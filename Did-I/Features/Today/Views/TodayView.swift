@@ -5,6 +5,7 @@ import TipKit
 struct TodayView: View {
     @State private var viewModel: TodayViewModel
     @State private var management: CheckManagementRequest?
+    @State private var photoCheck: PhotoRequest?
     @Binding var tab: MainTab
     let actions: TodayActions
 
@@ -64,6 +65,9 @@ struct TodayView: View {
             }
         }
         .onChange(of: changes.version) { viewModel.reload() }
+        .fullScreenCover(item: $photoCheck) { request in
+            PhotoCaptureView(checkName: request.checkName) { viewModel.attachPhoto($0, to: request.checkID) }
+        }
         .checkManagement(
             $management,
             onRename: viewModel.rename,
@@ -83,7 +87,7 @@ struct TodayView: View {
                 CheckTile(
                     content: tile.content,
                     onLog: { viewModel.log(tile.id) },
-                    onPhoto: { actions.takePhoto(tile.id) }
+                    onPhoto: { photoCheck = PhotoRequest(checkID: tile.id, checkName: tile.content.name) }
                 )
                 .contextMenu { menu(for: tile.id) }
                 .draggable(tile.id.uuidString) {
@@ -146,5 +150,11 @@ struct TodayActions {
     var openSettings: () -> Void = {}
     var openCheck: (UUID) -> Void = { _ in }
     var seeAll: () -> Void = {}
-    var takePhoto: (UUID) -> Void = { _ in }
+}
+
+/// The check a proof photo is being taken for.
+struct PhotoRequest: Identifiable {
+    var id: UUID { checkID }
+    let checkID: UUID
+    let checkName: String
 }

@@ -27,7 +27,8 @@ struct RootView: View {
                             days: environment.settings,
                             timeSource: environment.timeSource,
                             changes: environment.changes,
-                            editor: environment.checkEditor
+                            editor: environment.checkEditor,
+                            photos: environment.photos
                         ),
                         tab: $tab,
                         actions: todayActions

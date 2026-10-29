@@ -27,3 +27,18 @@ final class TodayUITests: XCTestCase {
         XCTAssertTrue(app.buttons["tile.Iron unplugged"].label.contains("not logged"))
     }
 }
+
+final class PhotoUITests: XCTestCase {
+    @MainActor
+    func testLoggingWithASamplePhotoInTheSimulator() throws {
+        let app = XCUIApplication.launched(arguments: ["-SeedSample"])
+        let camera = app.buttons["tile.Iron unplugged.photo"]
+        XCTAssertTrue(camera.waitForExistence(timeout: 5))
+        camera.tap()
+        let sample = app.buttons["photo.action"]
+        XCTAssertTrue(sample.waitForExistence(timeout: 3))
+        sample.tap()
+        XCTAssertTrue(app.descendants(matching: .any)["today.toast"].waitForExistence(timeout: 3))
+        XCTAssertEqual(app.buttons["tile.Iron unplugged.photo"].label, "Retake photo for Iron unplugged")
+    }
+}

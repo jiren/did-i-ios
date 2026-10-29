@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import UIKit
 
 /// Provides the day's boundary; `AppSettings` in the app, a fixed one in tests.
 protocol DayBoundaryProviding: AnyObject {
@@ -27,6 +28,7 @@ final class TodayViewModel {
     @ObservationIgnored private let timeSource: any TimeSource
     @ObservationIgnored private let changes: any ChangeNotifying
     @ObservationIgnored private let editor: CheckEditor
+    @ObservationIgnored private let photos: PhotoStore?
     @ObservationIgnored private let locale: Locale
     @ObservationIgnored private let toastDuration: Duration
 
@@ -41,6 +43,7 @@ final class TodayViewModel {
         timeSource: any TimeSource,
         changes: any ChangeNotifying,
         editor: CheckEditor,
+        photos: PhotoStore? = nil,
         locale: Locale = .autoupdatingCurrent,
         toastDuration: Duration = .seconds(5)
     ) {
@@ -50,6 +53,7 @@ final class TodayViewModel {
         self.timeSource = timeSource
         self.changes = changes
         self.editor = editor
+        self.photos = photos
         self.locale = locale
         self.toastDuration = toastDuration
     }
@@ -117,6 +121,32 @@ final class TodayViewModel {
         } catch {
             errorMessage = String(localized: "Couldn’t log \(check.name).")
         }
+    }
+
+    /// Saves a proof photo: it replaces today's photo on a retake, else it's a new log.
+    func attachPhoto(_ image: UIImage, to checkID: UUID) {
+        guard let photos, let check = checks.first(where: { $0.id == checkID }) else { return }
+        do {
+            let fileName = try photos.save(image)
+            if let log = todaysLog(for: checkID), log.hasPhoto {
+                try logStore.setPhoto(fileName, forLog: log.id)
+                var updated = log
+                updated.photoFileName = fileName
+                logCount += 1
+                changes.didChange()
+                reload()
+                showToast(LogToast(message: String(localized: "Photo saved · \(check.name)"), outcome: .refreshed(updated, previous: log)))
+            } else {
+                log(checkID, photoFileName: fileName)
+            }
+        } catch {
+            errorMessage = String(localized: "Couldn’t save that photo.")
+        }
+    }
+
+    private func todaysLog(for checkID: UUID) -> LogRecord? {
+        guard let log = latest[checkID], days.dayBoundary.isInSameDay(log.date, as: timeSource.now) else { return nil }
+        return log
     }
 
     func undo() {

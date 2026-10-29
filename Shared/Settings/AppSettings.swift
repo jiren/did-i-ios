@@ -15,9 +15,14 @@ final class AppSettings {
         didSet { defaults.set(dayStartHour, forKey: Key.dayStartHour) }
     }
 
+    var keepPhotos: KeepPhotos {
+        didSet { defaults.set(keepPhotos.rawValue, forKey: Key.keepPhotos) }
+    }
+
     init(defaults: UserDefaults) {
         self.defaults = defaults
         appearance = defaults.string(forKey: Key.appearance).flatMap(Appearance.init) ?? .system
+        keepPhotos = defaults.string(forKey: Key.keepPhotos).flatMap(KeepPhotos.init) ?? .thirtyDays
         dayStartHour = min(max(defaults.integer(forKey: Key.dayStartHour), 0), DayBoundary.latestStartHour)
     }
 
@@ -28,5 +33,6 @@ final class AppSettings {
     private enum Key {
         static let appearance = "appearance"
         static let dayStartHour = "dayStartHour"
+        static let keepPhotos = "keepPhotos"
     }
 }

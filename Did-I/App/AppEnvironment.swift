@@ -9,6 +9,7 @@ final class AppEnvironment {
     let changes: StoreChangeHub
     let timeSource: any TimeSource
     let checkEditor: CheckEditor
+    let photos: PhotoStore
 
     init(configuration: AppLaunchConfiguration, settings: AppSettings, container: ModelContainer) {
         self.configuration = configuration
@@ -16,8 +17,12 @@ final class AppEnvironment {
         self.timeSource = SystemTimeSource()
         self.store = SwiftDataStore(container: container, timeSource: timeSource)
         self.changes = StoreChangeHub(store: store)
-        self.checkEditor = CheckEditor(store: store, changes: changes, photos: nil)
+        self.photos = configuration.usesInMemoryStore
+            ? PhotoStore(folder: URL.temporaryDirectory.appending(path: "DidI-Photos-\(UUID().uuidString)"))
+            : PhotoStore()
+        self.checkEditor = CheckEditor(store: store, changes: changes, photos: photos)
         changes.startObservingOtherProcesses()
+        PhotoRetention.sweep(logs: store, photos: photos, keep: settings.keepPhotos, now: timeSource.now)
     }
 
     /// The disk store, or nil with the reason if it can't be opened.
