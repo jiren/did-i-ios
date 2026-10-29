@@ -179,9 +179,9 @@ The convention on disk: `App/` (composition root), `Core/<area>/` (e.g. `Checks/
 `ViewModels/` and `Models/`, `Debug/` (DEBUG-only) and `Resources/`. Create a folder when its first file lands; the
 synchronized groups pick it up. `Did-ITests/` mirrors `Did-I/`, with shared helpers in `Did-ITests/Support/`.
 
-`Shared/` is a synchronized folder in **both** the app and the widget extension (from Phase 9): the models, stores,
+`Shared/` is a synchronized folder in **both** the app and the `DidIWidgets` extension: the models, stores,
 day and summary rules, App Intents and the design tokens the widget uses. It must not import from `Features/` or
-use app-only APIs. The widget extension's own folder holds only the widget and control views.
+use app-only APIs (the extension builds with `APPLICATION_EXTENSION_API_ONLY`). `DidIWidgets/` holds only the widget and control views; its Info.plist and entitlements are in `Config/`. Intents live in `Shared/Intents/` and read `IntentServices.shared`, which the app replaces at launch with its own store so intents and screens share one context.
 
 ### Placement rules (under `Did-I/`)
 

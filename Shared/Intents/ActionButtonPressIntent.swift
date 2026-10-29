@@ -14,24 +14,13 @@ struct ActionButtonPressIntent: AppIntent {
     init() {}
 
     func perform() async throws -> some IntentResult & ProvidesDialog & ShowsSnippetIntent {
-        let checkID = try await resolveCheckID()
+        let checkID = try await PressResolver.checkID(chosen: check, parameter: $check)
         let logged = try await CheckLogger.log(checkID, source: .actionButton)
         if await IntentServices.shared.settings.actionButtonOpensCamera {
             try await continueInForeground(alwaysConfirm: false)
             await IntentServices.shared.showLogged?(LoggedRequest(logID: logged.logID, opensCamera: true))
         }
         return .result(dialog: "\(logged.dialog)", snippetIntent: LoggedSnippetIntent(logID: logged.logID))
-    }
-
-    private func resolveCheckID() async throws -> UUID {
-        let checks = try await CheckEntityQuery().suggestedEntities()
-        if let chosen = await IntentServices.shared.settings.actionButtonCheckID, checks.contains(where: { $0.id == chosen }) {
-            return chosen
-        }
-        if let check { return check.id }
-        guard !checks.isEmpty else { throw ActionButtonError.noChecks }
-        if checks.count == 1, let only = checks.first { return only.id }
-        return try await $check.requestDisambiguation(among: checks, dialog: "Which check?").id
     }
 }
 

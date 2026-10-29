@@ -89,6 +89,8 @@ struct SettingsView: View {
         .background(Color.ground)
         .toolbarVisibility(.hidden, for: .navigationBar)
         .task { viewModel.load() }
+        .onChange(of: settings.hidesNamesOnLockScreen) { WidgetRefresher.reloadAll() }
+        .onChange(of: settings.dayStartHour) { WidgetRefresher.reloadAll() }
         .confirmationDialog(String(localized: "Delete your data?"), isPresented: $isConfirmingDelete, titleVisibility: .visible) {
             Button(String(localized: "Delete logs and photos"), role: .destructive, action: viewModel.deleteAllLogs)
             Button(String(localized: "Delete everything, checks too"), role: .destructive, action: viewModel.deleteEverything)

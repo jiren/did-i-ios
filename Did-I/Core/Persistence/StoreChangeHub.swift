@@ -39,8 +39,8 @@ final class StoreChangeHub: ChangeNotifying {
         version += 1
     }
 
+    /// The widget extension wrote; it has already reloaded the widgets, so only screens need to hear.
     private func externalChange() {
         refreshFromDisk()
-        onChange.forEach { $0() }
     }
 }

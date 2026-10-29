@@ -25,6 +25,7 @@ final class AppEnvironment {
             store: store, settings: settings, photos: photos, timeSource: timeSource
         ) { [changes] in changes.didChange() }
         changes.onChange.append { [store] in ShortcutsIndex.update(with: (try? store.checks()) ?? []) }
+        changes.onChange.append { WidgetRefresher.reloadAll() }
         if !configuration.usesInMemoryStore {
             ShortcutsIndex.update(with: (try? store.checks()) ?? [])
         }
