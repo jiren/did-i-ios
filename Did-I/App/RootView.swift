@@ -13,6 +13,8 @@ struct RootView: View {
     @State private var tab: MainTab = .today
     @State private var path: [Route] = []
     @State private var isAddingChecks = false
+    /// The check History opens filtered to, from Detail's "See all in History".
+    @State private var historyFilter: UUID?
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -34,13 +36,43 @@ struct RootView: View {
                         actions: todayActions
                     )
                 case .history:
-                    PlaceholderScreen(title: String(localized: "History"), tab: $tab, onAdd: { isAddingChecks = true })
+                    HistoryView(
+                        viewModel: HistoryViewModel(
+                            checkStore: environment.store,
+                            logStore: environment.store,
+                            days: environment.settings,
+                            timeSource: environment.timeSource,
+                            changes: environment.changes,
+                            photos: environment.photos,
+                            selectedCheckID: historyFilter
+                        ),
+                        tab: $tab,
+                        onOpenCheck: { path.append(.check($0)) },
+                        onAddChecks: { isAddingChecks = true }
+                    )
+                    .id(historyFilter)
                 }
             }
             .navigationDestination(for: Route.self) { route in
                 switch route {
-                case .check:
-                    PlaceholderScreen(title: String(localized: "Check"), tab: nil, onAdd: {})
+                case .check(let id):
+                    DetailView(
+                        viewModel: DetailViewModel(
+                            checkID: id,
+                            checkStore: environment.store,
+                            logStore: environment.store,
+                            days: environment.settings,
+                            timeSource: environment.timeSource,
+                            changes: environment.changes,
+                            editor: environment.checkEditor,
+                            photos: environment.photos
+                        ),
+                        onSeeAllHistory: { checkID in
+                            historyFilter = checkID
+                            path = []
+                            tab = .history
+                        }
+                    )
                 case .settings:
                     PlaceholderScreen(title: String(localized: "Settings"), tab: nil, onAdd: {})
                 }
@@ -74,7 +106,10 @@ struct RootView: View {
             addChecks: { isAddingChecks = true },
             openSettings: { path.append(.settings) },
             openCheck: { path.append(.check($0)) },
-            seeAll: { tab = .history }
+            seeAll: {
+                historyFilter = nil
+                tab = .history
+            }
         )
     }
 }
