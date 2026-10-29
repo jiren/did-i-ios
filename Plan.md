@@ -70,7 +70,8 @@ Ask each before the phase that needs it, then move the answer into Resolved deci
 1. **Phase 10 (built as proposed, 2026-10-30, the user asked to keep going)**: the leave-home nudge needs **Always**
    location permission, asked only after someone sets a home in Settings › Reminders. Keep it, or drop the nudge
    (and the Detail switch)?
-2. **Before Phase 11**: the app icon in **Violet** as drawn, or another of the logo's colourways (Coral, Ink, Mint)?
+2. **Phase 11 (built as drawn, 2026-10-30)**: the app icon is **Violet**; switch to another of the logo's colourways
+   (Coral, Ink, Mint)? Re-render from `design/icon/*.svg` with `rsvg-convert`.
 
 ---
 
@@ -227,12 +228,14 @@ Branch `feature/phase-10-reminders`. Ask open question 1 first.
 **Done when** scheduler tests cover the budget and removal on log (with a stub notification center), and a reminder
 and a nudge fire on a device.
 
-## Phase 11 — App icon & name
+## Phase 11 — App icon & name ✅ Built 2026-10-30 (Violet, as drawn; open question 2 not yet answered)
 
 Branch `feature/phase-11-icon`. Ask open question 2 first.
 
-- The logo rendered from `Logo.dc.html` to `design/DidIAppIcon.svg`, then the app icon (default, dark, tinted) and
-  the widget's monochrome glyph.
+- The logo rendered from `Logo.dc.html` to `design/icon/DidIAppIcon{,-Dark,-Tinted}.svg`, then 1024 px PNGs
+  (`rsvg-convert`, alpha removed) in the app icon set: default (Violet), dark (Ink with a cream stroke), tinted
+  (white glyph on black). The widgets use SF Symbols, so no separate glyph asset was needed. A single-size icon
+  can't drop the check at 44 px; iOS scales the 1024 art.
 
 **Done when** the icon shows on the Home Screen in light, dark and tinted modes.
 
