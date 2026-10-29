@@ -23,6 +23,7 @@ don't apply here.
 |---|---|---|
 | UI | SwiftUI | `NavigationStack` / `NavigationSplitView` (iPad), not `NavigationView` |
 | State | `@Observable` macro | Not `ObservableObject` / `@Published` |
+| Targets | `Did-I`, `DidIWidgets` (widget extension, `com.elo.Did-I.Widgets`), `Did-ITests`, `Did-IUITests` | Both apps share `Shared/` and the App Group |
 | Persistence | SwiftData | `@Model`, `ModelContainer`, `ModelContext`; on this device only (no CloudKit), in the App Group |
 | Sharing | App Group `group.com.elo.Did-I` | One store, settings suite and photo folder for the app and the widget extension |
 | Settings | `UserDefaults` (group suite) | Appearance, day start, Action Button, privacy, photo retention, reminders |
@@ -95,9 +96,20 @@ xcodebuild test -scheme Did-I -only-testing:'Did-ITests/AppLaunchConfigurationTe
 `-maximum-parallel-testing-workers 2` (or `-parallel-testing-enabled NO`).
 
 To look at one screen without tests, build for the simulator, install with `xcrun simctl install`, launch with
-`xcrun simctl launch --terminate-running-process <UDID> com.elo.Did-I`, and take `xcrun simctl io <UDID> screenshot`.
+`xcrun simctl launch --terminate-running-process <UDID> com.elo.Did-I -UITests -SeedSample -Open detail`, and take
+`xcrun simctl io <UDID> screenshot`. The Debug-only launch arguments (`AppLaunchConfiguration`):
+
+- `-UITests`: an in-memory store, a fresh `UserDefaults` suite, TipKit tips hidden.
+- `-SeedSample`: the design's four checks, three logged this morning (only into an empty store).
+- `-Open <screen>`: `addChecks`, `history`, `settings`, `actionButton`, `reminders`, `detail` (the first check),
+  `logged` (the newest log).
+- `-Gallery` / `-GalleryControls`: the design-system gallery (tiles first, or the controls).
+- `-Appearance light|dark`: forces the theme.
+
 `xcrun simctl ui <UDID> appearance dark` and `xcrun simctl ui <UDID> content_size accessibility-extra-large` switch
-the theme and text size.
+the system theme and text size. For the iPad split view use the iOS 27.0 "iPad Air 11-inch (M4)"
+(`75DF238D-64A3-4D6E-91A3-287ADE75AD09`). Widgets, Siri, the Action Button, the camera, notifications and leaving
+home can't be driven from the command line; check those on a device.
 
 **Don't run tests on the simulator by default.** Building is fine, but ask the user before running any unit or UI
 tests (a single test included), and run them only when they say yes.

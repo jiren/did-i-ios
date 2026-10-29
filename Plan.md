@@ -61,6 +61,7 @@ user (dated), or *proposed, taken without asking* (change any of these by saying
 | **Permissions** | Proposed: when the camera, location or notifications are refused, the feature's control explains why and links to Settings. Logging never needs a permission. |
 | **Code sharing** | Proposed: a `Shared/` synchronized folder in both the app and the widget extension holds the models, stores, rules, intents and design tokens; the widget target gets the app's Swift settings. `Shared/` never imports from `Features/`. |
 | **App Store basics** | Proposed: `PrivacyInfo.xcprivacy` (the `UserDefaults` and file-timestamp required reasons). The usage strings (camera, location when in use and always, notifications) are reviewed with the user in Phase 12. |
+| **Polish (built)** | 2026-10-30: regular width shows Today or History beside the chosen check (`NavigationSplitView`, both columns visible); the violet tile's secondary text is `#F1ECFF` (4.9:1 on violet, the design's `#E3DAFF` was 4.3:1); toasts are announced to VoiceOver and fade instead of sliding with Reduce Motion. |
 | **App icon** | From `Logo.dc.html`: a question mark whose dot is a check: a white stroke on Violet `#6B3BFF`, a Sun `#FFD23F` dot, an ink check. The dark icon is the Ink variant, the tinted one the monochrome Lock Screen glyph. At 44 px and below the check drops out. Colourway: open question 2. |
 
 ## Open questions
@@ -239,7 +240,7 @@ Branch `feature/phase-11-icon`. Ask open question 2 first.
 
 **Done when** the icon shows on the Home Screen in light, dark and tinted modes.
 
-## Phase 12 — iPad, accessibility & polish
+## Phase 12 — iPad, accessibility & polish ✅ Built 2026-10-30 (iPad split view and an accessibility size checked on the simulator; tests compiled, not run; usage strings await the user's review)
 
 Branch `feature/phase-12-polish`.
 

@@ -5,14 +5,23 @@ struct DetailView: View {
     @State private var viewModel: DetailViewModel
     @State private var management: CheckManagementRequest?
     @State private var isShowingPhoto = false
+    let showsBackButton: Bool
     let onSeeAllHistory: (UUID) -> Void
+    let onRemoved: () -> Void
 
     @Environment(\.dismiss) private var dismiss
     @Environment(StoreChangeHub.self) private var changes
 
-    init(viewModel: @autoclosure () -> DetailViewModel, onSeeAllHistory: @escaping (UUID) -> Void) {
+    init(
+        viewModel: @autoclosure () -> DetailViewModel,
+        showsBackButton: Bool = true,
+        onSeeAllHistory: @escaping (UUID) -> Void,
+        onRemoved: @escaping () -> Void = {}
+    ) {
         _viewModel = State(initialValue: viewModel())
+        self.showsBackButton = showsBackButton
         self.onSeeAllHistory = onSeeAllHistory
+        self.onRemoved = onRemoved
     }
 
     var body: some View {
@@ -52,10 +61,17 @@ struct DetailView: View {
             }
         }
         .onChange(of: changes.version) { viewModel.reload() }
+        .onChange(of: viewModel.toast) { _, toast in
+            if let toast { AccessibilityNotification.Announcement(toast.message).post() }
+        }
         .onChange(of: viewModel.check?.nudgesOnLeavingHome) { _, isOn in
             if isOn == true { Task { await NotificationPermission.request() } }
         }
-        .onChange(of: viewModel.isRemoved) { _, removed in if removed { dismiss() } }
+        .onChange(of: viewModel.isRemoved) { _, removed in
+            guard removed else { return }
+            onRemoved()
+            dismiss()
+        }
         .fullScreenCover(isPresented: $isShowingPhoto) {
             PhotoViewer(image: viewModel.fullPhoto(), caption: viewModel.latestPhotoCaption)
         }
@@ -70,8 +86,10 @@ struct DetailView: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
-                RoundIconButton(systemName: "chevron.left", label: String(localized: "Back to Today"), style: .onColor) {
-                    dismiss()
+                if showsBackButton {
+                    RoundIconButton(systemName: "chevron.left", label: String(localized: "Back to Today"), style: .onColor) {
+                        dismiss()
+                    }
                 }
                 Spacer()
                 Menu {
@@ -211,7 +229,7 @@ struct DetailView: View {
         VStack(spacing: 12) {
             if let toast = viewModel.toast {
                 UndoToast(message: toast.message, onUndo: viewModel.undo)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .transition(.opacity)
             }
             Button(action: viewModel.logAgain) {
                 HStack(spacing: 10) {

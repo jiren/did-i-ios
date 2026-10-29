@@ -11,6 +11,7 @@ struct TodayView: View {
 
     @Environment(StoreChangeHub.self) private var changes
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(viewModel: @autoclosure () -> TodayViewModel, tab: Binding<MainTab>, actions: TodayActions) {
         _viewModel = State(initialValue: viewModel())
@@ -65,6 +66,9 @@ struct TodayView: View {
             }
         }
         .onChange(of: changes.version) { viewModel.reload() }
+        .onChange(of: viewModel.toast) { _, toast in
+            if let toast { AccessibilityNotification.Announcement(toast.message).post() }
+        }
         .fullScreenCover(item: $photoCheck) { request in
             PhotoCaptureView(checkName: request.checkName) { viewModel.attachPhoto($0, to: request.checkID) }
         }
@@ -133,7 +137,7 @@ struct TodayView: View {
         VStack(spacing: 12) {
             if let toast = viewModel.toast {
                 UndoToast(message: toast.message, onUndo: viewModel.undo)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
                     .accessibilityIdentifier("today.toast")
             }
             FloatingTabBar(selection: $tab, onAdd: actions.addChecks)

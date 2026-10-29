@@ -31,7 +31,7 @@ struct LoggedView: View {
                 .accessibilityAddTraits(.isHeader)
             Text(viewModel.whenText)
                 .font(Typography.text(20, .semibold, relativeTo: .title3))
-                .foregroundStyle(Color.lavender)
+                .foregroundStyle(Color.tileVioletSub)
                 .padding(.top, 12)
             Spacer(minLength: 40)
             buttons

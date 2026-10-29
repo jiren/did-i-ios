@@ -60,8 +60,8 @@ struct LoggedSnippetView: View {
                         .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(title).font(.didSection).foregroundStyle(.white)
-                        Text(when).font(.didSubheadline).foregroundStyle(Color.lavender)
-                        Text(source).font(.didFootnote).foregroundStyle(Color.lavender)
+                        Text(when).font(.didSubheadline).foregroundStyle(Color.tileVioletSub)
+                        Text(source).font(.didFootnote).foregroundStyle(Color.tileVioletSub)
                     }
                 }
                 HStack(spacing: 10) {
