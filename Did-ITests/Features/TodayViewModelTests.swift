@@ -15,7 +15,7 @@ struct TodayViewModelTests {
         checks = try store.addChecks(["Front door locked", "Pill taken", "Stove off", "Iron unplugged"].map { CheckDraft(name: $0) })
         viewModel = TodayViewModel(
             checkStore: store, logStore: store, days: FixedDays(), timeSource: clock, changes: changes,
-            locale: Locale(identifier: "en_US"), toastDuration: .seconds(60)
+            editor: CheckEditor(store: store, changes: changes, photos: nil), locale: Locale(identifier: "en_US"), toastDuration: .seconds(60)
         )
     }
 
@@ -82,10 +82,30 @@ struct TodayViewModelTests {
         #expect(viewModel.tiles[0].content.photoButtonLabel == "Retake photo for Front door locked")
     }
 
+    @Test func movingAndRenaming() {
+        viewModel.reload()
+        #expect(!viewModel.canMove(checks[0].id, by: -1))
+        viewModel.move(checks[0].id, by: 1)
+        #expect(viewModel.tiles.map(\.id) == [checks[1].id, checks[0].id, checks[2].id, checks[3].id])
+        viewModel.move(checks[3].id, to: checks[1].id)
+        #expect(viewModel.tiles.first?.id == checks[3].id)
+        viewModel.rename(checks[3].id, to: "Iron off")
+        #expect(viewModel.tiles.first?.content.name == "Iron off")
+    }
+
+    @Test func removingACheckDropsItsToast() throws {
+        viewModel.reload()
+        viewModel.log(checks[2].id)
+        #expect(viewModel.removeRequest(for: checks[2].id) == .remove(checks[2], logCount: 1))
+        viewModel.remove(checks[2].id)
+        #expect(viewModel.toast == nil)
+        #expect(viewModel.tiles.count == 3)
+    }
+
     @Test func theToastGoesAwayOnItsOwn() async throws {
         let quick = TodayViewModel(
             checkStore: store, logStore: store, days: FixedDays(), timeSource: clock, changes: changes,
-            locale: Locale(identifier: "en_US"), toastDuration: .milliseconds(10)
+            editor: CheckEditor(store: store, changes: changes, photos: nil), locale: Locale(identifier: "en_US"), toastDuration: .milliseconds(10)
         )
         quick.reload()
         quick.log(checks[0].id)

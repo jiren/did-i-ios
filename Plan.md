@@ -41,7 +41,7 @@ user (dated), or *proposed, taken without asking* (change any of these by saying
 | **Day boundary** | Proposed: "today" starts at midnight, with a **Day starts at** setting (midnight to 5 AM) for the 1 AM door check. Logs are stored as `Date`; "today" and relative times use the current calendar and time zone, so travel and DST just work. |
 | **Empty state** | Proposed (2026-10-30): "Nothing to check yet" with "Add the things you double-check — the front door, the stove, a pill. Then one tap each time, and you’ll never have to wonder." and an Add checks button. |
 | **Add checks** | From the design: a sheet of suggestion chips (Windows closed, Car locked, Tap off, Back door locked, Hair tool off, Lights off, Garage shut, Charger unplugged, Heater off), hiding ones already added, and "Something else?" with Add for a custom one; the button reads "Pick at least one" (disabled) / "Add 1 check" / "Add {n} checks". Proposed: a new install starts **empty** (no seeded checks), with an empty state that opens the sheet, and the design's four checks (Front door locked, Pill taken, Stove off, Iron unplugged) lead the suggestions. A suggestion's kind follows its name (door, pill, stove, plug), else `other`. |
-| **Manage checks** | Proposed (missing from the design): from a tile's context menu and from Detail: **rename**, **change icon**, **Remove** (with a confirmation dialog; removes its logs and photos); hold and drag tiles to **reorder**. |
+| **Manage checks** | Proposed (missing from the design): from a tile's context menu (Details, Rename, Change icon, Move earlier / later, Remove) and from Detail: **rename** (an alert), **change icon** (a sheet of the ten kinds), **Remove** (a confirmation naming how many logs go with it; removes its logs and photos); drag a tile onto another to **reorder**. Move earlier / later is the VoiceOver-friendly way. |
 | **Detail** | From `Detail.dc.html`: a violet header with Back and Remove, "{state} at {time}" ("Locked at 8:42 AM") and "{day} · {ago}", the latest photo; the "Nudge me when I leave home — Only if it isn't logged yet" switch; the History timeline (time and source) with the log count; **Log it again**. Proposed: the header's verb comes from the kind (Locked, Taken, Off, Unplugged, else "Logged"). |
 | **History** | The design's History tab and "See all" link to one check's Detail. Proposed: an **all-checks History** grouped by day, with a filter by check, each row opening its check; **swipe to delete** a wrong log (and its photo). |
 | **Photo proof** | Proposed: captured with the camera, downscaled HEIC plus a thumbnail, kept in the app (never the Photos library), shown full screen on a tap, deleted with its log. **Keep photos** 7 days / **30 days** (default) / Forever; logs are kept; stale and orphaned files are swept at launch. `NSCameraUsageDescription`. The Simulator has no camera, so DEBUG builds use `PhotosPicker` there. |
@@ -144,7 +144,7 @@ Branch `feature/phase-3-today`.
 **Done when** view-model tests cover logging, undo and the summary with stubs, and a UI test logs a check and undoes
 it.
 
-## Phase 4 — Add & manage checks
+## Phase 4 — Add & manage checks ✅ Built 2026-10-30 (checked on the simulator; tests compiled, not run)
 
 Branch `feature/phase-4-checks`.
 

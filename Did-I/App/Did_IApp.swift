@@ -9,6 +9,7 @@ struct Did_IApp: App {
     init() {
         FontRegistration.registerBundledFonts()
         let configuration = AppLaunchConfiguration()
+        DidITips.configure(forTesting: configuration.usesInMemoryStore)
         self.configuration = configuration
         let settings = AppSettings(defaults: configuration.makeDefaults())
         if let forced = configuration.forcedAppearance { settings.appearance = forced }

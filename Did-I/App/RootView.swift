@@ -26,7 +26,8 @@ struct RootView: View {
                             logStore: environment.store,
                             days: environment.settings,
                             timeSource: environment.timeSource,
-                            changes: environment.changes
+                            changes: environment.changes,
+                            editor: environment.checkEditor
                         ),
                         tab: $tab,
                         actions: todayActions
@@ -45,12 +46,26 @@ struct RootView: View {
             }
         }
         .sheet(isPresented: $isAddingChecks) {
-            PlaceholderScreen(title: String(localized: "Add checks"), tab: nil, onAdd: {})
+            AddChecksSheet(viewModel: AddChecksViewModel(store: environment.store, changes: environment.changes))
         }
         .environment(environment.changes)
+        .task { openForDebugging() }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { environment.changes.refreshFromDisk() }
         }
+    }
+
+    private func openForDebugging() {
+        #if DEBUG
+        switch environment.configuration.debugOpen {
+        case "addChecks": isAddingChecks = true
+        case "history": tab = .history
+        case "settings": path = [.settings]
+        case "detail":
+            if let first = try? environment.store.checks().first { path = [.check(first.id)] }
+        default: break
+        }
+        #endif
     }
 
     private var todayActions: TodayActions {

@@ -1,8 +1,10 @@
 import SwiftUI
+import TipKit
 
 /// Today (`Main.dc.html`): the header, the grid of checks, Recent, and the floating bar.
 struct TodayView: View {
     @State private var viewModel: TodayViewModel
+    @State private var management: CheckManagementRequest?
     @Binding var tab: MainTab
     let actions: TodayActions
 
@@ -29,6 +31,10 @@ struct TodayView: View {
                         .padding(.horizontal, 20)
                         .padding(.top, 22)
                 } else {
+                    TipView(EditTileTip())
+                        .tipBackground(Color.surface)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 18)
                     grid
                 }
                 if !viewModel.recent.isEmpty {
@@ -58,6 +64,12 @@ struct TodayView: View {
             }
         }
         .onChange(of: changes.version) { viewModel.reload() }
+        .checkManagement(
+            $management,
+            onRename: viewModel.rename,
+            onPickKind: { viewModel.setKind($1, for: $0) },
+            onRemove: viewModel.remove
+        )
     }
 
     private var columns: [GridItem] {
@@ -73,13 +85,44 @@ struct TodayView: View {
                     onLog: { viewModel.log(tile.id) },
                     onPhoto: { actions.takePhoto(tile.id) }
                 )
-                .contextMenu { actions.tileMenu(tile.id) }
+                .contextMenu { menu(for: tile.id) }
+                .draggable(tile.id.uuidString) {
+                    TileIcon(kind: tile.content.kind, swatch: tile.content.swatch, isDone: false)
+                }
+                .dropDestination(for: String.self) { items, _ in
+                    guard let dragged = items.first.flatMap(UUID.init(uuidString:)) else { return false }
+                    viewModel.move(dragged, to: tile.id)
+                    return true
+                }
             }
             AddTile(action: actions.addChecks)
                 .accessibilityIdentifier("today.addTile")
         }
         .padding(.horizontal, 20)
         .padding(.top, 22)
+    }
+
+    @ViewBuilder
+    private func menu(for id: UUID) -> some View {
+        Button { actions.openCheck(id) } label: { Label("Details", systemImage: "clock.arrow.circlepath") }
+        Button {
+            EditTileTip().invalidate(reason: .actionPerformed)
+            if let check = viewModel.check(id) { management = .rename(check) }
+        } label: { Label("Rename", systemImage: "pencil") }
+        Button {
+            EditTileTip().invalidate(reason: .actionPerformed)
+            if let check = viewModel.check(id) { management = .icon(check) }
+        } label: { Label("Change icon", systemImage: "square.grid.2x2") }
+        if viewModel.canMove(id, by: -1) {
+            Button { viewModel.move(id, by: -1) } label: { Label("Move earlier", systemImage: "arrow.left") }
+        }
+        if viewModel.canMove(id, by: 1) {
+            Button { viewModel.move(id, by: 1) } label: { Label("Move later", systemImage: "arrow.right") }
+        }
+        Divider()
+        Button(role: .destructive) {
+            management = viewModel.removeRequest(for: id)
+        } label: { Label("Remove", systemImage: "trash") }
     }
 
     private var bottomBar: some View {
@@ -104,26 +147,4 @@ struct TodayActions {
     var openCheck: (UUID) -> Void = { _ in }
     var seeAll: () -> Void = {}
     var takePhoto: (UUID) -> Void = { _ in }
-    var tileMenu: (UUID) -> TileMenu = { _ in TileMenu() }
-}
-
-/// A tile's context menu, supplied by the root so Today doesn't know about editing.
-struct TileMenu: View {
-    var items: [TileMenuItem] = []
-
-    var body: some View {
-        ForEach(items) { item in
-            Button(role: item.isDestructive ? .destructive : nil, action: item.action) {
-                Label(item.title, systemImage: item.systemImage)
-            }
-        }
-    }
-}
-
-struct TileMenuItem: Identifiable {
-    let id = UUID()
-    var title: String
-    var systemImage: String
-    var isDestructive = false
-    var action: () -> Void
 }

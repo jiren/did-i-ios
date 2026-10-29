@@ -26,6 +26,7 @@ final class TodayViewModel {
     @ObservationIgnored private let days: any DayBoundaryProviding
     @ObservationIgnored private let timeSource: any TimeSource
     @ObservationIgnored private let changes: any ChangeNotifying
+    @ObservationIgnored private let editor: CheckEditor
     @ObservationIgnored private let locale: Locale
     @ObservationIgnored private let toastDuration: Duration
 
@@ -39,6 +40,7 @@ final class TodayViewModel {
         days: any DayBoundaryProviding,
         timeSource: any TimeSource,
         changes: any ChangeNotifying,
+        editor: CheckEditor,
         locale: Locale = .autoupdatingCurrent,
         toastDuration: Duration = .seconds(5)
     ) {
@@ -47,6 +49,7 @@ final class TodayViewModel {
         self.days = days
         self.timeSource = timeSource
         self.changes = changes
+        self.editor = editor
         self.locale = locale
         self.toastDuration = toastDuration
     }
@@ -130,6 +133,53 @@ final class TodayViewModel {
 
     func dismissToast() {
         toast = nil
+    }
+
+    // MARK: - Managing checks
+
+    func check(_ id: UUID) -> CheckRecord? {
+        checks.first { $0.id == id }
+    }
+
+    func removeRequest(for id: UUID) -> CheckManagementRequest? {
+        guard let check = check(id) else { return nil }
+        return .remove(check, logCount: (try? logStore.logCount(for: id)) ?? 0)
+    }
+
+    func canMove(_ id: UUID, by offset: Int) -> Bool {
+        guard let index = checks.firstIndex(where: { $0.id == id }) else { return false }
+        return checks.indices.contains(index + offset)
+    }
+
+    func rename(_ id: UUID, to name: String) {
+        edit { try editor.rename(id, to: name) }
+    }
+
+    func setKind(_ kind: CheckKind, for id: UUID) {
+        edit { try editor.setKind(kind, for: id) }
+    }
+
+    func move(_ id: UUID, by offset: Int) {
+        edit { try editor.move(id, by: offset, in: checks.map(\.id)) }
+    }
+
+    /// A tile dropped on another takes its place.
+    func move(_ id: UUID, to target: UUID) {
+        edit { try editor.move(id, to: target, in: checks.map(\.id)) }
+    }
+
+    func remove(_ id: UUID) {
+        if toast?.outcome.record.checkID == id { toast = nil }
+        edit { try editor.remove(id) }
+    }
+
+    private func edit(_ change: () throws -> Void) {
+        do {
+            try change()
+            reload()
+        } catch {
+            errorMessage = String(localized: "Couldn’t change that check.")
+        }
     }
 
     private func showToast(_ toast: LogToast) {

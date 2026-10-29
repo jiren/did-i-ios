@@ -8,6 +8,7 @@ final class AppEnvironment {
     let store: SwiftDataStore
     let changes: StoreChangeHub
     let timeSource: any TimeSource
+    let checkEditor: CheckEditor
 
     init(configuration: AppLaunchConfiguration, settings: AppSettings, container: ModelContainer) {
         self.configuration = configuration
@@ -15,6 +16,7 @@ final class AppEnvironment {
         self.timeSource = SystemTimeSource()
         self.store = SwiftDataStore(container: container, timeSource: timeSource)
         self.changes = StoreChangeHub(store: store)
+        self.checkEditor = CheckEditor(store: store, changes: changes, photos: nil)
         changes.startObservingOtherProcesses()
     }
 

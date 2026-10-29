@@ -10,6 +10,9 @@ struct AppLaunchConfiguration {
     let showsGallery: Bool
     /// Launched with `-SeedSample` to add the design's sample checks to an empty store (Debug builds only).
     let seedsSampleData: Bool
+    /// `-Open <screen>` opens a screen at launch, for screenshots (Debug builds only): addChecks, history,
+    /// settings, actionButton, detail (the first check), logged.
+    let debugOpen: String?
     /// `-GalleryControls` starts the gallery at its controls.
     let galleryStartsAtControls: Bool
     /// Launched with `-Appearance light|dark` to force a theme (Debug builds only).
@@ -26,6 +29,7 @@ struct AppLaunchConfiguration {
         showsGallery = arguments.contains("-Gallery") || arguments.contains("-GalleryControls")
         galleryStartsAtControls = arguments.contains("-GalleryControls")
         seedsSampleData = arguments.contains("-SeedSample")
+        debugOpen = arguments.firstIndex(of: "-Open").flatMap { arguments.indices.contains($0 + 1) ? arguments[$0 + 1] : nil }
         forcedAppearance = arguments.firstIndex(of: "-Appearance")
             .flatMap { arguments.indices.contains($0 + 1) ? Appearance(rawValue: arguments[$0 + 1]) : nil }
         #else
@@ -33,6 +37,7 @@ struct AppLaunchConfiguration {
         showsGallery = false
         galleryStartsAtControls = false
         seedsSampleData = false
+        debugOpen = nil
         forcedAppearance = nil
         #endif
         isUnitTesting = environment["XCTestConfigurationFilePath"] != nil
