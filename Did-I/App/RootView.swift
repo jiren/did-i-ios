@@ -17,6 +17,8 @@ struct RootView: View {
     @State private var isAddingChecks = false
     /// The check History opens filtered to, from Detail's "See all in History".
     @State private var historyFilter: UUID?
+    /// The Logged screen after an Action Button press that continued in the app.
+    @State private var logged: LoggedRequest?
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -93,7 +95,30 @@ struct RootView: View {
             AddChecksSheet(viewModel: AddChecksViewModel(store: environment.store, changes: environment.changes))
         }
         .environment(environment.changes)
-        .task { openForDebugging() }
+        .fullScreenCover(item: $logged) { request in
+            LoggedView(
+                viewModel: LoggedViewModel(
+                    request: request,
+                    store: environment.store,
+                    days: environment.settings,
+                    changes: environment.changes,
+                    photos: environment.photos
+                ),
+                strongHaptic: environment.settings.actionButtonStrongHaptic
+            )
+        }
+        .task {
+            IntentServices.shared.openCheck = { id in
+                logged = nil
+                isAddingChecks = false
+                path = [.check(id)]
+            }
+            IntentServices.shared.showLogged = { request in
+                isAddingChecks = false
+                logged = request
+            }
+            openForDebugging()
+        }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { environment.changes.refreshFromDisk() }
         }
@@ -106,6 +131,10 @@ struct RootView: View {
         case "history": tab = .history
         case "settings": path = [.settings]
         case "actionButton": path = [.settings, .actionButton]
+        case "logged":
+            if let log = try? environment.store.logs(for: nil, limit: 1).first {
+                logged = LoggedRequest(logID: log.id, opensCamera: false)
+            }
         case "detail":
             if let first = try? environment.store.checks().first { path = [.check(first.id)] }
         default: break

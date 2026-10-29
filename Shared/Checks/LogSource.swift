@@ -12,7 +12,7 @@ nonisolated enum LogSource: String, CaseIterable, Codable, Sendable {
         case .actionButton: String(localized: "Action Button")
         case .control: String(localized: "Control Center")
         case .siri: String(localized: "Siri")
-        case .shortcut: String(localized: "Shortcut")
+        case .shortcut: String(localized: "Siri or Shortcuts")
         case .notification: String(localized: "Notification")
         }
     }

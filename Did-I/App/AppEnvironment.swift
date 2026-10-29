@@ -21,6 +21,13 @@ final class AppEnvironment {
             ? PhotoStore(folder: URL.temporaryDirectory.appending(path: "DidI-Photos-\(UUID().uuidString)"))
             : PhotoStore()
         self.checkEditor = CheckEditor(store: store, changes: changes, photos: photos)
+        IntentServices.shared = IntentServices(
+            store: store, settings: settings, photos: photos, timeSource: timeSource
+        ) { [changes] in changes.didChange() }
+        changes.onChange.append { [store] in ShortcutsIndex.update(with: (try? store.checks()) ?? []) }
+        if !configuration.usesInMemoryStore {
+            ShortcutsIndex.update(with: (try? store.checks()) ?? [])
+        }
         changes.startObservingOtherProcesses()
         PhotoRetention.sweep(logs: store, photos: photos, keep: settings.keepPhotos, now: timeSource.now)
     }
