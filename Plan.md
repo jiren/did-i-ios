@@ -55,6 +55,7 @@ user (dated), or *proposed, taken without asking* (change any of these by saying
 | **Widgets (built)** | 2026-10-30: `CheckWidget` (configurable: choose a check, else the first) for Lock Screen circular and rectangular and Home Screen small; `ChecksOverviewWidget` (medium, the first four); `LogCheckControl` (Control Center and the Action Button), whose logs read "Action Button or Control Center" since the two can't be told apart. Timelines hold now and the next day start. Target `DidIWidgets` (`com.elo.Did-I.Widgets`), with `Shared/` and the App Group. |
 | **Two processes, one store** | Proposed: widget and control intents run in the **widget extension's process**, so the app and the extension both write the store. After a write the extension posts a Darwin notification; the app reads the changes through SwiftData history (`fetchHistory`) and also refetches when it becomes active. |
 | **Reminders** | 2026-10-30, the user: a **time reminder** per check ("at 9 PM if Pill isn't logged"). Proposed: iOS keeps at most 64 pending local notifications, so reminders are scheduled a day ahead, nearest first, within a budget of 60, and rescheduled on every log, at launch and from a `BGAppRefreshTask`. Logging from anywhere (the app, a widget, a notification) removes that day's pending reminder. Notifications carry a **Log it** action that logs without opening the app. |
+| **Reminders (built)** | 2026-10-30: each check's page has "Remind me if it isn’t logged" (9 PM when turned on, then any time); Settings › Reminders shows notification access, home (set to where you are, within 150 m; move or forget), "Tell me when I’m good", and which checks remind or nudge. Notifications carry **Log it** (logs without opening, source "Notification"); a tap opens the check. A background app refresh (`com.elo.Did-I.reminders`) reschedules at the day change. |
 | **Leave-home nudge** | From `Detail.dc.html` ("Nudge me when I leave home — Only if it isn't logged yet"). Proposed: home is set in Settings (use current location); a `CLMonitor`, recreated under the same name at every launch, watches it; on leaving, checks with the nudge on and no log today get a notification. The reassurance from `LockScreen.dc.html` ("{name} {state} — {time} / You already checked. You're good.") is optional, off by default. Needs Always location (open question 1). |
 | **Tips** | Proposed: TipKit tips, each shown once and none on the empty screen: hold a tile to edit it, add a Lock Screen widget, set up the Action Button. |
 | **Permissions** | Proposed: when the camera, location or notifications are refused, the feature's control explains why and links to Settings. Logging never needs a permission. |
@@ -66,8 +67,9 @@ user (dated), or *proposed, taken without asking* (change any of these by saying
 
 Ask each before the phase that needs it, then move the answer into Resolved decisions with the date.
 
-1. **Before Phase 10**: the leave-home nudge needs **Always** location permission. Is that acceptable, or should
-   the nudge (and the Detail switch) be dropped?
+1. **Phase 10 (built as proposed, 2026-10-30, the user asked to keep going)**: the leave-home nudge needs **Always**
+   location permission, asked only after someone sets a home in Settings › Reminders. Keep it, or drop the nudge
+   (and the Detail switch)?
 2. **Before Phase 11**: the app icon in **Violet** as drawn, or another of the logo's colourways (Coral, Ink, Mint)?
 
 ---
@@ -213,7 +215,7 @@ Branch `feature/phase-9-widgets`.
 **Done when** each widget renders in its families in both themes (previews), and a widget log appears in the open
 app.
 
-## Phase 10 — Reminders
+## Phase 10 — Reminders ✅ Built 2026-10-30 (tests compiled, not run; notifications and leaving home need a device) — open question 1 not yet answered, built as proposed
 
 Branch `feature/phase-10-reminders`. Ask open question 1 first.
 

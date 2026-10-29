@@ -472,7 +472,10 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Did I?";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_FILE = "Config/Did-I-Info.plist";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Take a photo as proof that you did it. Photos stay inside Did I? on this device.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Did I? nudges you as you leave home about checks you haven’t logged yet. Your location stays on this device.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Did I? uses where you are to set your home, so it can nudge you as you leave.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -508,7 +511,10 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Did I?";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_FILE = "Config/Did-I-Info.plist";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Take a photo as proof that you did it. Photos stay inside Did I? on this device.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Did I? nudges you as you leave home about checks you haven’t logged yet. Your location stays on this device.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Did I? uses where you are to set your home, so it can nudge you as you leave.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

@@ -37,6 +37,19 @@ final class AppSettings {
         didSet { defaults.set(actionButtonStrongHaptic, forKey: Key.actionButtonStrongHaptic) }
     }
 
+    /// Where "leaving home" is measured from, or nil when not set.
+    var home: HomeLocation? {
+        didSet {
+            defaults.set(home?.latitude, forKey: Key.homeLatitude)
+            defaults.set(home?.longitude, forKey: Key.homeLongitude)
+        }
+    }
+
+    /// On leaving home, also tell people about checks they already logged ("You're good.").
+    var reassuresOnLeavingHome: Bool {
+        didSet { defaults.set(reassuresOnLeavingHome, forKey: Key.reassuresOnLeavingHome) }
+    }
+
     init(defaults: UserDefaults) {
         self.defaults = defaults
         appearance = defaults.string(forKey: Key.appearance).flatMap(Appearance.init) ?? .system
@@ -44,6 +57,13 @@ final class AppSettings {
         actionButtonCheckID = defaults.string(forKey: Key.actionButtonCheckID).flatMap(UUID.init(uuidString:))
         actionButtonOpensCamera = defaults.bool(forKey: Key.actionButtonOpensCamera)
         actionButtonStrongHaptic = defaults.object(forKey: Key.actionButtonStrongHaptic) as? Bool ?? true
+        if let latitude = defaults.object(forKey: Key.homeLatitude) as? Double,
+           let longitude = defaults.object(forKey: Key.homeLongitude) as? Double {
+            home = HomeLocation(latitude: latitude, longitude: longitude)
+        } else {
+            home = nil
+        }
+        reassuresOnLeavingHome = defaults.bool(forKey: Key.reassuresOnLeavingHome)
         keepPhotos = defaults.string(forKey: Key.keepPhotos).flatMap(KeepPhotos.init) ?? .thirtyDays
         dayStartHour = min(max(defaults.integer(forKey: Key.dayStartHour), 0), DayBoundary.latestStartHour)
     }
@@ -60,5 +80,16 @@ final class AppSettings {
         static let actionButtonCheckID = "actionButtonCheckID"
         static let actionButtonOpensCamera = "actionButtonOpensCamera"
         static let actionButtonStrongHaptic = "actionButtonStrongHaptic"
+        static let homeLatitude = "homeLatitude"
+        static let homeLongitude = "homeLongitude"
+        static let reassuresOnLeavingHome = "reassuresOnLeavingHome"
     }
+}
+
+nonisolated struct HomeLocation: Equatable, Sendable {
+    /// How far from home counts as leaving, in metres.
+    static let radius: Double = 150
+
+    var latitude: Double
+    var longitude: Double
 }

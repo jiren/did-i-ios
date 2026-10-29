@@ -24,6 +24,16 @@ struct Did_IApp: App {
                 .preferredColorScheme(settings.appearance.colorScheme)
                 .tint(Color.tileViolet)
         }
+        .backgroundTask(.appRefresh(BackgroundRefresh.identifier)) {
+            await refreshInBackground()
+        }
+    }
+
+    /// Keeps tomorrow's reminders booked even if the app isn't opened.
+    private func refreshInBackground() async {
+        guard case .success(let environment) = launch else { return }
+        environment.changes.refreshFromDisk()
+        environment.rescheduleReminders()
     }
 
     @ViewBuilder

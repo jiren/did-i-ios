@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import UserNotifications
 
 /// The composition root: builds the store, settings and services once, and hands them to screens.
 final class AppEnvironment {
@@ -10,6 +11,9 @@ final class AppEnvironment {
     let timeSource: any TimeSource
     let checkEditor: CheckEditor
     let photos: PhotoStore
+    let reminders: ReminderScheduler
+    let leaveHome: LeaveHomeMonitor
+    private let notifications: NotificationHandler
 
     init(configuration: AppLaunchConfiguration, settings: AppSettings, container: ModelContainer) {
         self.configuration = configuration
@@ -26,11 +30,33 @@ final class AppEnvironment {
         ) { [changes] in changes.didChange() }
         changes.onChange.append { [store] in ShortcutsIndex.update(with: (try? store.checks()) ?? []) }
         changes.onChange.append { WidgetRefresher.reloadAll() }
+        self.reminders = ReminderScheduler()
+        self.leaveHome = LeaveHomeMonitor(store: store, settings: settings, scheduler: reminders, timeSource: timeSource)
+        self.notifications = NotificationHandler(store: store, changes: changes, timeSource: timeSource)
+        ReminderScheduler.registerCategory()
+        UNUserNotificationCenter.current().delegate = notifications
+        changes.onChange.append { [weak self] in
+            self?.rescheduleReminders()
+            self?.leaveHome.update()
+        }
+        if !configuration.usesInMemoryStore {
+            rescheduleReminders()
+            leaveHome.update()
+        }
         if !configuration.usesInMemoryStore {
             ShortcutsIndex.update(with: (try? store.checks()) ?? [])
         }
         changes.startObservingOtherProcesses()
         PhotoRetention.sweep(logs: store, photos: photos, keep: settings.keepPhotos, now: timeSource.now)
+    }
+
+    /// Brings pending reminders in line with the checks and today's logs, and books the next background refresh.
+    func rescheduleReminders() {
+        let now = timeSource.now
+        Task { [store, settings, reminders] in
+            await reminders.reschedule(store: store, settings: settings, now: now)
+        }
+        BackgroundRefresh.schedule(after: settings.dayBoundary.day(containing: now).end)
     }
 
     /// The disk store, or nil with the reason if it can't be opened.

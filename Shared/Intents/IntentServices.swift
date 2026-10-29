@@ -29,14 +29,12 @@ final class IntentServices {
     /// For a process without the app's environment: its own container on the shared store.
     static func standalone() -> IntentServices {
         let store = (try? ModelContainer.app()).map { SwiftDataStore(container: $0) }
-        return IntentServices(
-            store: store,
-            settings: AppSettings(defaults: AppGroup.defaults),
-            photos: PhotoStore(),
-            timeSource: SystemTimeSource()
-        ) {
+        let settings = AppSettings(defaults: AppGroup.defaults)
+        return IntentServices(store: store, settings: settings, photos: PhotoStore(), timeSource: SystemTimeSource()) {
             StoreChangeSignal.post()
             WidgetCenter.shared.reloadAllTimelines()
+            guard let store else { return }
+            Task { await ReminderScheduler().reschedule(store: store, settings: settings, now: Date()) }
         }
     }
 

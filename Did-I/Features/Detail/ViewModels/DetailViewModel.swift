@@ -126,6 +126,32 @@ final class DetailViewModel {
         }
     }
 
+    static let defaultReminderMinutes = 21 * 60
+
+    /// The reminder time as today's date, for the time picker.
+    var reminderDate: Date? {
+        guard let minutes = check?.reminderMinutes else { return nil }
+        return days.dayBoundary.calendar.date(bySettingHour: minutes / 60, minute: minutes % 60, second: 0, of: timeSource.now)
+    }
+
+    /// Turns the "if not logged" reminder on (at 9 PM, or `date`) or off.
+    func setReminder(_ date: Date?) {
+        let calendar = days.dayBoundary.calendar
+        let minutes = date.map { calendar.component(.hour, from: $0) * 60 + calendar.component(.minute, from: $0) }
+        do {
+            try checkStore.setReminder(minutes: minutes, for: checkID)
+            check?.reminderMinutes = minutes
+            changes.didChange()
+        } catch {
+            errorMessage = String(localized: "Couldn’t change the reminder.")
+        }
+    }
+
+    func enableReminder() {
+        let minutes = Self.defaultReminderMinutes
+        setReminder(days.dayBoundary.calendar.date(bySettingHour: minutes / 60, minute: 0, second: 0, of: timeSource.now))
+    }
+
     func logAgain() {
         guard let check else { return }
         do {

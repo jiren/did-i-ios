@@ -87,7 +87,11 @@ struct RootView: View {
                 case .actionButton:
                     ActionButtonSettingsView(settings: environment.settings, checks: (try? environment.store.checks()) ?? [])
                 case .reminders:
-                    PlaceholderScreen(title: String(localized: "Reminders"), tab: nil, onAdd: {})
+                    RemindersSettingsView(
+                        viewModel: RemindersSettingsViewModel(
+                            settings: environment.settings, store: environment.store, monitor: environment.leaveHome
+                        )
+                    )
                 }
             }
         }
@@ -131,6 +135,7 @@ struct RootView: View {
         case "history": tab = .history
         case "settings": path = [.settings]
         case "actionButton": path = [.settings, .actionButton]
+        case "reminders": path = [.settings, .reminders]
         case "logged":
             if let log = try? environment.store.logs(for: nil, limit: 1).first {
                 logged = LoggedRequest(logID: log.id, opensCamera: false)

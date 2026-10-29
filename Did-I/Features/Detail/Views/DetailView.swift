@@ -29,6 +29,9 @@ struct DetailView: View {
                     .padding(.horizontal, 20)
                     .padding(.top, 16)
                     .accessibilityIdentifier("detail.nudge")
+                    reminderRow
+                        .padding(.horizontal, 20)
+                        .padding(.top, 8)
                 }
                 history
                     .padding(.horizontal, 24)
@@ -49,6 +52,9 @@ struct DetailView: View {
             }
         }
         .onChange(of: changes.version) { viewModel.reload() }
+        .onChange(of: viewModel.check?.nudgesOnLeavingHome) { _, isOn in
+            if isOn == true { Task { await NotificationPermission.request() } }
+        }
         .onChange(of: viewModel.isRemoved) { _, removed in if removed { dismiss() } }
         .fullScreenCover(isPresented: $isShowingPhoto) {
             PhotoViewer(image: viewModel.fullPhoto(), caption: viewModel.latestPhotoCaption)
@@ -129,6 +135,40 @@ struct DetailView: View {
             viewModel.swatch.background,
             in: UnevenRoundedRectangle(bottomLeadingRadius: 36, bottomTrailingRadius: 36, style: .continuous)
         )
+    }
+
+    private var reminderRow: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            SwitchRow(
+                title: String(localized: "Remind me if it isn’t logged"),
+                subtitle: viewModel.reminderDate == nil ? String(localized: "Off") : String(localized: "Every day at this time"),
+                symbolName: "clock.fill",
+                isOn: Binding(
+                    get: { viewModel.reminderDate != nil },
+                    set: { isOn in
+                        if isOn {
+                            viewModel.enableReminder()
+                            Task { await NotificationPermission.request() }
+                        } else {
+                            viewModel.setReminder(nil)
+                        }
+                    }
+                )
+            )
+            .accessibilityIdentifier("detail.reminder")
+            if let date = viewModel.reminderDate {
+                DatePicker(
+                    String(localized: "Reminder time"),
+                    selection: Binding(get: { date }, set: { viewModel.setReminder($0) }),
+                    displayedComponents: .hourAndMinute
+                )
+                .font(.didRowTitle)
+                .foregroundStyle(Color.ink)
+                .padding(.horizontal, 16)
+                .frame(minHeight: 52)
+                .background(Color.surface, in: .rect(cornerRadius: 18, style: .continuous))
+            }
+        }
     }
 
     private var history: some View {
