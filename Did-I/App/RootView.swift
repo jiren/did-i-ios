@@ -4,6 +4,8 @@ import SwiftUI
 enum Route: Hashable {
     case check(UUID)
     case settings
+    case actionButton
+    case reminders
 }
 
 /// The app's shell: Today or History under one navigation stack, with the sheets they open.
@@ -74,7 +76,16 @@ struct RootView: View {
                         }
                     )
                 case .settings:
-                    PlaceholderScreen(title: String(localized: "Settings"), tab: nil, onAdd: {})
+                    SettingsView(
+                        viewModel: SettingsViewModel(store: environment.store, changes: environment.changes, photos: environment.photos),
+                        settings: environment.settings,
+                        onOpenActionButton: { path.append(.actionButton) },
+                        onOpenReminders: { path.append(.reminders) }
+                    )
+                case .actionButton:
+                    ActionButtonSettingsView(settings: environment.settings, checks: (try? environment.store.checks()) ?? [])
+                case .reminders:
+                    PlaceholderScreen(title: String(localized: "Reminders"), tab: nil, onAdd: {})
                 }
             }
         }
@@ -94,6 +105,7 @@ struct RootView: View {
         case "addChecks": isAddingChecks = true
         case "history": tab = .history
         case "settings": path = [.settings]
+        case "actionButton": path = [.settings, .actionButton]
         case "detail":
             if let first = try? environment.store.checks().first { path = [.check(first.id)] }
         default: break

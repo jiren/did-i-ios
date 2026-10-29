@@ -193,6 +193,14 @@ final class SwiftDataStore: CheckStoring, LogStoring {
     }
 
     @discardableResult
+    func deleteAllLogs() throws -> [String] {
+        let photos = Array(try photoFileNames())
+        try context.delete(model: LogEntry.self)
+        try context.save()
+        return photos
+    }
+
+    @discardableResult
     func deleteEverything() throws -> [String] {
         let photos = Array(try photoFileNames())
         try context.delete(model: LogEntry.self)

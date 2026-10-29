@@ -41,6 +41,9 @@ protocol LogStoring: AnyObject {
     /// Removes the photo from logs older than `date`, returning those file names.
     @discardableResult
     func clearPhotos(olderThan date: Date) throws -> [String]
+    /// Removes every log but keeps the checks, returning the photo file names.
+    @discardableResult
+    func deleteAllLogs() throws -> [String]
     /// Removes every check and log, returning their photo file names.
     @discardableResult
     func deleteEverything() throws -> [String]

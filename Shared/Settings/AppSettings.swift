@@ -19,9 +19,31 @@ final class AppSettings {
         didSet { defaults.set(keepPhotos.rawValue, forKey: Key.keepPhotos) }
     }
 
+    /// Lock Screen widgets show only icons and times.
+    var hidesNamesOnLockScreen: Bool {
+        didSet { defaults.set(hidesNamesOnLockScreen, forKey: Key.hidesNamesOnLockScreen) }
+    }
+
+    /// The check an Action Button press (or the control) logs, or nil to ask which.
+    var actionButtonCheckID: UUID? {
+        didSet { defaults.set(actionButtonCheckID?.uuidString, forKey: Key.actionButtonCheckID) }
+    }
+
+    var actionButtonOpensCamera: Bool {
+        didSet { defaults.set(actionButtonOpensCamera, forKey: Key.actionButtonOpensCamera) }
+    }
+
+    var actionButtonStrongHaptic: Bool {
+        didSet { defaults.set(actionButtonStrongHaptic, forKey: Key.actionButtonStrongHaptic) }
+    }
+
     init(defaults: UserDefaults) {
         self.defaults = defaults
         appearance = defaults.string(forKey: Key.appearance).flatMap(Appearance.init) ?? .system
+        hidesNamesOnLockScreen = defaults.bool(forKey: Key.hidesNamesOnLockScreen)
+        actionButtonCheckID = defaults.string(forKey: Key.actionButtonCheckID).flatMap(UUID.init(uuidString:))
+        actionButtonOpensCamera = defaults.bool(forKey: Key.actionButtonOpensCamera)
+        actionButtonStrongHaptic = defaults.object(forKey: Key.actionButtonStrongHaptic) as? Bool ?? true
         keepPhotos = defaults.string(forKey: Key.keepPhotos).flatMap(KeepPhotos.init) ?? .thirtyDays
         dayStartHour = min(max(defaults.integer(forKey: Key.dayStartHour), 0), DayBoundary.latestStartHour)
     }
@@ -34,5 +56,9 @@ final class AppSettings {
         static let appearance = "appearance"
         static let dayStartHour = "dayStartHour"
         static let keepPhotos = "keepPhotos"
+        static let hidesNamesOnLockScreen = "hidesNamesOnLockScreen"
+        static let actionButtonCheckID = "actionButtonCheckID"
+        static let actionButtonOpensCamera = "actionButtonOpensCamera"
+        static let actionButtonStrongHaptic = "actionButtonStrongHaptic"
     }
 }
