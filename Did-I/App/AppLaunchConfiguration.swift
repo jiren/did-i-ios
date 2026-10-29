@@ -6,6 +6,12 @@ struct AppLaunchConfiguration {
     let isUITesting: Bool
     /// Hosting the unit tests.
     let isUnitTesting: Bool
+    /// Launched with `-Gallery` to show the component gallery (Debug builds only).
+    let showsGallery: Bool
+    /// `-GalleryControls` starts the gallery at its controls.
+    let galleryStartsAtControls: Bool
+    /// Launched with `-Appearance light|dark` to force a theme (Debug builds only).
+    let forcedAppearance: Appearance?
 
     var usesInMemoryStore: Bool { isUITesting || isUnitTesting }
 
@@ -15,8 +21,15 @@ struct AppLaunchConfiguration {
     ) {
         #if DEBUG
         isUITesting = arguments.contains("-UITests")
+        showsGallery = arguments.contains("-Gallery") || arguments.contains("-GalleryControls")
+        galleryStartsAtControls = arguments.contains("-GalleryControls")
+        forcedAppearance = arguments.firstIndex(of: "-Appearance")
+            .flatMap { arguments.indices.contains($0 + 1) ? Appearance(rawValue: arguments[$0 + 1]) : nil }
         #else
         isUITesting = false
+        showsGallery = false
+        galleryStartsAtControls = false
+        forcedAppearance = nil
         #endif
         isUnitTesting = environment["XCTestConfigurationFilePath"] != nil
     }

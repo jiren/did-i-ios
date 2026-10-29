@@ -30,6 +30,8 @@ user (dated), or *proposed, taken without asking* (change any of these by saying
 | **Platform** | iPhone and iPad, iOS 27.0. Display name **Did I?** (`INFOPLIST_KEY_CFBundleDisplayName`); the project, target and bundle ID keep Did-I. English first, every string in `Localizable.xcstrings`. |
 | **Storage** | 2026-10-30, the user: **this device only**, no sync and no account. SwiftData in App Group `group.com.elo.Did-I`, shared by the app and the widget extension; settings in that group's `UserDefaults` suite; photos as files in the group container. |
 | **Font** | 2026-10-30, the user: the **design's fonts**, bundled with their OFL licences: Bricolage Grotesque for titles, tile names and big times; DM Sans for everything else. Registered with `CTFontManager` at launch, scaled with Dynamic Type through `Font.custom(_:size:relativeTo:)`, keeping the design's weights. |
+| **Font files** | 2026-10-30, while building: static instances cut from the Google Fonts variable files (Bricolage Grotesque SemiBold, Bold at opsz 32 and ExtraBold at opsz 72; DM Sans Regular, SemiBold, Bold at opsz 14), in `Shared/Resources/Fonts/` with their OFL licences, registered per process with `CTFontManager`. |
+| **Dark palette** | Proposed (2026-10-30), pending the user's sign-off: ground `#14111F`, surface `#221E33`, sand and chrome `#2E2944`, ink (text) `#FFF6EA`, muted `#B9B2CC`, lines `#3A3452`, link `#B3A1FF`; the six tile colours, violet header and lavender stay as in light. Colour sets live in `Shared/DesignSystem/Palette.xcassets`. |
 | **Theme** | 2026-10-30, the user: a **dark theme** added to the light-only design, derived from its palette (ink ground, raised ink surfaces, the same bright tile colours, lavender muted text), with Appearance **System / Light / Dark** in Settings. Contrast checked in both. The user approves the dark colours from the Phase 2 gallery before Phase 3 builds on them. |
 | **Model** | A `Check` (name, kind, order, reminder settings) has many `LogEntry`s (date, source, optional photo). Proposed (2026-10-30, while building): kinds `door`, `car`, `garage`, `window`, `tap`, `light`, `pill`, `stove`, `plug`, `other` pick the SF Symbol, so every suggestion gets its own icon; a name's keywords pick the kind. Sources `app`, `lockScreenWidget`, `homeScreenWidget`, `actionButton`, `control`, `siri`, `shortcut`, `notification`; History shows them ("Action Button · photo", "Lock Screen widget", "In the app"). The state a log confirms comes from the name's last word ("Front door locked" → "Locked at 8:42 AM"), else "Logged". Stores hand out value records (`CheckRecord`, `LogRecord`), never models. |
 | **Today** | From `Main.dc.html`: a check is **done when it has a log today**. The header reads "{done} of {total} today", then "All clear. Nothing to recheck." / "1 left: {name}" / "{n} left to check". A 2-column grid of tiles, an "Add checks" tile, Recent (the latest 3, "See all"), and a floating bar: Today, History, + (Add checks). |
@@ -114,7 +116,7 @@ Branch `feature/phase-1-core`. Pure code and stores in `Shared/`, no UI.
 **Done when** table tests cover the summary copy, relative times, day boundaries (including DST changes and a day
 start after midnight), the 10 s rule and undo, and a write from a second `ModelContainer` on the same file is seen.
 
-## Phase 2 — Design system
+## Phase 2 — Design system ✅ Built 2026-10-30 (gallery checked on the simulator in both themes; dark palette awaiting the user's sign-off, screenshots in `design/review/`)
 
 Branch `feature/phase-2-design-system`.
 

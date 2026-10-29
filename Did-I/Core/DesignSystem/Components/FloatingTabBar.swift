@@ -1,0 +1,50 @@
+import SwiftUI
+
+enum MainTab: Hashable {
+    case today, history
+}
+
+/// Today's floating bar: Today, History and the round Add button, on Liquid Glass tinted ink.
+struct FloatingTabBar: View {
+    @Binding var selection: MainTab
+    let onAdd: () -> Void
+
+    var body: some View {
+        HStack(spacing: 4) {
+            item(.today, title: String(localized: "Today"))
+            item(.history, title: String(localized: "History"))
+            Spacer(minLength: 0)
+            Button(action: onAdd) {
+                Image(systemName: "plus")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 48, height: 48)
+                    .background(Color.tileViolet, in: .circle)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Add checks")
+            .accessibilityIdentifier("tabbar.add")
+        }
+        .padding(.horizontal, 10)
+        .frame(minHeight: 68)
+        .glassEffect(.regular.tint(Color.chrome), in: .capsule)
+    }
+
+    private func item(_ tab: MainTab, title: String) -> some View {
+        let isSelected = selection == tab
+        return Button {
+            selection = tab
+        } label: {
+            Text(title)
+                .font(isSelected ? .didEmphasis : .didSubheadline)
+                .foregroundStyle(isSelected ? Color.onTile : Color.onChromeMuted)
+                .padding(.horizontal, 18)
+                .frame(minHeight: 48)
+                .background(isSelected ? Color.tileSun : Color.clear, in: .capsule)
+                .contentShape(.capsule)
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityIdentifier(tab == .today ? "tabbar.today" : "tabbar.history")
+    }
+}
