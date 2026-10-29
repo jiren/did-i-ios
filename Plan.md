@@ -39,6 +39,7 @@ user (dated), or *proposed, taken without asking* (change any of these by saying
 | **Logging & undo** | From the design: a log appends, never overwrites, and shows a toast ("Logged · {name}", "Photo saved · {name}") with **Undo** for 5 s. Proposed: logging the same check again within **10 s** refreshes that log's time instead of adding one, whatever the source (a double tap, a widget tapped twice); Undo still removes it. A haptic on every log (`.sensoryFeedback`). |
 | **Relative times** | Proposed (2026-10-30): "Just now" under a minute, "{m}m ago", "{h}h ago" / "{h}h {m}m ago", "{d}d ago"; the design's mock times mix these, so one rule applies everywhere. |
 | **Day boundary** | Proposed: "today" starts at midnight, with a **Day starts at** setting (midnight to 5 AM) for the 1 AM door check. Logs are stored as `Date`; "today" and relative times use the current calendar and time zone, so travel and DST just work. |
+| **Empty state** | Proposed (2026-10-30): "Nothing to check yet" with "Add the things you double-check — the front door, the stove, a pill. Then one tap each time, and you’ll never have to wonder." and an Add checks button. |
 | **Add checks** | From the design: a sheet of suggestion chips (Windows closed, Car locked, Tap off, Back door locked, Hair tool off, Lights off, Garage shut, Charger unplugged, Heater off), hiding ones already added, and "Something else?" with Add for a custom one; the button reads "Pick at least one" (disabled) / "Add 1 check" / "Add {n} checks". Proposed: a new install starts **empty** (no seeded checks), with an empty state that opens the sheet, and the design's four checks (Front door locked, Pill taken, Stove off, Iron unplugged) lead the suggestions. A suggestion's kind follows its name (door, pill, stove, plug), else `other`. |
 | **Manage checks** | Proposed (missing from the design): from a tile's context menu and from Detail: **rename**, **change icon**, **Remove** (with a confirmation dialog; removes its logs and photos); hold and drag tiles to **reorder**. |
 | **Detail** | From `Detail.dc.html`: a violet header with Back and Remove, "{state} at {time}" ("Locked at 8:42 AM") and "{day} · {ago}", the latest photo; the "Nudge me when I leave home — Only if it isn't logged yet" switch; the History timeline (time and source) with the log count; **Log it again**. Proposed: the header's verb comes from the kind (Locked, Taken, Off, Unplugged, else "Logged"). |
@@ -131,7 +132,7 @@ Branch `feature/phase-2-design-system`.
 **Done when** the gallery renders every component, and the user has approved the dark palette from its
 screenshots.
 
-## Phase 3 — Today
+## Phase 3 — Today ✅ Built 2026-10-30 (checked on the simulator, empty and with sample data; tests compiled, not run)
 
 Branch `feature/phase-3-today`.
 

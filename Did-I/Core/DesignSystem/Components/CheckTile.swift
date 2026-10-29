@@ -26,6 +26,7 @@ struct CheckTile: View {
             Button(action: onLog) { label }
                 .buttonStyle(TilePressStyle())
                 .accessibilityLabel(content.accessibilityLabel)
+                .accessibilityIdentifier("tile.\(content.name)")
             photoButton
                 .padding(12)
         }
@@ -86,6 +87,7 @@ struct CheckTile: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(content.photoButtonLabel)
+        .accessibilityIdentifier("tile.\(content.name).photo")
     }
 
     private var photoBackground: Color {

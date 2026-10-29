@@ -8,6 +8,8 @@ struct AppLaunchConfiguration {
     let isUnitTesting: Bool
     /// Launched with `-Gallery` to show the component gallery (Debug builds only).
     let showsGallery: Bool
+    /// Launched with `-SeedSample` to add the design's sample checks to an empty store (Debug builds only).
+    let seedsSampleData: Bool
     /// `-GalleryControls` starts the gallery at its controls.
     let galleryStartsAtControls: Bool
     /// Launched with `-Appearance light|dark` to force a theme (Debug builds only).
@@ -23,12 +25,14 @@ struct AppLaunchConfiguration {
         isUITesting = arguments.contains("-UITests")
         showsGallery = arguments.contains("-Gallery") || arguments.contains("-GalleryControls")
         galleryStartsAtControls = arguments.contains("-GalleryControls")
+        seedsSampleData = arguments.contains("-SeedSample")
         forcedAppearance = arguments.firstIndex(of: "-Appearance")
             .flatMap { arguments.indices.contains($0 + 1) ? Appearance(rawValue: arguments[$0 + 1]) : nil }
         #else
         isUITesting = false
         showsGallery = false
         galleryStartsAtControls = false
+        seedsSampleData = false
         forcedAppearance = nil
         #endif
         isUnitTesting = environment["XCTestConfigurationFilePath"] != nil

@@ -4,6 +4,7 @@ import SwiftUI
 struct Did_IApp: App {
     private let configuration: AppLaunchConfiguration
     @State private var settings: AppSettings
+    @State private var launch: Result<AppEnvironment, LaunchError>
 
     init() {
         FontRegistration.registerBundledFonts()
@@ -12,6 +13,7 @@ struct Did_IApp: App {
         let settings = AppSettings(defaults: configuration.makeDefaults())
         if let forced = configuration.forcedAppearance { settings.appearance = forced }
         _settings = State(initialValue: settings)
+        _launch = State(initialValue: Self.makeEnvironment(configuration: configuration, settings: settings))
     }
 
     var body: some Scene {
@@ -25,14 +27,40 @@ struct Did_IApp: App {
 
     @ViewBuilder
     private var content: some View {
-        #if DEBUG
-        if configuration.showsGallery {
-            ComponentGallery(startsAtControls: configuration.galleryStartsAtControls)
-        } else {
-            RootView()
+        switch launch {
+        case .success(let environment):
+            #if DEBUG
+            if configuration.showsGallery {
+                ComponentGallery(startsAtControls: configuration.galleryStartsAtControls)
+            } else {
+                RootView(environment: environment)
+            }
+            #else
+            RootView(environment: environment)
+            #endif
+        case .failure(let error):
+            LaunchFailureView(message: error.message)
         }
-        #else
-        RootView()
-        #endif
     }
+
+    private static func makeEnvironment(
+        configuration: AppLaunchConfiguration, settings: AppSettings
+    ) -> Result<AppEnvironment, LaunchError> {
+        switch AppEnvironment.makeContainer(for: configuration) {
+        case .success(let container):
+            let environment = AppEnvironment(configuration: configuration, settings: settings, container: container)
+            #if DEBUG
+            if configuration.seedsSampleData {
+                SampleData.seed(into: environment.store, now: environment.timeSource.now)
+            }
+            #endif
+            return .success(environment)
+        case .failure(let error):
+            return .failure(LaunchError(message: error.localizedDescription))
+        }
+    }
+}
+
+struct LaunchError: Error {
+    let message: String
 }
