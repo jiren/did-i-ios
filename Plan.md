@@ -82,18 +82,19 @@ Ask each before the phase that needs it, then move the answer into Resolved deci
 
 ---
 
-## Phase 0 — Project foundation
+## Phase 0 — Project foundation ✅ Built 2026-10-30 (launched on the simulator; tests compiled, not run)
 
 Branch `feature/phase-0-foundation`.
 
-- Remove the template's `Item` and list. Add `App/` with the composition root and `ModelContainer.app(inMemory:)`,
-  its store in the App Group container.
+- Remove the template's `Item` and list. Add `App/` with the composition root. (`ModelContainer.app(inMemory:)` lands
+  with the first models in Phase 1; SwiftData has no empty schema.)
 - `AppLaunchConfiguration`: an in-memory store and a fresh `UserDefaults` suite when hosted by unit tests
   (`XCTestConfigurationFilePath`) or launched with `-UITests`.
 - Create `Shared/` (in the app target for now; the widget joins in Phase 9), so models never have to move.
 - The App Group capability, `Localizable.xcstrings`, `PrivacyInfo.xcprivacy`, a `.gitignore` (`xcuserdata/` is
   tracked today: untrack it), and the display name (Did I?).
 - Copy the canvas artboards into `design/` (`<Name>.dc.html` plus `canvas.json`).
+- A shared `Did-I` scheme (`xcshareddata/`) with both test bundles.
 
 **Done when** the app launches to an empty root view, and the unit and UI test targets run green.
 

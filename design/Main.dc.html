@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Did I? — Today</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=DM+Sans:opsz,wght@9..40,400..700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#4B22E0}a:hover{color:#2E0FA8}
+button{font:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFF6EA; color: #17142A; font-family: 'DM Sans', system-ui, sans-serif; position: relative; overflow: hidden">
+
+<div style="position: absolute; inset: 0; overflow-y: auto; padding-bottom: 120px">
+
+<div style="padding: 64px 24px 0; display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<p style="margin: 0; font-size: 15px; font-weight: 600; color: #5C5670">Thursday, Oct 29</p>
+<a href="ActionButton.dc.html" aria-label="Settings" style="width: 44px; height: 44px; border-radius: 22px; background: #17142A; color: #FFF6EA; display: flex; align-items: center; justify-content: center">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M4 12h2M18 12h2M12 4v2M12 18v2M6.3 6.3l1.4 1.4M16.3 16.3l1.4 1.4M6.3 17.7l1.4-1.4M16.3 7.7l1.4-1.4"></path></svg>
+</a>
+</div>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 52px; line-height: 0.95; font-weight: 800; letter-spacing: -1.5px">Did I?</h1>
+<div style="display: flex; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap">
+<span style="display: inline-flex; align-items: center; gap: 6px; background: #17142A; color: #FFD23F; font-size: 14px; font-weight: 700; padding: 7px 12px; border-radius: 999px">{{doneCount}} of {{total}} today</span>
+<span style="font-size: 15px; font-weight: 700; color: #17142A">{{summary}}</span>
+</div>
+</div>
+
+<div style="padding: 22px 20px 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+<sc-for list="{{items}}" as="item" hint-placeholder-count="4">
+<div style="position: relative; display: flex">
+<button onClick="{{item.log}}" aria-label="{{item.aria}}" style="{{item.tileStyle}}">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%">
+<span style="{{item.iconStyle}}">
+<sc-if value="{{item.isDoor}}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg></sc-if>
+<sc-if value="{{item.isPill}}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8.5" width="18" height="7" rx="3.5" transform="rotate(-40 12 12)"></rect><path d="M9.2 9.2l5.6 5.6"></path></svg></sc-if>
+<sc-if value="{{item.isStove}}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 .3 2 1.2 3 2.5 3.5C11.5 9 11 6 12 3z"></path></svg></sc-if>
+<sc-if value="{{item.isPlug}}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0V8zM12 17v4"></path></svg></sc-if>
+<sc-if value="{{item.isOther}}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M8 12.3l2.8 2.8L16.2 9.6"></path></svg></sc-if>
+</span>
+<sc-if value="{{item.done}}" hint-placeholder-val="{{ true }}">
+<span style="width: 28px; height: 28px; border-radius: 14px; background: #17142A; color: #FFFFFF; display: flex; align-items: center; justify-content: center">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+</span>
+</sc-if>
+</div>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 21px; font-weight: 750; line-height: 1.1; margin-top: 18px; padding-right: 4px">{{item.name}}</span>
+<span style="font-size: 21px; font-weight: 700; letter-spacing: -0.5px; margin-top: 4px">{{item.time}}</span>
+<span style="{{item.subStyle}}">{{item.ago}}</span>
+</button>
+<button onClick="{{item.snap}}" aria-label="{{item.photoAria}}" style="{{item.camStyle}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>
+<sc-if value="{{item.photo}}" hint-placeholder-val="{{ false }}">
+<span aria-hidden="true" style="position: absolute; top: -3px; right: -3px; width: 18px; height: 18px; border-radius: 9px; background: #FFD23F; color: #17142A; display: flex; align-items: center; justify-content: center; border: 2px solid #17142A; box-sizing: border-box">
+<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+</span>
+</sc-if>
+</button>
+</div>
+</sc-for>
+<button onClick="{{openSheet}}" aria-label="Add checks" style="border-radius: 28px; padding: 16px; min-height: 196px; box-sizing: border-box; border: 2.5px dashed #B9B2CC; background: #FFFFFF; color: #4B22E0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; font-family: inherit">
+<span style="width: 52px; height: 52px; border-radius: 26px; background: #6B3BFF; color: #FFFFFF; display: flex; align-items: center; justify-content: center">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; font-weight: 750">Add checks</span>
+</button>
+</div>
+
+<div style="padding: 22px 24px 0; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: baseline">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 750">Recent</h2>
+<a href="Detail.dc.html" style="font-size: 15px; font-weight: 700; text-decoration: none">See all</a>
+</div>
+<sc-for list="{{recent}}" as="r" hint-placeholder-count="3">
+<a href="Detail.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; min-height: 48px; box-sizing: border-box; background: #FFFFFF; border-radius: 18px; color: #17142A; text-decoration: none">
+<span style="{{r.dotStyle}}"></span>
+<span style="flex-grow: 1; font-size: 15px; font-weight: 600">{{r.label}}</span>
+<span style="font-size: 14px; color: #5C5670">{{r.meta}}</span>
+</a>
+</sc-for>
+</div>
+</div>
+
+<sc-if value="{{toast.show}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: absolute; left: 20px; right: 20px; bottom: 110px; background: #17142A; color: #FFFFFF; border-radius: 20px; padding: 6px 6px 6px 16px; display: flex; align-items: center; gap: 10px">
+<span style="width: 24px; height: 24px; border-radius: 12px; background: #2FD4A7; color: #17142A; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+</span>
+<span style="flex-grow: 1; font-size: 15px; font-weight: 600">{{toast.text}}</span>
+<button onClick="{{undo}}" style="height: 44px; padding: 0 16px; border-radius: 14px; border: none; background: #FFD23F; color: #17142A; font-size: 15px; font-weight: 700">Undo</button>
+</div>
+</sc-if>
+
+<nav aria-label="Main" style="position: absolute; left: 20px; right: 20px; bottom: 28px; height: 68px; background: #17142A; border-radius: 34px; display: flex; align-items: center; justify-content: space-around; padding: 0 10px">
+<a href="Main.dc.html" aria-current="page" style="background: #FFD23F; color: #17142A; height: 48px; padding: 0 18px; border-radius: 24px; font-size: 15px; font-weight: 700; display: flex; align-items: center; text-decoration: none">Today</a>
+<a href="Detail.dc.html" style="color: #D9D4EA; height: 48px; padding: 0 14px; font-size: 15px; font-weight: 600; display: flex; align-items: center; text-decoration: none">History</a>
+<button onClick="{{openSheet}}" aria-label="Add checks" style="border: none; background: #6B3BFF; color: #FFFFFF; width: 48px; height: 48px; border-radius: 24px; display: flex; align-items: center; justify-content: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+</button>
+</nav>
+
+<sc-if value="{{sheetOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; inset: 0; background: rgba(23,20,42,0.55); display: flex; flex-direction: column; justify-content: flex-end">
+<button onClick="{{closeSheet}}" aria-label="Close" style="flex-grow: 1; border: none; background: transparent"></button>
+<div role="dialog" aria-label="Add checks" style="background: #FFF6EA; border-radius: 32px 32px 0 0; padding: 12px 22px 30px; display: flex; flex-direction: column; gap: 16px">
+<span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #B9B2CC"></span>
+<div style="display: flex; justify-content: space-between; align-items: center">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 28px; font-weight: 800; letter-spacing: -0.5px">Add checks</h2>
+<span style="font-size: 15px; color: #5C5670">Pick as many as you like.</span>
+</div>
+<button onClick="{{closeSheet}}" aria-label="Close" style="width: 44px; height: 44px; border-radius: 22px; border: none; background: #EDE6D8; color: #17142A; display: flex; align-items: center; justify-content: center">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+</button>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{chips}}" as="chip" hint-placeholder-count="8">
+<button onClick="{{chip.toggle}}" aria-pressed="{{chip.pressed}}" style="{{chip.style}}">
+<sc-if value="{{chip.on}}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+{{chip.label}}
+</button>
+</sc-for>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="custom-check" style="font-size: 14px; font-weight: 700">Something else?</label>
+<div style="display: flex; gap: 8px">
+<input id="custom-check" type="text" placeholder="e.g. Cat fed" value="{{customText}}" onChange="{{onCustom}}" style="flex-grow: 1; min-width: 0; height: 50px; border-radius: 16px; border: 2px solid #17142A; background: #FFFFFF; padding: 0 14px; font: inherit; font-size: 16px; color: #17142A; box-sizing: border-box">
+<button onClick="{{addCustom}}" style="height: 50px; padding: 0 18px; border-radius: 16px; border: none; background: #17142A; color: #FFFFFF; font-size: 15px; font-weight: 700">Add</button>
+</div>
+</div>
+
+<button onClick="{{commit}}" disabled="{{commitDisabled}}" style="{{commitStyle}}">{{commitLabel}}</button>
+</div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"sheetOpen":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      items: [
+        { id: 'door', label: 'Front door locked', kind: 'door', done: true, photo: true, time: '8:42 AM', ago: '2h ago · photo' },
+        { id: 'pill', label: 'Pill taken', kind: 'pill', done: true, time: '8:15 AM', ago: '2h 27m ago' },
+        { id: 'stove', label: 'Stove off', kind: 'stove', done: true, time: '8:30 AM', ago: '2h 12m ago' },
+        { id: 'plug', label: 'Iron unplugged', kind: 'plug', done: false }
+      ],
+      log: [
+        { id: 'door', label: 'Front door locked', meta: '8:42 AM · photo' },
+        { id: 'stove', label: 'Stove off', meta: '8:30 AM' },
+        { id: 'pill', label: 'Pill taken', meta: '8:15 AM' }
+      ],
+      undoSnap: null,
+      toastText: '',
+      sheetOpen: !!props.sheetOpen,
+      picked: props.sheetOpen ? { 'Windows closed': true, 'Car locked': true, 'Tap off': true } : {},
+      customs: [],
+      customText: ''
+    };
+  }
+  componentDidUpdate(prev) {
+    if (prev.sheetOpen !== this.props.sheetOpen) this.setState({ sheetOpen: !!this.props.sheetOpen });
+  }
+  componentWillUnmount() { clearTimeout(this.toastTimer); }
+  logItem(id, withPhoto) {
+    var s = this.state;
+    var target = s.items.filter(function (x) { return x.id === id; })[0];
+    var list = s.items.map(function (x) {
+      return x.id === id ? Object.assign({}, x, { done: true, photo: withPhoto || false, time: 'Just now', ago: withPhoto ? 'With photo' : 'Logged · 0s ago' }) : x;
+    });
+    var entry = { id: id, label: target.label, meta: withPhoto ? 'Just now · photo' : 'Just now' };
+    this.setState({
+      items: list,
+      log: [entry].concat(s.log),
+      undoSnap: { items: s.items, log: s.log },
+      toastText: (withPhoto ? 'Photo saved · ' : 'Logged · ') + target.label
+    });
+    var self = this;
+    clearTimeout(this.toastTimer);
+    this.toastTimer = setTimeout(function () { self.setState({ undoSnap: null }); }, 5000);
+  }
+  renderVals() {
+    var self = this;
+    var palette = [
+      { bg: '#6B3BFF', fg: '#FFFFFF', sub: '#E3DAFF', chip: 'rgba(255,255,255,0.18)' },
+      { bg: '#FFD23F', fg: '#17142A', sub: '#4A3F10', chip: 'rgba(23,20,42,0.10)' },
+      { bg: '#FF7A59', fg: '#17142A', sub: '#3D1A10', chip: 'rgba(23,20,42,0.10)' },
+      { bg: '#2FD4A7', fg: '#17142A', sub: '#0F3D31', chip: 'rgba(23,20,42,0.10)' },
+      { bg: '#5BC0FF', fg: '#17142A', sub: '#0E3550', chip: 'rgba(23,20,42,0.10)' },
+      { bg: '#FF8AD8', fg: '#17142A', sub: '#4D1640', chip: 'rgba(23,20,42,0.10)' }
+    ];
+    var dotFor = {};
+    var st = this.state;
+    var done = 0;
+    var pending = [];
+    var items = st.items.map(function (it, i) {
+      var p = palette[i % palette.length];
+      dotFor[it.id] = p.bg;
+      if (it.done) done++; else pending.push(it.label);
+      var base = 'width: 100%; border-radius: 28px; padding: 16px 16px 20px; min-height: 196px; box-sizing: border-box; display: flex; flex-direction: column; align-items: flex-start; text-align: left; font-family: inherit; ';
+      var camBg = it.photo ? '#17142A' : (it.done ? p.chip : 'rgba(23,20,42,0.10)');
+      var camFg = it.photo ? '#FFFFFF' : (it.done ? p.fg : '#17142A');
+      return {
+        photo: !!it.photo,
+        photoAria: it.photo ? 'Retake photo for ' + it.label : 'Log ' + it.label + ' with a photo',
+        camStyle: 'position: absolute; right: 12px; bottom: 12px; width: 44px; height: 44px; border-radius: 22px; border: none; display: flex; align-items: center; justify-content: center; background: ' + camBg + '; color: ' + camFg + ';',
+        snap: function () { self.logItem(it.id, true); },
+        name: it.label,
+        done: !!it.done,
+        time: it.done ? it.time : 'Tap to log',
+        ago: it.done ? it.ago : 'Not yet today',
+        aria: it.label + (it.done ? ', logged ' + it.time + ' — tap to log again' : ', not logged — tap to log'),
+        tileStyle: it.done ? base + 'border: none; background: ' + p.bg + '; color: ' + p.fg + ';' : base + 'border: 2.5px dashed #17142A; background: transparent; color: #17142A;',
+        iconStyle: 'width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; background: ' + (it.done ? p.chip : p.bg) + '; color: ' + (it.done ? p.fg : (i % palette.length === 0 ? '#FFFFFF' : '#17142A')) + ';',
+        subStyle: 'font-size: 13px; font-weight: 600; margin-top: 2px; color: ' + (it.done ? p.sub : '#5C5670') + ';',
+        isDoor: it.kind === 'door', isPill: it.kind === 'pill', isStove: it.kind === 'stove', isPlug: it.kind === 'plug', isOther: it.kind === 'other',
+        log: function () { self.logItem(it.id, false); }
+      };
+    });
+
+    var summary = pending.length === 0 ? 'All clear. Nothing to recheck.' : (pending.length === 1 ? '1 left: ' + pending[0] : pending.length + ' left to check');
+
+    var recent = st.log.slice(0, 3).map(function (r) {
+      return { label: r.label, meta: r.meta, dotStyle: 'width: 10px; height: 10px; border-radius: 5px; flex-shrink: 0; background: ' + (dotFor[r.id] || '#6B3BFF') + ';' };
+    });
+
+    var existing = {};
+    st.items.forEach(function (x) { existing[x.label] = true; });
+    var suggestions = ['Windows closed', 'Car locked', 'Tap off', 'Back door locked', 'Hair tool off', 'Lights off', 'Garage shut', 'Charger unplugged', 'Heater off'];
+    var labels = suggestions.filter(function (s) { return !existing[s]; }).concat(st.customs.filter(function (c) { return !existing[c]; }));
+    var count = 0;
+    var chips = labels.map(function (label) {
+      var on = !!st.picked[label];
+      if (on) count++;
+      return {
+        label: label, on: on, pressed: on ? 'true' : 'false',
+        style: 'height: 44px; padding: 0 16px; border-radius: 22px; font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; ' + (on ? 'border: 2px solid #17142A; background: #17142A; color: #FFFFFF;' : 'border: 2px solid #17142A; background: transparent; color: #17142A;'),
+        toggle: function () {
+          var p = Object.assign({}, self.state.picked); p[label] = !p[label];
+          self.setState({ picked: p });
+        }
+      };
+    });
+
+    return {
+      items: items,
+      total: items.length,
+      doneCount: done,
+      summary: summary,
+      recent: recent,
+      toast: { show: !!st.undoSnap, text: st.toastText },
+      undo: function () {
+        var u = self.state.undoSnap;
+        if (!u) return;
+        clearTimeout(self.toastTimer);
+        self.setState({ items: u.items, log: u.log, undoSnap: null });
+      },
+      sheetOpen: st.sheetOpen,
+      chips: chips,
+      customText: st.customText,
+      commitDisabled: count === 0,
+      commitLabel: count === 0 ? 'Pick at least one' : (count === 1 ? 'Add 1 check' : 'Add ' + count + ' checks'),
+      commitStyle: 'height: 60px; border-radius: 30px; border: none; font-size: 17px; font-weight: 700; ' + (count === 0 ? 'background: #EDE6D8; color: #5C5670;' : 'background: #6B3BFF; color: #FFFFFF;'),
+      openSheet: function () { self.setState({ sheetOpen: true }); },
+      closeSheet: function () { self.setState({ sheetOpen: false, picked: {}, customText: '' }); },
+      onCustom: function (e) { self.setState({ customText: e.target.value }); },
+      addCustom: function () {
+        var t = (self.state.customText || '').trim();
+        if (!t) return;
+        var p = Object.assign({}, self.state.picked); p[t] = true;
+        var c = self.state.customs.indexOf(t) === -1 ? self.state.customs.concat([t]) : self.state.customs;
+        self.setState({ customs: c, picked: p, customText: '' });
+      },
+      commit: function () {
+        var s = self.state;
+        var have = {};
+        s.items.forEach(function (x) { have[x.label] = true; });
+        var add = Object.keys(s.picked).filter(function (k) { return s.picked[k] && !have[k]; }).map(function (k, n) {
+          return { id: 'c' + Date.now() + '-' + n, label: k, kind: 'other', done: false };
+        });
+        self.setState({ items: s.items.concat(add), sheetOpen: false, picked: {}, customText: '' });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

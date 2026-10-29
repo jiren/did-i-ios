@@ -9,8 +9,7 @@ door? Did I take my pill?"). A *check* is one recurring thing; *logging* it reco
 photo as proof), so the answer is one glance away: in the app, on a Lock Screen widget, or after one press of the
 Action Button. Tagline: "tap once, stop wondering".
 
-The repo is still the **Xcode SwiftData template** (`Item`, `ContentView`, an empty `Did_ITests.example()`). None of
-the design is built yet. `Plan.md` (written 2026-10-30) holds the resolved decisions, the open questions and the
+Phases are built in order on stacked branches (see `Plan.md` for which are done). `Plan.md` (written 2026-10-30) holds the resolved decisions, the open questions and the
 phases 0–12, built in order; update it as phases finish. Ask about scope beyond it and the design (see **Design**)
 rather than inventing it.
 
@@ -88,7 +87,7 @@ xcodebuild test -scheme Did-I -only-testing:Did-ITests \
   -destination 'platform=iOS Simulator,name=iPhone 18 Pro,OS=27.0' -maximum-parallel-testing-workers 2
 
 # Single test (Swift Testing: Target/SuiteType/testFunction())
-xcodebuild test -scheme Did-I -only-testing:'Did-ITests/Did_ITests/example()' \
+xcodebuild test -scheme Did-I -only-testing:'Did-ITests/AppLaunchConfigurationTests/uiTestLaunchUsesMemory()' \
   -destination 'platform=iOS Simulator,name=iPhone 18 Pro,OS=27.0'
 ```
 
@@ -209,8 +208,7 @@ use app-only APIs. The widget extension's own folder holds only the widget and c
 ### SwiftData
 
 - Build one app container in a single place (e.g. `ModelContainer.app(inMemory:)`) with every `@Model` listed in
-  one schema list; a model missing from that list isn't stored. Today that's the template's inline container in
-  `Did_IApp`, and `Item` is the template's placeholder model to replace. Tests and previews use in-memory containers.
+  one schema list; a model missing from that list isn't stored. Tests and previews use in-memory containers.
 - **Stores are the only code that inserts, updates or deletes models.** Every write sets `updatedAt`.
 - `ModelContext` isn't `Sendable`, so background writes (e.g. from an App Intent) go through a `@ModelActor`.
 - **Two processes write the store.** Widget and control intents run in the widget extension, so never assume the
@@ -250,8 +248,7 @@ use app-only APIs. The widget extension's own folder holds only the widget and c
 
 - Name files after their primary type. Capability protocols end in `-ing`/`-able`, and booleans read as assertions
   (`isDoneToday`).
-- No force-unwraps, `try!` or force casts outside tests (the template's `fatalError` container goes when the
-  container moves to `App/`).
+- No force-unwraps, `try!` or force casts outside tests.
 - Use conventional commits (`feat:`, `fix:`, `refactor:`, `test:`, `chore:`, `docs:`) and branch names
   `feature/<desc>` or `fix/<desc>`.
 
