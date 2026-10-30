@@ -315,7 +315,7 @@ Branch `feature/phase-13-categories-core`. Pure code and stores in `Shared/`, no
 from its anchor, a day start after midnight and DST changes), the progress copy and Coming up; store tests cover
 delete-with-tasks and move-to-Daily; and a V1 store file on disk migrates to V2 with its checks, logs and reminder.
 
-## Phase 14 — Calendar & category components
+## Phase 14 — Calendar & category components (built 2026-10-30 on top of the unmerged phase 13 branch; awaiting the user's approval of the screenshots)
 
 Branch `feature/phase-14-calendar-components`.
 
@@ -329,6 +329,16 @@ Branch `feature/phase-14-calendar-components`.
 
 **Done when** the gallery shows every new component in both themes, and the user has approved the screenshots in
 `design/review/`.
+
+Built: `DayStripCell`, `CategoryChip` (filter and Add to) and `NewCategoryChip`, `ProgressBarCard`,
+`CategorySectionHeader`, `TaskTile` and `AddTaskTile`, `ComingUpRow`, `NothingDueCard`, `AddChecksButton`,
+`ProgressRing` (in `FloatingTabBar`), `CategoryBadge`, and `CategoryPreviewCard`, `CategoryIconGrid`,
+`ColourSwatchPicker`, `WeekdayPicker`, `CategoryTaskRow`. The gallery opens on them with `-GalleryCalendar`,
+`-GalleryAgenda` and `-GalleryCategory`; screenshots are `design/review/gallery-{calendar,agenda,category}-*.png`.
+Proposed, taken without asking: in dark, the selected day and Today's "{n} left" pill are Sun with ink text (a new
+`selection` colour set, ink in light), because the ink-on-ink of the light design disappears on the dark surface.
+Left for Phase 18, as planned: at accessibility sizes the 3-column grid truncates names and the strip's weekdays
+shorten ("M…"). Like the design, a Mint task's segment doesn't show on the Mint "All clear" card.
 
 ## Phase 15 — Today as a calendar
 

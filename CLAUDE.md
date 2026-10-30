@@ -104,7 +104,8 @@ To look at one screen without tests, build for the simulator, install with `xcru
 - `-SeedSample`: the design's four checks, three logged this morning (only into an empty store).
 - `-Open <screen>`: `addChecks`, `history`, `settings`, `actionButton`, `reminders`, `detail` (the first check),
   `logged` (the newest log).
-- `-Gallery` / `-GalleryControls`: the design-system gallery (tiles first, or the controls).
+- `-Gallery` / `-GalleryControls` / `-GalleryCalendar` / `-GalleryAgenda` / `-GalleryCategory`: the design-system
+  gallery (tiles first, or that page).
 - `-Appearance light|dark`: forces the theme.
 
 `xcrun simctl ui <UDID> appearance dark` and `xcrun simctl ui <UDID> content_size accessibility-extra-large` switch
