@@ -534,3 +534,14 @@ streaks would need new data and screens and move Did I? toward a habit tracker; 
 - A **Habits** section ends the gallery: Healthy day (7 PM), Mindful (9 PM), Self-care (9:30 PM), Learning (8 PM)
   and Wind-down (10 PM), each daily with three yes/no tasks and an evening reminder.
 
+## Follow-up — Mark as not done ✅ Done 2026-10-30, merged into main (unit tests and the History UI tests pass)
+
+The user, 2026-10-30: a done task should be easy to un-complete.
+
+- **Mark as not done** on a done tile's hold menu (today only) and under "Log it again" on its page: today's logs of
+  that task are removed, with "Not done · {name}" and **Undo** on the toast (`LogStoring.unlog`, undone as
+  `LogOutcome.removed`). Earlier days' logs stay. Photo files stay so Undo can bring them back; the launch sweep
+  removes any no log points at.
+- `-SeedSample`'s second front-door log is last night at 10:58 PM, as in `Detail.dc.html`, rather than 12 hours
+  ago (which was still today in the evening).
+

@@ -51,6 +51,20 @@ struct DetailViewModelTests {
         #expect(viewModel.countText == "0 logs")
     }
 
+    @Test func markingNotDoneKeepsYesterdaysLog() throws {
+        _ = try store.log(door.id, source: .lockScreenWidget, at: TestTime.date(2026, 10, 28, 22, 58), photoFileName: nil)
+        _ = try store.log(door.id, source: .app, at: TestTime.date(2026, 10, 29, 8, 42), photoFileName: nil)
+        let viewModel = makeViewModel()
+        viewModel.reload()
+        #expect(viewModel.isDoneToday)
+        viewModel.markNotDone()
+        #expect(!viewModel.isDoneToday)
+        #expect(viewModel.countText == "1 log")
+        #expect(viewModel.toast?.message == "Not done · Front door locked")
+        viewModel.undo()
+        #expect(viewModel.countText == "2 logs")
+    }
+
     @Test func theNudgeSwitchIsStored() throws {
         let viewModel = makeViewModel()
         viewModel.reload()

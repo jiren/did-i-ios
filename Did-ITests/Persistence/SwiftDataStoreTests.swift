@@ -112,6 +112,28 @@ struct SwiftDataStoreTests {
         #expect(try store.checks().isEmpty)
     }
 
+    @Test func unlogRemovesTheDaysLogsAndUndoPutsThemBack() throws {
+        let (door, pill) = try addDoorAndPill()
+        _ = try store.log(door.id, source: .lockScreenWidget, at: TestTime.date(2026, 10, 28, 22), photoFileName: nil)
+        _ = try store.log(door.id, source: .app, at: TestTime.date(2026, 10, 29, 7), photoFileName: "door.heic")
+        _ = try store.log(door.id, source: .siri, at: TestTime.date(2026, 10, 29, 7, 30), photoFileName: nil)
+        _ = try store.log(pill.id, source: .app, at: TestTime.date(2026, 10, 29, 7), photoFileName: nil)
+        let today = (TestTime.date(2026, 10, 29), TestTime.date(2026, 10, 30))
+
+        let outcome = try #require(try store.unlog(door.id, from: today.0, to: today.1))
+        guard case .removed(let removed) = outcome else { Issue.record("not removed"); return }
+        #expect(removed.map(\.source) == [.siri, .app])
+        #expect(outcome.record.checkID == door.id)
+        #expect(try store.logCount(for: door.id) == 1)
+        #expect(try store.logCount(for: pill.id) == 1)
+        #expect(try store.unlog(door.id, from: today.0, to: today.1) == nil)
+
+        try store.undo(outcome)
+        let restored = try store.logs(for: door.id, limit: nil)
+        #expect(restored.map(\.id) == removed.map(\.id) + [restored[2].id])
+        #expect(restored.first { $0.photoFileName == "door.heic" } != nil)
+    }
+
     @Test func setsTheNudge() throws {
         let (door, _) = try addDoorAndPill()
         try store.setNudgesOnLeavingHome(true, for: door.id)

@@ -231,6 +231,25 @@ final class TodayViewModel {
         }
     }
 
+    /// Logged today, so it can be marked as not done.
+    func isDoneToday(_ checkID: UUID) -> Bool {
+        isToday && todaysLogs.contains { $0.checkID == checkID }
+    }
+
+    /// "Mark as not done": removes today's logs of a task, with Undo on the toast.
+    func markNotDone(_ checkID: UUID) {
+        guard let check = checks.first(where: { $0.id == checkID }) else { return }
+        let today = days.dayBoundary.day(containing: timeSource.now)
+        do {
+            guard let outcome = try logStore.unlog(checkID, from: today.start, to: today.end) else { return }
+            changes.didChange()
+            reload()
+            showToast(LogToast(message: String(localized: "Not done · \(check.name)"), outcome: outcome))
+        } catch {
+            errorMessage = String(localized: "Couldn’t change \(check.name).")
+        }
+    }
+
     /// Saves a proof photo: it replaces today's photo on a retake, else it's a new log.
     func attachPhoto(_ image: UIImage, to checkID: UUID) {
         guard isToday, let photos, let check = checks.first(where: { $0.id == checkID }) else { return }

@@ -175,6 +175,9 @@ struct TodayView: View {
     @ViewBuilder
     private func menu(for id: UUID) -> some View {
         Button { actions.openCheck(id) } label: { Label("Details", systemImage: "clock.arrow.circlepath") }
+        if viewModel.isDoneToday(id) {
+            Button { viewModel.markNotDone(id) } label: { Label("Mark as not done", systemImage: "arrow.uturn.backward") }
+        }
         Button {
             EditTileTip().invalidate(reason: .actionPerformed)
             if let check = viewModel.check(id) { management = .rename(check) }

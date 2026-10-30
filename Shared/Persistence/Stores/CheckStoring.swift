@@ -52,8 +52,12 @@ protocol CategoryStoring: AnyObject {
 protocol LogStoring: AnyObject {
     /// Logs a check, or refreshes its last log if that was within `LogRules.refreshWindow`.
     func log(_ checkID: UUID, source: LogSource, at date: Date, photoFileName: String?) throws -> LogOutcome
-    /// Reverses a `log` call.
+    /// Reverses a `log` or `unlog` call.
     func undo(_ outcome: LogOutcome) throws
+    /// "Mark as not done": removes a check's logs from `start` (inclusive) to `end` (exclusive), newest first, or
+    /// returns nil when there are none. Their photo files stay, so `undo` can put the logs back; the launch sweep
+    /// removes files no log points at.
+    func unlog(_ checkID: UUID, from start: Date, to end: Date) throws -> LogOutcome?
     func setPhoto(_ fileName: String?, forLog id: UUID) throws
     /// Deletes one log, returning its photo file name.
     @discardableResult

@@ -247,6 +247,28 @@ struct TodayViewModelTests {
         #expect(viewModel.sections[0].tiles.map(\.id) == checks.map(\.id))
     }
 
+    @Test func markingNotDoneUndoesTodayWithUndo() {
+        viewModel.reload()
+        viewModel.log(checks[0].id)
+        #expect(viewModel.isDoneToday(checks[0].id))
+        #expect(!viewModel.isDoneToday(checks[1].id))
+
+        viewModel.markNotDone(checks[0].id)
+        #expect(!door.content.isDone)
+        #expect(viewModel.toast?.message == "Not done · Front door locked")
+        #expect(viewModel.progress.main == "0 of 4 done")
+
+        viewModel.undo()
+        #expect(door.content.isDone)
+    }
+
+    @Test func aLaterDayCantBeMarkedNotDone() {
+        viewModel.reload()
+        viewModel.log(checks[0].id)
+        viewModel.select(Self.friday)
+        #expect(!viewModel.isDoneToday(checks[0].id))
+    }
+
     @Test func removingACheckDropsItsToast() throws {
         viewModel.reload()
         viewModel.log(checks[2].id)

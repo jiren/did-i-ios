@@ -157,6 +157,25 @@ final class DetailViewModel {
         }
     }
 
+    /// Logged today, so it can be marked as not done.
+    var isDoneToday: Bool {
+        logs.first.map { days.dayBoundary.isInSameDay($0.date, as: timeSource.now) } ?? false
+    }
+
+    /// "Mark as not done": removes today's logs, with Undo on the toast.
+    func markNotDone() {
+        guard let check else { return }
+        let today = days.dayBoundary.day(containing: timeSource.now)
+        do {
+            guard let outcome = try logStore.unlog(checkID, from: today.start, to: today.end) else { return }
+            changes.didChange()
+            reload()
+            showToast(LogToast(message: String(localized: "Not done · \(check.name)"), outcome: outcome))
+        } catch {
+            errorMessage = String(localized: "Couldn’t change \(check.name).")
+        }
+    }
+
     func undo() {
         guard let toast else { return }
         self.toast = nil

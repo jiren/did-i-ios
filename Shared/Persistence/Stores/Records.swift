@@ -77,10 +77,14 @@ nonisolated enum LogOutcome: Hashable, Sendable {
     case added(LogRecord)
     /// The same check was logged moments ago, so that log took the new time instead.
     case refreshed(LogRecord, previous: LogRecord)
+    /// "Mark as not done": the day's logs of one check were removed (never empty).
+    case removed([LogRecord])
 
+    /// The log this is about: the new or refreshed one, or the newest one removed.
     var record: LogRecord {
         switch self {
         case .added(let record), .refreshed(let record, _): record
+        case .removed(let records): records[0]
         }
     }
 }

@@ -15,6 +15,20 @@ final class HistoryUITests: XCTestCase {
         XCTAssertEqual(app.staticTexts["detail.count"].label, "3 logs")
     }
 
+    /// The sample's front door was logged this morning and last night: marking it not done leaves last night's.
+    @MainActor
+    func testMarkingNotDoneFromDetail() throws {
+        let app = XCUIApplication.launched(arguments: ["-SeedSample", "-Open", "detail"])
+        let count = app.staticTexts["detail.count"]
+        XCTAssertTrue(count.waitForExistence(timeout: 5))
+        XCTAssertEqual(count.label, "2 logs")
+        app.buttons["detail.markNotDone"].tap()
+        XCTAssertEqual(app.staticTexts["detail.count"].label, "1 log")
+        XCTAssertFalse(app.buttons["detail.markNotDone"].waitForExistence(timeout: 1))
+        app.buttons["toast.undo"].tap()
+        XCTAssertEqual(app.staticTexts["detail.count"].label, "2 logs")
+    }
+
     @MainActor
     func testDeletingALogFromHistory() throws {
         let app = XCUIApplication.launched(arguments: ["-SeedSample", "-Open", "history"])

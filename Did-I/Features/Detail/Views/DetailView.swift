@@ -233,6 +233,17 @@ struct DetailView: View {
             }
             .buttonStyle(PillButtonStyle(variant: .ink, height: 64))
             .accessibilityIdentifier("detail.logAgain")
+            if viewModel.isDoneToday {
+                Button(action: viewModel.markNotDone) {
+                    Label("Mark as not done", systemImage: "arrow.uturn.backward")
+                        .font(.didEmphasis)
+                        .foregroundStyle(Color.linkText)
+                        .frame(minHeight: 44)
+                        .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("detail.markNotDone")
+            }
         }
         .padding(.horizontal, 20)
         .padding(.bottom, 8)

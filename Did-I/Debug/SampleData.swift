@@ -38,8 +38,10 @@ enum SampleData {
             let seconds = min(minutes * 60, sinceMidnight * minutes / 240)
             _ = try? store.log(check.id, source: .app, at: now.addingTimeInterval(-seconds), photoFileName: nil)
         }
+        // Last night at 10:58 PM, as in `Detail.dc.html`, whatever the time now.
         if let door = daily.first {
-            _ = try? store.log(door.id, source: .lockScreenWidget, at: now.addingTimeInterval(-12 * 3600), photoFileName: nil)
+            let lastNight = calendar.startOfDay(for: now).addingTimeInterval(-62 * 60)
+            _ = try? store.log(door.id, source: .lockScreenWidget, at: lastNight, photoFileName: nil)
         }
     }
 }

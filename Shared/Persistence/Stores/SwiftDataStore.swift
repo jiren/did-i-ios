@@ -230,7 +230,33 @@ final class SwiftDataStore: CheckStoring, CategoryStoring, LogStoring {
             entry.photoFileName = previous.photoFileName
             entry.updatedAt = timeSource.now
             try context.save()
+        case .removed(let records):
+            for record in records {
+                guard let check = try checkModel(record.checkID) else { throw StoreError.checkNotFound }
+                let entry = LogEntry(
+                    id: record.id, date: record.date, source: record.source, photoFileName: record.photoFileName, check: check
+                )
+                entry.updatedAt = timeSource.now
+                context.insert(entry)
+                check.updatedAt = timeSource.now
+            }
+            try context.save()
         }
+    }
+
+    func unlog(_ checkID: UUID, from start: Date, to end: Date) throws -> LogOutcome? {
+        guard let check = try checkModel(checkID) else { throw StoreError.checkNotFound }
+        let descriptor = FetchDescriptor<LogEntry>(
+            predicate: #Predicate { $0.check?.id == checkID && $0.date >= start && $0.date < end },
+            sortBy: [SortDescriptor(\.date, order: .reverse)]
+        )
+        let entries = try context.fetch(descriptor)
+        guard !entries.isEmpty else { return nil }
+        let records = entries.map { Self.record($0) }
+        entries.forEach(context.delete)
+        check.updatedAt = timeSource.now
+        try context.save()
+        return .removed(records)
     }
 
     func setPhoto(_ fileName: String?, forLog id: UUID) throws {
