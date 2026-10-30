@@ -241,10 +241,19 @@ private struct RepeatEditor: View {
             switch viewModel.repeatKind {
             case .daily:
                 EmptyView()
-            case .weekly, .everyTwoWeeks:
+            case .weekly:
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("On (pick one or more)").font(.didFootnote).foregroundStyle(Color.muted)
+                    WeekdayPicker(selection: $viewModel.weekdays, allowsSeveral: true, colour: viewModel.colour)
+                }
+            case .everyTwoWeeks:
                 VStack(alignment: .leading, spacing: 6) {
                     Text("On").font(.didFootnote).foregroundStyle(Color.muted)
-                    WeekdayPicker(selection: $viewModel.weekday, colour: viewModel.colour)
+                    WeekdayPicker(
+                        selection: Binding(get: { [viewModel.weekday] }, set: { viewModel.weekday = $0.first ?? viewModel.weekday }),
+                        allowsSeveral: false,
+                        colour: viewModel.colour
+                    )
                 }
             case .monthly:
                 HStack {

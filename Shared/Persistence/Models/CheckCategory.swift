@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-extension SchemaV2 {
+extension SchemaV3 {
     /// A group of checks with its own icon, colour, schedule and reminder (`NewCategory.dc.html`).
     @Model
     final class CheckCategory {
@@ -13,8 +13,11 @@ extension SchemaV2 {
         var colourRaw: String
         /// A `RepeatKind` raw value; the fields after it hold its details.
         var repeatKindRaw: String
-        /// 1 (Sunday) to 7, for weekly and every-two-weeks rules.
+        /// 1 (Sunday) to 7, for every-two-weeks rules (and weekly rules saved before phase 22).
         var repeatWeekday: Int?
+        /// A weekly rule's days, one bit per weekday (bit 0 is Sunday). Nil for rules saved before phase 22, which
+        /// use `repeatWeekday`.
+        var repeatWeekdayMask: Int?
         /// The year for a one-off date or an every-two-weeks anchor.
         var repeatYear: Int?
         var repeatMonth: Int?
@@ -51,7 +54,9 @@ extension SchemaV2 {
                 let day = CalendarDay(year: repeatYear ?? 2026, month: repeatMonth ?? 1, day: repeatDay ?? 1)
                 switch RepeatKind(rawValue: repeatKindRaw) ?? .daily {
                 case .daily: return .daily
-                case .weekly: return .weekly(weekday: weekday)
+                case .weekly:
+                    let days = repeatWeekdayMask.map(Self.weekdays(fromMask:)) ?? [weekday]
+                    return .weekly(weekdays: days.isEmpty ? [weekday] : days)
                 case .everyTwoWeeks: return .everyTwoWeeks(weekday: weekday, anchor: day)
                 case .monthly: return .monthly(day: day.day)
                 case .yearly: return .yearly(month: day.month, day: day.day)
@@ -61,14 +66,16 @@ extension SchemaV2 {
             set {
                 repeatKindRaw = newValue.kind.rawValue
                 repeatWeekday = nil
+                repeatWeekdayMask = nil
                 repeatYear = nil
                 repeatMonth = nil
                 repeatDay = nil
                 switch newValue {
                 case .daily:
                     break
-                case .weekly(let weekday):
-                    repeatWeekday = weekday
+                case .weekly(let weekdays):
+                    repeatWeekdayMask = weekdays.reduce(0) { $0 | (1 << ($1 - 1)) }
+                    repeatWeekday = weekdays.min()
                 case .everyTwoWeeks(let weekday, let anchor):
                     repeatWeekday = weekday
                     (repeatYear, repeatMonth, repeatDay) = (anchor.year, anchor.month, anchor.day)
@@ -80,6 +87,10 @@ extension SchemaV2 {
                     (repeatYear, repeatMonth, repeatDay) = (day.year, day.month, day.day)
                 }
             }
+        }
+
+        private static func weekdays(fromMask mask: Int) -> Set<Int> {
+            Set((1...7).filter { mask & (1 << ($0 - 1)) != 0 })
         }
     }
 }

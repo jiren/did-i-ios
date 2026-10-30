@@ -26,8 +26,10 @@ final class CategoryEditorViewModel {
     var icon: CategoryIcon = .suitcase
     var colour: CategoryColour = .sky
     var repeatKind: RepeatKind = .daily
-    /// 1 (Sunday) to 7, for Weekly and Every 2 weeks.
+    /// 1 (Sunday) to 7, for Every 2 weeks.
     var weekday = 6
+    /// The days for Weekly: one or more.
+    var weekdays: Set<Int> = [6]
     /// 1 to 31, for Monthly.
     var monthDay = 1
     /// For Yearly and On a date.
@@ -88,6 +90,7 @@ final class CategoryEditorViewModel {
         categories = (try? store.categories()) ?? []
         let checks = (try? store.checks()) ?? []
         weekday = today.weekday(in: calendar)
+        weekdays = [weekday]
         monthDay = today.day
         date = today.adding(days: 1, calendar: calendar).noon(in: calendar)
         reminderTime = time(minutes: Self.defaultReminderMinutes)
@@ -104,7 +107,12 @@ final class CategoryEditorViewModel {
         repeatKind = category.rule.kind
         switch category.rule {
         case .daily: break
-        case .weekly(let day), .everyTwoWeeks(let day, _): weekday = day
+        case .weekly(let days):
+            weekdays = days
+            weekday = days.min() ?? weekday
+        case .everyTwoWeeks(let day, _):
+            weekday = day
+            weekdays = [day]
         case .monthly(let day): monthDay = day
         case .yearly(let month, let day): date = Self.yearlyDate(month: month, day: day, from: today, calendar: calendar)
         case .once(let day): date = day.noon(in: calendar)
@@ -126,7 +134,8 @@ final class CategoryEditorViewModel {
         let rule = template.rule(today: today, calendar: calendar)
         repeatKind = rule.kind
         switch rule {
-        case .weekly(let day): weekday = day
+        case .weekly(let days): weekdays = days
+        case .everyTwoWeeks(let day, _): weekday = day
         case .monthly(let day): monthDay = day
         case .once(let day): date = day.noon(in: calendar)
         default: break
@@ -159,7 +168,7 @@ final class CategoryEditorViewModel {
         let day = CalendarDay(date, calendar: calendar)
         switch repeatKind {
         case .daily: return .daily
-        case .weekly: return .weekly(weekday: weekday)
+        case .weekly: return weekdays.isEmpty ? .weekly(weekday: weekday) : .weekly(weekdays: weekdays)
         case .everyTwoWeeks:
             if case .everyTwoWeeks(let loadedDay, _) = loadedRule, loadedDay == weekday, let loadedRule { return loadedRule }
             return .everyTwoWeeks(weekday: weekday, startingOnOrAfter: today, calendar: calendar)

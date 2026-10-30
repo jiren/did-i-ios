@@ -238,9 +238,10 @@ use app-only APIs (the extension builds with `APPLICATION_EXTENSION_API_ONLY`). 
   Darwin notification) and refetches when it becomes active.
 - Keep models `final` and store enums (check kind, log source) as raw strings. Store photos as files or with
   `@Attribute(.externalStorage)`, not inline blobs.
-- The schema is versioned: `SchemaV1` holds frozen copies of the phase 0–12 models, and the app's `Check`,
-  `LogEntry` and `CheckCategory` are typealiases of `SchemaV2`'s. A schema change adds `SchemaV3` with copies of the
-  models and a stage in `DidIMigrationPlan`, and never edits an earlier version's models. Daily has a fixed id
+- The schema is versioned: `SchemaV1` (phases 0–12) and `SchemaV2` (phases 13–21) hold frozen copies of their
+  models, and the app's `Check`, `LogEntry` and `CheckCategory` are typealiases of `SchemaV3`'s. A schema change adds
+  the next version with copies of the models and a stage in `DidIMigrationPlan`, and never edits an earlier
+  version's models; a stage works on its own version's model types. Daily has a fixed id
   (`CategoryDefaults.dailyID`).
 
 ### Concurrency

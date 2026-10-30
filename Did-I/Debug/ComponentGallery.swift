@@ -10,7 +10,7 @@ struct ComponentGallery: View {
     @State private var tab: MainTab = .today
     @State private var icon: CategoryIcon = .suitcase
     @State private var colour: CategoryColour = .sky
-    @State private var weekday = 6
+    @State private var weekdays: Set<Int> = [2, 4, 6]
 
     var body: some View {
         ScrollView {
@@ -145,7 +145,7 @@ struct ComponentGallery: View {
                 ChoiceChip(title: kind.title, isOn: kind == .weekly) {}
             }
         }
-        WeekdayPicker(selection: $weekday, colour: colour)
+        WeekdayPicker(selection: $weekdays, allowsSeveral: true, colour: colour)
         SectionLabel(title: "Tasks")
         ForEach(["Passport packed", "Charger packed", "Windows closed"], id: \.self) { name in
             CategoryTaskRow(name: .constant(name), colour: colour) {}

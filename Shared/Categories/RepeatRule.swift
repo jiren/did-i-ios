@@ -3,8 +3,8 @@ import Foundation
 /// When a category is due (`Main.dc.html`'s `isDue` and `repeatLabel`, `NewCategory.dc.html`'s Repeat).
 nonisolated enum RepeatRule: Hashable, Sendable {
     case daily
-    /// `weekday` is 1 (Sunday) to 7 (Saturday).
-    case weekly(weekday: Int)
+    /// On these weekdays, 1 (Sunday) to 7 (Saturday): one ("Every Friday") or several ("Every weekday").
+    case weekly(weekdays: Set<Int>)
     /// Every other `weekday`, counted from `anchor`, the first day it was due.
     case everyTwoWeeks(weekday: Int, anchor: CalendarDay)
     /// `day` is 1 to 31; past the month's end it falls on the last day.
@@ -13,6 +13,15 @@ nonisolated enum RepeatRule: Hashable, Sendable {
     case yearly(month: Int, day: Int)
     /// Once, on that day.
     case once(CalendarDay)
+
+    /// Monday to Friday.
+    static let workingDays: Set<Int> = [2, 3, 4, 5, 6]
+    static let weekendDays: Set<Int> = [1, 7]
+
+    /// Weekly on one day.
+    static func weekly(weekday: Int) -> RepeatRule {
+        .weekly(weekdays: [clampedWeekday(weekday)])
+    }
 
     /// Every other `weekday`, starting with the first one on or after `day`.
     static func everyTwoWeeks(weekday: Int, startingOnOrAfter day: CalendarDay, calendar: Calendar) -> RepeatRule {
@@ -36,8 +45,8 @@ nonisolated enum RepeatRule: Hashable, Sendable {
         switch self {
         case .daily:
             return true
-        case .weekly(let weekday):
-            return day.weekday(in: calendar) == weekday
+        case .weekly(let weekdays):
+            return weekdays.contains(day.weekday(in: calendar))
         case .everyTwoWeeks(let weekday, let anchor):
             guard day.weekday(in: calendar) == weekday else { return false }
             let weeks = Int((Double(anchor.days(to: day, calendar: calendar)) / 7).rounded(.down))
@@ -74,8 +83,8 @@ nonisolated enum RepeatRule: Hashable, Sendable {
         switch self {
         case .daily:
             return String(localized: "Every day")
-        case .weekly(let weekday):
-            return String(localized: "Every \(Self.weekdayName(weekday, calendar: calendar, locale: locale))")
+        case .weekly(let weekdays):
+            return Self.weeklyLabel(weekdays, calendar: calendar, locale: locale)
         case .everyTwoWeeks(let weekday, _):
             return String(localized: "Every other \(Self.weekdayName(weekday, calendar: calendar, locale: locale))")
         case .monthly(let day):
@@ -86,6 +95,28 @@ nonisolated enum RepeatRule: Hashable, Sendable {
         case .once(let day):
             return String(localized: "Once · \(Self.shortDate(day, calendar: calendar, locale: locale))")
         }
+    }
+
+    /// "Every Friday", "Every weekday", "Every weekend", "Every Mon, Wed, Fri", or "Every day" for all seven.
+    private static func weeklyLabel(_ weekdays: Set<Int>, calendar: Calendar, locale: Locale) -> String {
+        switch weekdays {
+        case workingDays: return String(localized: "Every weekday")
+        case weekendDays: return String(localized: "Every weekend")
+        case Set(1...7): return String(localized: "Every day")
+        default: break
+        }
+        if weekdays.count == 1, let weekday = weekdays.first {
+            return String(localized: "Every \(weekdayName(weekday, calendar: calendar, locale: locale))")
+        }
+        var calendar = calendar
+        calendar.locale = locale
+        let names = weekOrder(weekdays, calendar: calendar).map { calendar.shortStandaloneWeekdaySymbols[$0 - 1] }
+        return String(localized: "Every \(names.joined(separator: ", "))")
+    }
+
+    /// `weekdays` in the calendar's week order (Monday first in many places).
+    static func weekOrder(_ weekdays: Set<Int>, calendar: Calendar) -> [Int] {
+        (0..<7).map { (calendar.firstWeekday - 1 + $0) % 7 + 1 }.filter(weekdays.contains)
     }
 
     /// "Fri, Nov 6", the design's short date.

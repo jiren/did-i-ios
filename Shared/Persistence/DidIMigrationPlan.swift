@@ -3,10 +3,11 @@ import SwiftData
 import Synchronization
 
 nonisolated enum DidIMigrationPlan: SchemaMigrationPlan {
-    static var schemas: [any VersionedSchema.Type] { [SchemaV1.self, SchemaV2.self] }
-    static var stages: [MigrationStage] { [v1ToV2] }
+    static var schemas: [any VersionedSchema.Type] { [SchemaV1.self, SchemaV2.self, SchemaV3.self] }
+    static var stages: [MigrationStage] { [v1ToV2, v2ToV3] }
 
-    /// V1 → V2: every check goes into Daily, which takes the earliest per-check reminder time.
+    /// V1 → V2: every check goes into Daily, which takes the earliest per-check reminder time. Works on V2's own
+    /// models, so later versions can't change it.
     static let v1ToV2 = MigrationStage.custom(
         fromVersion: SchemaV1.self,
         toVersion: SchemaV2.self,
@@ -19,7 +20,16 @@ nonisolated enum DidIMigrationPlan: SchemaMigrationPlan {
                 defer { value = nil }
                 return value
             }
-            let daily = try CategoryDefaults.dailyModel(in: context, now: Date())
+            let id = CategoryDefaults.dailyID
+            var descriptor = FetchDescriptor<SchemaV2.CheckCategory>(predicate: #Predicate { $0.id == id })
+            descriptor.fetchLimit = 1
+            let daily: SchemaV2.CheckCategory
+            if let existing = try context.fetch(descriptor).first {
+                daily = existing
+            } else {
+                daily = SchemaV2.CheckCategory(dailyWithID: id, name: CategoryDefaults.dailyName, now: Date())
+                context.insert(daily)
+            }
             daily.reminderMinutes = minutes
             for check in try context.fetch(FetchDescriptor<SchemaV2.Check>()) where check.category == nil {
                 check.category = daily
@@ -27,6 +37,9 @@ nonisolated enum DidIMigrationPlan: SchemaMigrationPlan {
             try context.save()
         }
     )
+
+    /// V2 → V3: adds the weekdays a weekly category repeats on; existing ones keep their one day.
+    static let v2ToV3 = MigrationStage.lightweight(fromVersion: SchemaV2.self, toVersion: SchemaV3.self)
 
     /// The V1 reminder time, read before V1's column goes and written to Daily after.
     private static let carriedReminderMinutes = Mutex<Int?>(nil)

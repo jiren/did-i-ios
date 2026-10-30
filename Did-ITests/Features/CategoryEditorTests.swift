@@ -64,7 +64,7 @@ struct CategoryEditorViewModelTests {
         viewModel.icon = .bin
         viewModel.colour = .mint
         viewModel.repeatKind = .weekly
-        viewModel.weekday = 6
+        viewModel.weekdays = [6]
         viewModel.remindsMe = true
         viewModel.reminderTime = TestTime.date(2026, 10, 29, 19, 30)
         viewModel.taskText = "Bins out"
@@ -78,6 +78,19 @@ struct CategoryEditorViewModelTests {
         #expect(category.reminderMinutes == 19 * 60 + 30)
         #expect(try store.checks().map(\.categoryID) == [category.id])
         #expect(changes.count == 1)
+    }
+
+    @Test func weeklyCanBeOnSeveralDays() throws {
+        let viewModel = editor()
+        viewModel.name = "Leaving work"
+        viewModel.repeatKind = .weekly
+        viewModel.weekdays = RepeatRule.workingDays
+        #expect(viewModel.repeatSummary == "Every weekday")
+        #expect(viewModel.save())
+        let saved = try #require(try store.categories().first { $0.name == "Leaving work" })
+        #expect(saved.rule == .weekly(weekdays: RepeatRule.workingDays))
+        let reopened = editor(saved.id)
+        #expect(reopened.weekdays == RepeatRule.workingDays)
     }
 
     @Test func everyOtherWeekStartsOnTheNextMatchingDay() throws {

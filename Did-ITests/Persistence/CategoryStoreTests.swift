@@ -83,7 +83,7 @@ struct CategoryStoreTests {
 
     @Test func storesEveryRepeatRule() throws {
         let rules: [RepeatRule] = [
-            .daily, .weekly(weekday: 2), .everyTwoWeeks(weekday: 6, anchor: CalendarDay(year: 2026, month: 10, day: 30)),
+            .daily, .weekly(weekday: 2), .weekly(weekdays: [1, 4, 7]), .everyTwoWeeks(weekday: 6, anchor: CalendarDay(year: 2026, month: 10, day: 30)),
             .monthly(day: 31), .yearly(month: 2, day: 29), .once(CalendarDay(year: 2026, month: 11, day: 2)),
         ]
         for (index, rule) in rules.enumerated() {
@@ -192,6 +192,41 @@ struct MigrationTests {
         #expect(try store.logCount(for: doorID) == 2)
         #expect(try store.photoFileNames() == ["door.heic"])
         #expect(try store.latestLogs()[doorID]?.source == .lockScreenWidget)
+    }
+
+    @Test func aVersion2StoreKeepsItsWeeklyDay() throws {
+        let url = URL.temporaryDirectory.appending(path: "DidI-V2-\(UUID().uuidString).store")
+        defer {
+            for suffix in ["", "-shm", "-wal"] {
+                try? FileManager.default.removeItem(at: URL(filePath: url.path() + suffix))
+            }
+        }
+        let now = TestTime.date(2026, 10, 29, 8)
+        let binsID = UUID()
+        do {
+            let schema = Schema(versionedSchema: SchemaV2.self)
+            let container = try ModelContainer(for: schema, configurations: [ModelConfiguration(schema: schema, url: url)])
+            let context = ModelContext(container)
+            let daily = SchemaV2.CheckCategory(dailyWithID: CategoryDefaults.dailyID, name: "Daily", now: now)
+            let bins = SchemaV2.CheckCategory(dailyWithID: binsID, name: "Bin night", now: now)
+            bins.isDefault = false
+            bins.order = 1
+            bins.iconRaw = "bin"
+            bins.repeatKindRaw = "weekly"
+            bins.repeatWeekday = 6
+            context.insert(daily)
+            context.insert(bins)
+            let check = SchemaV2.Check(name: "Bins out", kindRaw: "other", order: 0, now: now)
+            check.category = bins
+            context.insert(check)
+            try context.save()
+        }
+
+        let store = SwiftDataStore(container: try ModelContainer.app(url: url))
+        let bins = try #require(try store.category(id: binsID))
+        #expect(bins.rule == .weekly(weekday: 6))
+        #expect(bins.icon == .bin)
+        #expect(try store.checks().map(\.name) == ["Bins out"])
     }
 
     private func writeVersion1Store(at url: URL, now: Date, doorID: UUID) throws {

@@ -498,3 +498,15 @@ app, so adding one template moved the other's task.
 - Where tasks from every category are listed together, a shared name shows its category: Siri, Shortcuts, Spotlight
   and the widget picker show it as a subtitle (`CheckEntity.category`), so Siri asks which; the Action Button
   picker and History's filters read "Stove off · Bedtime" (`CheckLabels`).
+
+## Phase 22 — Weekly on several days ✅ Done 2026-10-30, merged into main (builds; the simulator's real V2 store migrated to V3; tests not yet run)
+
+Branch `feature/phase-22-weekly-days`.
+
+- **Weekly** takes one or more days: "Every Friday", "Every weekday" (Mon–Fri), "Every weekend" (Sat–Sun),
+  "Every Mon, Wed, Fri" (in the calendar's week order), and "Every day" for all seven. The editor's **On** picker is
+  multi-select for Weekly (at least one day stays); **Every 2 weeks** keeps one day.
+- `SchemaV3` adds `CheckCategory.repeatWeekdayMask` (one bit per weekday) with a lightweight stage from V2;
+  `SchemaV2` became frozen copies, and the V1 → V2 stage now uses V2's own models. A weekly category saved before
+  keeps its one day (`repeatWeekday`).
+

@@ -131,18 +131,20 @@ struct ColourSwatchPicker: View {
     }
 }
 
-/// "On": seven weekday buttons, the chosen one in the category's colour.
+/// "On": seven weekday buttons, the chosen ones in the category's colour. With `allowsSeveral`, each tap adds or
+/// removes a day (at least one stays); otherwise a tap picks the one day.
 struct WeekdayPicker: View {
     /// 1 (Sunday) to 7.
-    @Binding var selection: Int
+    @Binding var selection: Set<Int>
+    var allowsSeveral = false
     let colour: CategoryColour
     var calendar: Calendar = .autoupdatingCurrent
 
     var body: some View {
         HStack(spacing: 6) {
             ForEach(weekdays, id: \.self) { weekday in
-                let isOn = weekday == selection
-                Button { selection = weekday } label: {
+                let isOn = selection.contains(weekday)
+                Button { toggle(weekday) } label: {
                     Text(calendar.veryShortStandaloneWeekdaySymbols[weekday - 1])
                         .font(.didEmphasis)
                         .foregroundStyle(isOn ? colour.foreground : Color.ink)
@@ -159,7 +161,19 @@ struct WeekdayPicker: View {
 
     /// In the calendar's week order (Monday first in many places).
     private var weekdays: [Int] {
-        (0..<7).map { (calendar.firstWeekday - 1 + $0) % 7 + 1 }
+        RepeatRule.weekOrder(Set(1...7), calendar: calendar)
+    }
+
+    private func toggle(_ weekday: Int) {
+        guard allowsSeveral else {
+            selection = [weekday]
+            return
+        }
+        if selection.contains(weekday) {
+            if selection.count > 1 { selection.remove(weekday) }
+        } else {
+            selection.insert(weekday)
+        }
     }
 }
 

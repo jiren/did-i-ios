@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-extension SchemaV2 {
+extension SchemaV3 {
     /// One time a check was done.
     @Model
     final class LogEntry {

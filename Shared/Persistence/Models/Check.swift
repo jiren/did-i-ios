@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-extension SchemaV2 {
+extension SchemaV3 {
     /// One thing people doubt they did, logged as often as they like.
     @Model
     final class Check {
