@@ -21,8 +21,11 @@ final class HistoryUITests: XCTestCase {
         let firstRow = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Front door locked'")).firstMatch
         XCTAssertTrue(firstRow.waitForExistence(timeout: 5))
         let before = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Front door locked'")).count
+        let deleted = app.buttons.matching(NSPredicate(format: "label == %@", firstRow.label)).firstMatch
         firstRow.swipeLeft()
         app.buttons["Delete"].tap()
+        // Wait for the list to refresh before counting.
+        XCTAssertTrue(deleted.waitForNonExistence(timeout: 3))
         let after = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Front door locked'")).count
         XCTAssertEqual(after, before - 1)
     }

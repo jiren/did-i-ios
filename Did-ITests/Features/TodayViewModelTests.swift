@@ -155,9 +155,9 @@ struct TodayViewModelTests {
         #expect(viewModel.sections.map(\.category.name) == ["Daily"])
     }
 
-    @Test func aSectionClosesOnceAllDoneAndRemembersATap() {
+    @Test func aSectionFinishedWhileWatchingStaysOpenAndOneAlreadyDoneStartsClosed() throws {
         clock.now = TestTime.date(2026, 10, 30, 10)
-        viewModel.rebuild()
+        viewModel.reload()
         let binsOut = tile("Bins out").id
         let recycling = tile("Recycling out").id
         viewModel.log(binsOut)
@@ -165,12 +165,20 @@ struct TodayViewModelTests {
         viewModel.log(recycling)
         let section = viewModel.sections[1]
         #expect(section.isAllDone)
-        #expect(!section.isExpanded)
+        #expect(section.isExpanded)
         #expect(section.progressText == "✓ 2/2")
         #expect(section.meta.plainSpaces == "All done · last 10:00 AM")
 
-        viewModel.toggleSection(bins.id)
-        #expect(viewModel.sections[1].isExpanded)
+        // Opening Today afresh (a new screen), the finished section starts closed.
+        let fresh = Self.makeViewModel(store: store, clock: clock, changes: changes, toastDuration: .seconds(60))
+        fresh.reload()
+        #expect(!fresh.sections[1].isExpanded)
+        fresh.toggleSection(bins.id)
+        #expect(fresh.sections[1].isExpanded)
+    }
+
+    @Test func aTapIsRememberedUntilTheDayChanges() {
+        viewModel.reload()
         viewModel.toggleSection(CategoryDefaults.dailyID)
         #expect(!viewModel.sections[0].isExpanded)
 

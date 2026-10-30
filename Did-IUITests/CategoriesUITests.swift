@@ -61,10 +61,13 @@ final class CategoriesUITests: XCTestCase {
         app.buttons["category.removeTask.Headphones charged"].tap()
         app.buttons["category.save"].tap()
 
-        let bar = app.buttons["tabbar.add"]
-        XCTAssertTrue(bar.waitForExistence(timeout: 3))
-        app.buttons["filter.Gym"].tap()
-        XCTAssertTrue(app.buttons["tile.Water bottle"].waitForExistence(timeout: 3))
+        // Gym is the last section, and Today's stacks are lazy: scroll until it's built.
+        XCTAssertTrue(app.buttons["tabbar.add"].waitForExistence(timeout: 3))
+        let water = app.buttons["tile.Water bottle"]
+        for _ in 0..<6 where !water.exists {
+            app.swipeUp()
+        }
+        XCTAssertTrue(water.exists)
         XCTAssertTrue(app.buttons["tile.Towel"].exists)
         XCTAssertFalse(app.buttons["tile.Headphones charged"].exists)
     }

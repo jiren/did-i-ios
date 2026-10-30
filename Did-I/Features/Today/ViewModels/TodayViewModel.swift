@@ -60,7 +60,8 @@ final class TodayViewModel {
     /// The day picked in the strip; nil means today, and it goes back to nil when the day changes.
     @ObservationIgnored private var selectedDay: CalendarDay?
     @ObservationIgnored private var agendaToday: CalendarDay?
-    /// Sections opened or closed by hand, until the day changes; others are closed when all done.
+    /// Sections opened or closed by hand, or finished while Today was open, until the day changes. Others start
+    /// closed when all done.
     @ObservationIgnored private var expandedOverrides: [UUID: Bool] = [:]
 
     init(
@@ -212,6 +213,8 @@ final class TodayViewModel {
 
     func log(_ checkID: UUID, photoFileName: String? = nil) {
         guard isToday, let check = checks.first(where: { $0.id == checkID }) else { return }
+        // A section finished while you watch stays open, so the tile you tapped doesn't vanish.
+        if expandedOverrides[check.categoryID] == nil { expandedOverrides[check.categoryID] = true }
         do {
             let outcome = try logStore.log(checkID, source: .app, at: timeSource.now, photoFileName: photoFileName)
             logCount += 1
