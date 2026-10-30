@@ -453,3 +453,19 @@ Found while testing these (fixed on the same branch):
 - **Test fixes.** The full run on 2026-10-30 went 169 passed, 4 failed, 1 skipped. The failures were a spliced
   nudge test, a timing-sensitive toast test, and two category UI tests that tapped under the tab bar or the
   keyboard. Those tests have been fixed and pass when rerun on their own.
+
+## Phase 19 — Compact Today ✅ Done 2026-10-30, merged into main (checked on the simulator: grid and list, both themes, an accessibility size, the iPad split; tests not yet run)
+
+Branch `feature/phase-19-compact-today`. The canvas changed again on 2026-10-30: only `Main.dc.html`, now a compact
+Today; the other artboards are unchanged (re-copied into `design/`). The user, 2026-10-30: **Today only**, and the
+header keeps **the view toggle, Categories and Settings**. Where this differs from **Categories & calendar**
+above (the Today rows), this wins.
+
+| Topic | Decision |
+|---|---|
+| **Header** | From the design: "Today" (or the weekday, "Sat") with "Fri, Oct 30" (or "Oct 31") on one line; the "Did I?" title goes. Then the grid/list toggle, Categories (`rectangle.stack.fill`, so it isn't mistaken for the grid icon) and Settings. |
+| **Strip** | From the design: 54 pt days, one letter per weekday ("Today" stays), 17 pt dates, 5 pt dots. VoiceOver reads "Sat, Oct 31, also due: Bin night, Home safety". |
+| **Sticky block** | From the design: the progress bar is one line (scope, "4 of 6 done", the pill) over its segments, and the filter chips pin with it. Scope is the filter's name, else "Today", else the weekday; a later day reads "{n} tasks planned"; nothing due reads "Free". Chips have no border (a faint ink fill); New category is a dashed + circle. Proposed: not pinned at accessibility sizes, where it would cover much of the screen. |
+| **Sections** | From the design: the header opens or closes the section (meta line "Every Friday" or "All done · last 8:42 AM", a mint "✓ 2/2" once all done, a chevron), and a + adds tasks (the Add task tile goes). A section starts closed once all its tasks are done today. Tasks not done come first. Proposed: a section opened or closed by hand stays so until the day changes; adding from its + opens it. |
+| **Grid or list** | From the design: a toggle between 3-column tiles (tighter: radius 20, 30 pt icons, 28 pt camera) and 52 pt rows. Proposed: the choice is kept in settings (`AppSettings.todayLayout`); at accessibility sizes Today always uses rows (square tiles in one column would be huge), and a row puts its status under the name. |
+| **Removed** | From the design: the dashed "Add checks" button (the tab bar's + stays, now "Add tasks") and **Coming up** (the strip's dots show what's due). "Nothing due" reads "{Category} isn’t due on {date}. The dots on the days above show when it is." or "No tasks scheduled for {date}." |

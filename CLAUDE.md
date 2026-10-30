@@ -296,13 +296,14 @@ are `project/<Name>.dc.html` there; read them with the Artifact tool (`action: "
 into `design/` (outside the synchronized groups, never bundled); they don't render locally, because `support.js`
 isn't in the export, so read them as source. If the canvas changes, re-copy them rather than editing `design/`.
 
-- **`Main.dc.html` ("Today") is the app's home** and the interactive artboard (redesigned 2026-10-30): the date,
-  the "Did I?" title, a 7-day strip from today (dots for non-daily categories due), category filter chips and "New
-  category", a sticky progress bar, one section per due category (3-column tiles plus "Add task"), "Nothing due",
-  "Add checks", "Coming up", the undo toast, a floating bottom bar (Today with a progress ring / History / + Add),
-  and the Add sheet with "Add to" categories. Its script holds the sample categories and tasks, the repeat rules,
-  the tile palette, the suggestions and the copy. Port behaviour and copy from it as written. `AddChecks.dc.html`
-  is `Main` with the sheet open.
+- **`Main.dc.html` ("Today") is the app's home** and the interactive artboard (compact, 2026-10-30): "Today" (or
+  "Sat") with the date, a grid/list toggle and Settings (the app adds Categories between them), a 7-day strip of
+  letters and dates (dots for non-daily categories due), a sticky block of a one-line progress bar and the category
+  filter chips (with a dashed + for New category), then one collapsible section per due category (its header opens
+  or closes it, a + adds tasks; tasks not done first, as 3-column tiles or 52 pt rows), "Nothing due", the undo
+  toast, a floating bottom bar (Today with a progress ring / History / + Add tasks), and the Add sheet with "Add to"
+  categories. Its script holds the sample categories and tasks, the repeat rules, the tile palette, the suggestions
+  and the copy. Port behaviour and copy from it as written. `AddChecks.dc.html` is `Main` with the sheet open.
 - **`NewCategory.dc.html`**: the New category page: a preview card, name, icon grid, colour swatches, repeat
   (with weekday, day-of-month or date), the tasks list, "Remind me at", and "Create category".
 - **`Detail.dc.html` (Check detail)**: violet header with back and Remove, "Locked at {time}" and "{day} · {ago}",
