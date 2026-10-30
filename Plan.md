@@ -362,7 +362,7 @@ open the sheet on that category (the sheet adds there; its "Add to" chips come i
 dragged only within its category; `-SeedSample` seeds the design's four categories, with Bin night due today. The
 old 2-column `CheckTile`, `AddTile`, `ProgressPill` and the `TodaySummary` rule were removed.
 
-## Phase 16 — Category management & the Add sheet
+## Phase 16 — Category management & the Add sheet ✅ Done 2026-10-30, merged into main (New category and Settings › Categories checked on the simulator; tests not yet run)
 
 Branch `feature/phase-16-category-management`.
 
@@ -377,6 +377,14 @@ Branch `feature/phase-16-category-management`.
 **Done when** view-model tests cover create, edit, validation and both delete choices, and UI tests create a weekly
 category with two tasks (it shows on its day in the strip), add tasks to it from its section, move a task to
 another category, and delete a category both ways.
+
+Built as planned. Proposed, taken without asking: Edit category lists a category's existing tasks without remove
+buttons (removing a task stays on its tile's menu, with the confirmation) and adds new ones on Save; a new
+category starts on today's weekday and day of the month, tomorrow's date and the first colour no category uses;
+a name already used shows "There’s already a category called “…”." under the form; Settings › Categories rows
+read "Every Friday · 2 tasks", reorder by holding and dragging and delete by swiping; a task moves from its tile's
+**Move to** menu and Detail's **Category** row; the Add sheet keeps the design's four Daily checks ahead of its
+eight suggestions until each exists.
 
 ## Phase 17 — Reminders, intents & widgets follow categories
 

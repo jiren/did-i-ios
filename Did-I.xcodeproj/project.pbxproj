@@ -11,13 +11,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		9E9D21B43093C900007D3788 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9E9D215A3093C751007D3788 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 9E9D21B73093C900007D3788;
-			remoteInfo = DidIWidgets;
-		};
 		9E9D21723093C752007D3788 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9E9D215A3093C751007D3788 /* Project object */;
@@ -32,19 +25,24 @@
 			remoteGlobalIDString = 9E9D21613093C751007D3788;
 			remoteInfo = "Did-I";
 		};
+		9E9D21B43093C900007D3788 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9E9D215A3093C751007D3788 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9E9D21B73093C900007D3788;
+			remoteInfo = DidIWidgets;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		9E9D21B33093C900007D3788 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
 			dstPath = "";
-			dstSubfolderSpec = 13;
+			dstSubfolder = PlugIns;
 			files = (
 				9E9D21B23093C900007D3788 /* DidIWidgets.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -101,10 +99,8 @@
 		};
 		9E9D21B93093C900007D3788 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -210,11 +206,9 @@
 			);
 			buildRules = (
 			);
-			dependencies = (
-			);
 			fileSystemSynchronizedGroups = (
-				9E9D21B63093C900007D3788 /* DidIWidgets */,
 				9E9D21A03093C800007D3788 /* Shared */,
+				9E9D21B63093C900007D3788 /* DidIWidgets */,
 			);
 			name = DidIWidgets;
 			productName = DidIWidgets;
@@ -287,10 +281,8 @@
 		};
 		9E9D21BA3093C900007D3788 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
@@ -312,10 +304,8 @@
 		};
 		9E9D21B83093C900007D3788 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
@@ -470,9 +460,9 @@
 				DEVELOPMENT_TEAM = J8MHDV8383;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/Did-I-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Did I?";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
-				INFOPLIST_FILE = "Config/Did-I-Info.plist";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Take a photo as proof that you did it. Photos stay inside Did I? on this device.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Did I? nudges you as you leave home about checks you haven’t logged yet. Your location stays on this device.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Did I? uses where you are to set your home, so it can nudge you as you leave.";
@@ -509,9 +499,9 @@
 				DEVELOPMENT_TEAM = J8MHDV8383;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/Did-I-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Did I?";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
-				INFOPLIST_FILE = "Config/Did-I-Info.plist";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Take a photo as proof that you did it. Photos stay inside Did I? on this device.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Did I? nudges you as you leave home about checks you haven’t logged yet. Your location stays on this device.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Did I? uses where you are to set your home, so it can nudge you as you leave.";
