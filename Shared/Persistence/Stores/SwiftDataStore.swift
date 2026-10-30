@@ -420,7 +420,7 @@ final class SwiftDataStore: CheckStoring, CategoryStoring, LogStoring {
             id: model.id,
             name: model.name,
             icon: CategoryIcon(rawValue: model.iconRaw) ?? .sun,
-            colour: TileSwatch(key: model.colourRaw) ?? .violet,
+            colour: CategoryColour(key: model.colourRaw) ?? .violet,
             rule: model.isDefault ? .daily : model.rule,
             reminderMinutes: model.reminderMinutes,
             order: model.order,

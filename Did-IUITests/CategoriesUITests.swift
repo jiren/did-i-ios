@@ -9,6 +9,8 @@ final class CategoriesUITests: XCTestCase {
     @MainActor
     func testCreatingAWeeklyCategoryAndAddingToIt() throws {
         let app = XCUIApplication.launched(arguments: ["-SeedSample", "-Open", "newCategory"])
+        XCTAssertTrue(app.buttons["templates.scratch"].waitForExistence(timeout: 5))
+        app.buttons["templates.scratch"].tap()
         let name = app.textFields["category.name"]
         XCTAssertTrue(name.waitForExistence(timeout: 5))
         name.tap()
@@ -39,6 +41,32 @@ final class CategoriesUITests: XCTestCase {
         XCTAssertEqual(app.buttons["addChecks.commit"].label, "Add 1 task to Gym")
         app.buttons["addChecks.commit"].tap()
         XCTAssertTrue(app.buttons["tile.Keys packed"].waitForExistence(timeout: 3))
+    }
+
+    /// New category starts from the templates; Gym's tasks are renamed and removed before it's created.
+    @MainActor
+    func testCreatingFromATemplate() throws {
+        let app = XCUIApplication.launched(arguments: ["-SeedSample", "-Open", "newCategory"])
+        let gym = app.buttons["templates.gym"]
+        XCTAssertTrue(gym.waitForExistence(timeout: 5))
+        gym.tap()
+        XCTAssertEqual(app.textFields["category.name"].value as? String, "Gym")
+
+        let towel = app.textFields["category.taskName.Towel packed"]
+        XCTAssertTrue(towel.waitForExistence(timeout: 3))
+        towel.tap()
+        // The cursor lands at the end: delete " packed".
+        towel.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 7))
+        app.buttons["category.keyboardDone"].tap()
+        app.buttons["category.removeTask.Headphones charged"].tap()
+        app.buttons["category.save"].tap()
+
+        let bar = app.buttons["tabbar.add"]
+        XCTAssertTrue(bar.waitForExistence(timeout: 3))
+        app.buttons["filter.Gym"].tap()
+        XCTAssertTrue(app.buttons["tile.Water bottle"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["tile.Towel"].exists)
+        XCTAssertFalse(app.buttons["tile.Headphones charged"].exists)
     }
 
     @MainActor

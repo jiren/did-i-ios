@@ -60,15 +60,18 @@ struct RootView: View {
                 )
             }
             .fullScreenCover(item: $categoryEditor) { request in
-                CategoryEditorView(
-                    viewModel: CategoryEditorViewModel(
-                        editing: { if case .edit(let id) = request { id } else { nil } }(),
-                        store: environment.store,
-                        changes: environment.changes,
-                        days: environment.settings,
-                        timeSource: environment.timeSource
+                switch request {
+                case .new:
+                    NewCategoryFlow(
+                        templates: CategoryTemplatesViewModel(
+                            store: environment.store, days: environment.settings, timeSource: environment.timeSource
+                        ),
+                        makeEditor: { categoryEditorModel(editing: nil) },
+                        onDone: { categoryEditor = nil }
                     )
-                )
+                case .edit(let id):
+                    CategoryEditorView(viewModel: categoryEditorModel(editing: id))
+                }
             }
             .fullScreenCover(item: $logged) { request in
                 LoggedView(
@@ -237,6 +240,17 @@ struct RootView: View {
                 tab = .history
             },
             onRemoved: { if isRoot { selectedCheck = nil } }
+        )
+    }
+
+    private func categoryEditorModel(editing id: UUID?) -> CategoryEditorViewModel {
+        CategoryEditorViewModel(
+            editing: id,
+            store: environment.store,
+            editor: environment.checkEditor,
+            changes: environment.changes,
+            days: environment.settings,
+            timeSource: environment.timeSource
         )
     }
 

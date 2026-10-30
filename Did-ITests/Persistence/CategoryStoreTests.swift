@@ -70,6 +70,15 @@ struct CategoryStoreTests {
         try store.updateCategory(bins.id, to: edited)
     }
 
+    @Test func storesACustomColourAndALibraryIcon() throws {
+        let category = try store.addCategory(
+            CategoryDraft(name: "Pets", icon: CategoryIcon(symbol: "pawprint.fill"), colour: .custom(hex: "#123456")), tasks: []
+        )
+        let saved = try #require(try store.category(id: category.id))
+        #expect(saved.colour == .custom(hex: "#123456"))
+        #expect(saved.icon.symbolName == "pawprint.fill")
+    }
+
     @Test func storesEveryRepeatRule() throws {
         let rules: [RepeatRule] = [
             .daily, .weekly(weekday: 2), .everyTwoWeeks(weekday: 6, anchor: CalendarDay(year: 2026, month: 10, day: 30)),

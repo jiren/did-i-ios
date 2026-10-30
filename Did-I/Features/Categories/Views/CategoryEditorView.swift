@@ -1,15 +1,24 @@
 import SwiftUI
 
-/// New category / Edit category (`NewCategory.dc.html`): a full-screen page with a live preview.
+/// New category / Edit category (`NewCategory.dc.html`, Phase 20): a full-screen page with a live preview. Opened
+/// from the template gallery (pushed, with a back button) or on its own to edit (with a close button).
 struct CategoryEditorView: View {
     @State private var viewModel: CategoryEditorViewModel
     @Environment(\.dismiss) private var dismiss
     @FocusState private var focus: Field?
+    @State private var isPickingIcon = false
+    @State private var isPickingColour = false
+    /// Pushed from the template gallery: back goes to the templates.
+    let isPushed: Bool
+    /// After a save; closes the whole flow.
+    let onSaved: () -> Void
 
-    private enum Field { case name, task }
+    private enum Field: Hashable { case name, task, taskName(UUID) }
 
-    init(viewModel: @autoclosure () -> CategoryEditorViewModel) {
+    init(viewModel: @autoclosure () -> CategoryEditorViewModel, isPushed: Bool = false, onSaved: @escaping () -> Void = {}) {
         _viewModel = State(initialValue: viewModel())
+        self.isPushed = isPushed
+        self.onSaved = onSaved
     }
 
     var body: some View {
@@ -21,8 +30,12 @@ struct CategoryEditorView: View {
                     repeatSummary: viewModel.repeatSummary, detail: viewModel.previewDetail
                 )
                 nameField
-                field(String(localized: "Icon")) { CategoryIconGrid(selection: $viewModel.icon, colour: viewModel.colour) }
-                field(String(localized: "Colour")) { ColourSwatchPicker(selection: $viewModel.colour) }
+                field(String(localized: "Icon")) {
+                    CategoryIconGrid(selection: $viewModel.icon, colour: viewModel.colour) { isPickingIcon = true }
+                }
+                field(String(localized: "Colour")) {
+                    ColourSwatchPicker(selection: $viewModel.colour) { isPickingColour = true }
+                }
                 if !viewModel.isDaily {
                     field(String(localized: "Repeat")) { RepeatEditor(viewModel: viewModel) }
                 }
@@ -43,9 +56,7 @@ struct CategoryEditorView: View {
         .safeAreaInset(edge: .bottom) {
             // Hidden while typing, so it can't cover the field being edited; Done above the keyboard brings it back.
             if focus == nil {
-                Button(viewModel.commitTitle) {
-                    if viewModel.save() { dismiss() }
-                }
+                Button(viewModel.commitTitle, action: save)
                 .buttonStyle(PillButtonStyle(variant: .brand))
                 .disabled(!viewModel.canSave)
                 .padding(.horizontal, 20)
@@ -67,7 +78,25 @@ struct CategoryEditorView: View {
             }
         }
         .background(Color.ground)
-        .task { viewModel.load() }
+        .toolbarVisibility(.hidden, for: .navigationBar)
+        .sheet(isPresented: $isPickingIcon) {
+            IconLibrarySheet(selection: $viewModel.icon, colour: viewModel.colour)
+        }
+        .sheet(isPresented: $isPickingColour) {
+            CustomColourPicker(colour: viewModel.colour, onPick: viewModel.setCustomColour)
+                .presentationDetents([.medium, .large])
+        }
+        .confirmationDialog(
+            viewModel.removalQuestion ?? "",
+            isPresented: Binding(get: { viewModel.removalQuestion != nil }, set: { if !$0 { viewModel.cancelRemoval() } }),
+            titleVisibility: .visible
+        ) {
+            Button(String(localized: "Remove and save"), role: .destructive, action: save)
+                .accessibilityIdentifier("category.confirmRemoval")
+            Button(String(localized: "Keep them"), role: .cancel) { viewModel.cancelRemoval() }
+        } message: {
+            Text("Their logs and photos are deleted too.")
+        }
         .onChange(of: viewModel.remindsMe) { _, isOn in
             if isOn { Task { await NotificationPermission.request() } }
         }
@@ -80,8 +109,11 @@ struct CategoryEditorView: View {
                 .foregroundStyle(Color.ink)
                 .accessibilityAddTraits(.isHeader)
             HStack {
-                RoundIconButton(systemName: "xmark", label: String(localized: "Cancel and go back")) { dismiss() }
-                    .accessibilityIdentifier("category.close")
+                RoundIconButton(
+                    systemName: isPushed ? "chevron.left" : "xmark",
+                    label: isPushed ? String(localized: "Back to templates") : String(localized: "Cancel and go back")
+                ) { dismiss() }
+                .accessibilityIdentifier("category.close")
                 Spacer()
             }
         }
@@ -109,18 +141,19 @@ struct CategoryEditorView: View {
                     .font(.didFootnote)
                     .foregroundStyle(Color.muted)
             }
-            ForEach(viewModel.existingTasks, id: \.self) { task in
-                HStack(spacing: 12) {
-                    Circle().fill(viewModel.colour.background).frame(width: 10, height: 10).accessibilityHidden(true)
-                    Text(task).font(.didRowTitle).foregroundStyle(Color.ink)
-                    Spacer()
+            ForEach($viewModel.tasks) { $task in
+                CategoryTaskRow(name: $task.name, colour: viewModel.colour, note: viewModel.note(for: task)) {
+                    viewModel.removeTask(task.id)
                 }
-                .padding(.horizontal, 14)
-                .frame(minHeight: 52)
-                .background(Color.surface, in: .rect(cornerRadius: 16, style: .continuous))
-            }
-            ForEach(viewModel.newTasks, id: \.self) { task in
-                CategoryTaskRow(name: task, colour: viewModel.colour) { viewModel.removeTask(task) }
+                .focused($focus, equals: .taskName(task.id))
+                .draggable(task.id.uuidString) {
+                    Text(task.name).font(.didRowTitle).padding(8)
+                }
+                .dropDestination(for: String.self) { items, _ in
+                    guard let dragged = items.first.flatMap(UUID.init(uuidString:)) else { return false }
+                    viewModel.moveTask(dragged, to: task.id)
+                    return true
+                }
             }
             HStack(spacing: 8) {
                 TextField(String(localized: "Add a task, e.g. Passport packed"), text: $viewModel.taskText)
@@ -175,6 +208,13 @@ struct CategoryEditorView: View {
         }
         .padding(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 12))
         .background(Color.surface, in: .rect(cornerRadius: 18, style: .continuous))
+    }
+
+    private func save() {
+        focus = nil
+        guard viewModel.save() else { return }
+        // Pushed from the templates, the whole flow closes; on its own, the page does.
+        if isPushed { onSaved() } else { dismiss() }
     }
 
     private func field<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {

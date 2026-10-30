@@ -40,7 +40,7 @@ nonisolated struct DayAgenda: Equatable, Sendable {
         var weekdayText: String
         var dayNumber: Int
         /// The colours of up to three non-daily categories due that day.
-        var dots: [TileSwatch]
+        var dots: [CategoryColour]
         var isToday: Bool
         var isSelected: Bool
         /// "Sat, Oct 31, also due: Bin night, Home safety".

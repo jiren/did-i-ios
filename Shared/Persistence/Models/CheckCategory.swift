@@ -7,9 +7,9 @@ extension SchemaV2 {
     final class CheckCategory {
         @Attribute(.unique) var id: UUID
         var name: String
-        /// A `CategoryIcon` raw value.
+        /// A `CategoryIcon` raw value: a drawn icon's name or "sf:<symbol>".
         var iconRaw: String
-        /// A `TileSwatch` key.
+        /// A `CategoryColour` key: a swatch's name or "#RRGGBB".
         var colourRaw: String
         /// A `RepeatKind` raw value; the fields after it hold its details.
         var repeatKindRaw: String
@@ -32,7 +32,7 @@ extension SchemaV2 {
         @Relationship(deleteRule: .cascade, inverse: \Check.category)
         var checks: [Check] = []
 
-        init(id: UUID = UUID(), name: String, icon: CategoryIcon, colour: TileSwatch, rule: RepeatRule, order: Int, isDefault: Bool = false, now: Date) {
+        init(id: UUID = UUID(), name: String, icon: CategoryIcon, colour: CategoryColour, rule: RepeatRule, order: Int, isDefault: Bool = false, now: Date) {
             self.id = id
             self.name = name
             self.iconRaw = icon.rawValue

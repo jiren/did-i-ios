@@ -9,7 +9,7 @@ struct ComponentGallery: View {
     @State private var switchOn = true
     @State private var tab: MainTab = .today
     @State private var icon: CategoryIcon = .suitcase
-    @State private var colour: TileSwatch = .sky
+    @State private var colour: CategoryColour = .sky
     @State private var weekday = 6
 
     var body: some View {
@@ -136,9 +136,9 @@ struct ComponentGallery: View {
             detail: "3 tasks · Reminder at 8:00 PM"
         )
         SectionLabel(title: "Icon")
-        CategoryIconGrid(selection: $icon, colour: colour)
+        CategoryIconGrid(selection: $icon, colour: colour) {}
         SectionLabel(title: "Colour")
-        ColourSwatchPicker(selection: $colour)
+        ColourSwatchPicker(selection: $colour) {}
         SectionLabel(title: "Repeat")
         FlowLayout(spacing: 8) {
             ForEach(RepeatKind.allCases, id: \.self) { kind in
@@ -148,7 +148,7 @@ struct ComponentGallery: View {
         WeekdayPicker(selection: $weekday, colour: colour)
         SectionLabel(title: "Tasks")
         ForEach(["Passport packed", "Charger packed", "Windows closed"], id: \.self) { name in
-            CategoryTaskRow(name: name, colour: colour) {}
+            CategoryTaskRow(name: .constant(name), colour: colour, note: name == "Windows closed" ? "In Daily · moves here" : nil) {}
         }
         ScrollView(.horizontal) {
             HStack(spacing: 8) {

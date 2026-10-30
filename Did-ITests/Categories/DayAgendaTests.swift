@@ -46,7 +46,7 @@ private struct Sample {
     }
 
     private static func category(
-        _ name: String, _ icon: CategoryIcon, _ colour: TileSwatch, _ rule: RepeatRule, order: Int, isDefault: Bool = false
+        _ name: String, _ icon: CategoryIcon, _ colour: CategoryColour, _ rule: RepeatRule, order: Int, isDefault: Bool = false
     ) -> CategoryRecord {
         CategoryRecord(
             id: isDefault ? CategoryDefaults.dailyID : UUID(), name: name, icon: icon, colour: colour, rule: rule,

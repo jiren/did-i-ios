@@ -3,7 +3,7 @@ import SwiftUI
 /// A category's icon on its colour: 40 pt in a section header, 36 in Coming up, 22 in a chip.
 struct CategoryBadge: View {
     let icon: CategoryIcon
-    let colour: TileSwatch
+    let colour: CategoryColour
     var size: CGFloat = 40
     /// Nil makes it a circle.
     var cornerRadius: CGFloat? = 14

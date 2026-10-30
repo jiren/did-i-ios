@@ -13,9 +13,12 @@ struct CategoryEditorViewModelTests {
         store = SwiftDataStore(container: try .app(inMemory: true), timeSource: clock)
     }
 
+    private func names(_ viewModel: CategoryEditorViewModel) -> [String] { viewModel.tasks.map(\.name) }
+
     private func editor(_ id: UUID? = nil) -> CategoryEditorViewModel {
         let viewModel = CategoryEditorViewModel(
-            editing: id, store: store, changes: changes, days: FixedDays(), timeSource: clock, locale: Locale(identifier: "en_US")
+            editing: id, store: store, editor: CheckEditor(store: store, changes: changes, photos: nil), changes: changes,
+            days: FixedDays(), timeSource: clock, locale: Locale(identifier: "en_US")
         )
         viewModel.load()
         return viewModel
@@ -49,9 +52,9 @@ struct CategoryEditorViewModelTests {
         viewModel.remindsMe = true
         #expect(viewModel.previewName == "Weekend trip")
         #expect(viewModel.repeatSummary == "Once · Fri, Nov 6")
-        #expect(viewModel.newTasks == ["Passport packed", "Charger packed"])
+        #expect(names(viewModel) == ["Passport packed", "Charger packed"])
         #expect(viewModel.previewDetail.plainSpaces == "2 tasks · Reminder at 8:00 PM")
-        viewModel.removeTask("Charger packed")
+        viewModel.removeTask(viewModel.tasks[1].id)
         #expect(viewModel.taskCountText == "1 task")
     }
 
@@ -102,7 +105,7 @@ struct CategoryEditorViewModelTests {
         let viewModel = editor(bins.id)
         #expect(viewModel.title == "Edit category")
         #expect(viewModel.commitTitle == "Save")
-        #expect(viewModel.existingTasks == ["Recycling out"])
+        #expect(names(viewModel) == ["Recycling out"])
         #expect(viewModel.remindsMe)
         #expect(viewModel.rule == .everyTwoWeeks(weekday: 6, anchor: anchor))
         viewModel.name = "Recycling night"
@@ -120,6 +123,93 @@ struct CategoryEditorViewModelTests {
         let viewModel = editor(birthday.id)
         #expect(CalendarDay(viewModel.date, calendar: TestTime.calendar()) == CalendarDay(year: 2028, month: 2, day: 29))
         #expect(viewModel.rule == .yearly(month: 2, day: 29))
+    }
+
+    // MARK: - Templates and task editing (Phase 20)
+
+    @Test func aTemplateFillsTheForm() {
+        let viewModel = editor()
+        let binNight = CategoryTemplates.all.first { $0.id == "binNight" }!
+        viewModel.apply(binNight)
+        #expect(viewModel.name == "Bin night")
+        #expect(viewModel.icon == .bin)
+        #expect(viewModel.colour == .mint)
+        #expect(viewModel.rule == .weekly(weekday: 5))
+        #expect(viewModel.remindsMe)
+        #expect(viewModel.previewDetail.plainSpaces == "2 tasks · Reminder at 8:00 PM")
+        #expect(names(viewModel) == ["Bins out", "Recycling out"])
+    }
+
+    @Test func aUsedTemplateNameGetsANumber() throws {
+        _ = try store.addCategory(CategoryDraft(name: "Gym"), tasks: [])
+        _ = try store.addCategory(CategoryDraft(name: "gym 2"), tasks: [])
+        let viewModel = editor()
+        viewModel.apply(CategoryTemplates.all.first { $0.id == "gym" }!)
+        #expect(viewModel.name == "Gym 3")
+        #expect(viewModel.save())
+    }
+
+    @Test func tasksAreRenamedReorderedAndRemovedBeforeSaving() throws {
+        let viewModel = editor()
+        viewModel.apply(CategoryTemplates.all.first { $0.id == "gym" }!)
+        viewModel.tasks[1].name = "Towel"
+        viewModel.removeTask(viewModel.tasks[2].id)
+        viewModel.moveTask(viewModel.tasks[1].id, to: viewModel.tasks[0].id)
+        viewModel.tasks.append(.new("   "))
+        #expect(viewModel.taskCountText == "2 tasks")
+        #expect(viewModel.save())
+        let gym = try #require(try store.categories().first { $0.name == "Gym" })
+        #expect(try store.checks().filter { $0.categoryID == gym.id }.map(\.name) == ["Towel", "Water bottle"])
+        #expect(gym.icon == CategoryIcon(symbol: "figure.run"))
+    }
+
+    @Test func aTaskInAnotherCategoryMovesHere() throws {
+        let stove = try store.addChecks([CheckDraft(name: "Stove off")])[0]
+        _ = try store.log(stove.id, source: .app, at: clock.now, photoFileName: nil)
+        let viewModel = editor()
+        viewModel.apply(CategoryTemplates.all.first { $0.id == "bedtime" }!)
+        let draft = try #require(viewModel.tasks.first { $0.name == "Stove off" })
+        #expect(viewModel.note(for: draft) == "In Daily · moves here")
+        #expect(viewModel.save())
+        let bedtime = try #require(try store.categories().first { $0.name == "Bedtime" })
+        #expect(try store.check(id: stove.id)?.categoryID == bedtime.id)
+        #expect(try store.logCount(for: stove.id) == 1)
+        #expect(try store.checks().filter { $0.name == "Stove off" }.count == 1)
+    }
+
+    @Test func editingRenamesAndRemovesSavedTasksAfterAsking() throws {
+        let bins = try store.addCategory(
+            CategoryDraft(name: "Bin night", rule: .weekly(weekday: 6)),
+            tasks: [CheckDraft(name: "Bins out"), CheckDraft(name: "Recycling out")]
+        )
+        let recycling = try #require(try store.checks().first { $0.name == "Recycling out" })
+        _ = try store.log(recycling.id, source: .app, at: clock.now, photoFileName: nil)
+        let viewModel = editor(bins.id)
+        viewModel.tasks[0].name = "Bins out by 8"
+        viewModel.removeTask(viewModel.tasks[1].id)
+
+        #expect(!viewModel.save())
+        #expect(viewModel.removalQuestion == "Remove Recycling out and its 1 logs?")
+        viewModel.cancelRemoval()
+        #expect(names(viewModel) == ["Bins out by 8", "Recycling out"])
+
+        viewModel.removeTask(viewModel.tasks[1].id)
+        #expect(!viewModel.save())
+        #expect(viewModel.save())
+        #expect(try store.checks().filter { $0.categoryID == bins.id }.map(\.name) == ["Bins out by 8"])
+        #expect(try store.check(id: recycling.id) == nil)
+    }
+
+    @Test func aCustomColourAndALibraryIconSave() throws {
+        let viewModel = editor()
+        viewModel.name = "Fish"
+        viewModel.setCustomColour(red: 0.1, green: 0.2, blue: 0.8)
+        viewModel.icon = CategoryIcon(symbol: "fish.fill")
+        #expect(viewModel.save())
+        let fish = try #require(try store.categories().first { $0.name == "Fish" })
+        #expect(fish.colour == .custom(hex: "#1A33CC"))
+        #expect(fish.icon.symbolName == "fish.fill")
+        #expect(!fish.icon.isFeatured)
     }
 
     @Test func dailyKeepsItsSchedule() throws {

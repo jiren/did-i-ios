@@ -15,7 +15,7 @@ nonisolated struct CategoryRecord: Identifiable, Hashable, Sendable {
     let id: UUID
     var name: String
     var icon: CategoryIcon
-    var colour: TileSwatch
+    var colour: CategoryColour
     var rule: RepeatRule
     /// Minutes after midnight for the reminder, or nil.
     var reminderMinutes: Int?
@@ -28,11 +28,11 @@ nonisolated struct CategoryRecord: Identifiable, Hashable, Sendable {
 nonisolated struct CategoryDraft: Hashable, Sendable {
     var name: String
     var icon: CategoryIcon
-    var colour: TileSwatch
+    var colour: CategoryColour
     var rule: RepeatRule
     var reminderMinutes: Int?
 
-    init(name: String, icon: CategoryIcon = .sun, colour: TileSwatch = .violet, rule: RepeatRule = .daily, reminderMinutes: Int? = nil) {
+    init(name: String, icon: CategoryIcon = .sun, colour: CategoryColour = .violet, rule: RepeatRule = .daily, reminderMinutes: Int? = nil) {
         self.name = name
         self.icon = icon
         self.colour = colour

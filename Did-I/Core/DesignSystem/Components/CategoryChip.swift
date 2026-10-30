@@ -9,7 +9,7 @@ struct CategoryChip: View {
 
     let title: String
     var icon: CategoryIcon?
-    var colour: TileSwatch = .violet
+    var colour: CategoryColour = .violet
     let isSelected: Bool
     var style: Style = .filter
     let action: () -> Void

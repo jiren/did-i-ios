@@ -1,0 +1,109 @@
+import SwiftUI
+
+/// What the New category flow pushes: a template, or a blank form.
+enum NewCategoryStart: Hashable {
+    case template(CategoryTemplate)
+    case scratch
+}
+
+/// The start of New category (Phase 20): "Start from a template", a 2-column grid of templates, then Start from
+/// scratch. Picking one opens the form, filled in.
+struct CategoryTemplateGallery: View {
+    @State private var viewModel: CategoryTemplatesViewModel
+    let onPick: (NewCategoryStart) -> Void
+
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    init(viewModel: @autoclosure () -> CategoryTemplatesViewModel, onPick: @escaping (NewCategoryStart) -> Void) {
+        _viewModel = State(initialValue: viewModel())
+        self.onPick = onPick
+    }
+
+    private var columns: [GridItem] {
+        Array(repeating: GridItem(.flexible(), spacing: 10, alignment: .top), count: dynamicTypeSize.isAccessibilitySize ? 1 : 2)
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                ZStack {
+                    Text("New category")
+                        .font(.didSheetTitle)
+                        .foregroundStyle(Color.ink)
+                        .accessibilityAddTraits(.isHeader)
+                    HStack {
+                        RoundIconButton(systemName: "xmark", label: String(localized: "Cancel and go back")) { dismiss() }
+                            .accessibilityIdentifier("templates.close")
+                        Spacer()
+                    }
+                }
+                SectionLabel(title: String(localized: "Start from a template"))
+                LazyVGrid(columns: columns, spacing: 10) {
+                    ForEach(viewModel.items) { item in
+                        TemplateCard(item: item) { onPick(.template(item.template)) }
+                    }
+                }
+                Button { onPick(.scratch) } label: {
+                    Label("Start from scratch", systemImage: "plus")
+                        .font(.didRowTitle)
+                        .foregroundStyle(Color.linkText)
+                        .frame(maxWidth: .infinity, minHeight: 56)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                .strokeBorder(Color.disabledFill, style: StrokeStyle(lineWidth: 2.5, dash: [7, 6]))
+                        }
+                        .contentShape(.rect(cornerRadius: 20))
+                }
+                .buttonStyle(TilePressStyle())
+                .accessibilityIdentifier("templates.scratch")
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 12)
+            .padding(.bottom, 24)
+        }
+        .background(Color.ground)
+        .toolbarVisibility(.hidden, for: .navigationBar)
+        .task { viewModel.load() }
+    }
+}
+
+/// A template: its icon on its colour, name, "Every day · 5 tasks", and "Added" when a category has its name.
+private struct TemplateCard: View {
+    let item: CategoryTemplatesViewModel.Item
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(alignment: .top) {
+                    CategoryBadge(icon: item.template.icon, colour: item.template.colour, size: 40)
+                    Spacer(minLength: 4)
+                    if item.isAdded {
+                        Text("Added")
+                            .font(.didMicro)
+                            .foregroundStyle(Color.muted)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.sand, in: .capsule)
+                    }
+                }
+                Text(item.template.name)
+                    .font(.didBarTitle)
+                    .foregroundStyle(Color.ink)
+                    .multilineTextAlignment(.leading)
+                Text(item.detail)
+                    .font(.didFootnoteRegular)
+                    .foregroundStyle(Color.muted)
+                    .multilineTextAlignment(.leading)
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity, minHeight: 132, alignment: .topLeading)
+            .background(Color.surface, in: .rect(cornerRadius: 22, style: .continuous))
+            .contentShape(.rect(cornerRadius: 22))
+        }
+        .buttonStyle(TilePressStyle())
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("templates.\(item.template.id)")
+    }
+}
