@@ -87,8 +87,9 @@ final class HistoryViewModel {
             if let selected = selectedCategoryID, !categories.contains(where: { $0.id == selected }) { selectedCategoryID = nil }
             let shown = selectedCategoryID.map { id in checks.filter { $0.categoryID == id } } ?? checks
             if let selected = selectedCheckID, !shown.contains(where: { $0.id == selected }) { selectedCheckID = nil }
+            let titles = CheckLabels.titles(for: checks, categories: categories)
             filters = [HistoryFilter(id: nil, title: String(localized: "All"))]
-                + shown.map { HistoryFilter(id: $0.id, title: $0.name) }
+                + shown.map { HistoryFilter(id: $0.id, title: titles[$0.id] ?? $0.name) }
             var logs = try logStore.logs(for: selectedCheckID, limit: Self.limit)
             if selectedCheckID == nil, selectedCategoryID != nil {
                 let ids = Set(shown.map(\.id))

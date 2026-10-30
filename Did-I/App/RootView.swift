@@ -202,7 +202,12 @@ struct RootView: View {
                 onOpenReminders: { path.append(.reminders) }
             )
         case .actionButton:
-            ActionButtonSettingsView(settings: environment.settings, checks: (try? environment.store.checks()) ?? [])
+            let checks = (try? environment.store.checks()) ?? []
+            ActionButtonSettingsView(
+                settings: environment.settings,
+                checks: checks,
+                titles: CheckLabels.titles(for: checks, categories: (try? environment.store.categories()) ?? [])
+            )
         case .categories:
             CategoriesView(
                 viewModel: CategoriesViewModel(

@@ -30,7 +30,7 @@ final class AppEnvironment {
         IntentServices.shared = IntentServices(
             store: store, settings: settings, photos: photos, timeSource: timeSource
         ) { [changes] in changes.didChange() }
-        changes.onChange.append { [store] in ShortcutsIndex.update(with: (try? store.checks()) ?? []) }
+        changes.onChange.append { [store] in ShortcutsIndex.update(from: store) }
         changes.onChange.append { WidgetRefresher.reloadAll() }
         self.reminders = ReminderScheduler()
         self.leaveHome = LeaveHomeMonitor(store: store, settings: settings, scheduler: reminders, timeSource: timeSource)
@@ -46,7 +46,7 @@ final class AppEnvironment {
             leaveHome.update()
         }
         if !configuration.usesInMemoryStore {
-            ShortcutsIndex.update(with: (try? store.checks()) ?? [])
+            ShortcutsIndex.update(from: store)
         }
         changes.startObservingOtherProcesses()
         PhotoRetention.sweep(logs: store, photos: photos, keep: settings.keepPhotos, now: timeSource.now)

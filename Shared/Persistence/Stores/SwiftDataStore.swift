@@ -43,10 +43,11 @@ final class SwiftDataStore: CheckStoring, CategoryStoring, LogStoring {
         return added.map { Self.record($0) }
     }
 
-    /// Inserts checks at the end of `category` without saving.
+    /// Inserts checks at the end of `category` without saving. Names are unique within a category; another
+    /// category can have a task with the same name.
     private func insertChecks(_ drafts: [CheckDraft], into category: CheckCategory) throws -> [Check] {
         let existing = try allCheckModels()
-        var keys = Set(existing.map { CheckName.key($0.name) })
+        var keys = Set(existing.filter { $0.category?.id == category.id }.map { CheckName.key($0.name) })
         var order = (existing.map(\.order).max() ?? -1) + 1
         var added: [Check] = []
         for draft in drafts {

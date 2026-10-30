@@ -163,18 +163,19 @@ struct CategoryEditorViewModelTests {
         #expect(gym.icon == CategoryIcon(symbol: "figure.run"))
     }
 
-    @Test func aTaskInAnotherCategoryMovesHere() throws {
+    @Test func aTaskCanAlsoBeInAnotherCategory() throws {
         let stove = try store.addChecks([CheckDraft(name: "Stove off")])[0]
         _ = try store.log(stove.id, source: .app, at: clock.now, photoFileName: nil)
         let viewModel = editor()
         viewModel.apply(CategoryTemplates.all.first { $0.id == "bedtime" }!)
-        let draft = try #require(viewModel.tasks.first { $0.name == "Stove off" })
-        #expect(viewModel.note(for: draft) == "In Daily · moves here")
+        #expect(names(viewModel).contains("Stove off"))
         #expect(viewModel.save())
         let bedtime = try #require(try store.categories().first { $0.name == "Bedtime" })
-        #expect(try store.check(id: stove.id)?.categoryID == bedtime.id)
+        // Daily keeps its Stove off and its log; Bedtime has its own.
+        #expect(try store.check(id: stove.id)?.categoryID == CategoryDefaults.dailyID)
         #expect(try store.logCount(for: stove.id) == 1)
-        #expect(try store.checks().filter { $0.name == "Stove off" }.count == 1)
+        let stoves = try store.checks().filter { $0.name == "Stove off" }
+        #expect(Set(stoves.map(\.categoryID)) == [CategoryDefaults.dailyID, bedtime.id])
     }
 
     @Test func editingRenamesAndRemovesSavedTasksAfterAsking() throws {

@@ -485,3 +485,16 @@ the palette by position); **app only** (the canvas doesn't show this).
 | **Colour** | The six swatches, then a custom swatch (a rainbow ring) that opens the system colour picker (no opacity). Stored as "#RRGGBB" in the same field (`CategoryColour`); text on it is white or ink, whichever has the better contrast. |
 | **Icons** | The 12 drawn icons, then the chosen library icon, then **More icons**: a sheet of about 160 SF Symbols in 12 groups with search (`IconLibrary`). Stored as "sf:<symbol>" in the same field (`CategoryIcon` is now a struct; old values still read). No migration. |
 | **Proposed** | A template whose name a category already has shows **Added** and opens as "Bin night 2". A template task that already exists in another category reads "In Daily · moves here" and moves on Create rather than being skipped silently. The pushed form has a back button to the templates; Create closes the whole flow. |
+
+## Phase 21 — The same task in more than one category ✅ Done 2026-10-30, merged into main (builds; tests not yet run)
+
+Branch `feature/phase-21-shared-task-names`. The user, 2026-10-30, after the template research: phases 21–24 in
+order. Templates shared task names ("Stove off" in Leaving home and Bedtime), and names were unique across the
+app, so adding one template moved the other's task.
+
+- A task's name is unique **within its category**; another category can have a task of the same name.
+- The Add sheet hides suggestions the **chosen** category already has (switching category updates them).
+- The category editor no longer moves a task from another category ("In Daily · moves here" is gone).
+- Where tasks from every category are listed together, a shared name shows its category: Siri, Shortcuts, Spotlight
+  and the widget picker show it as a subtitle (`CheckEntity.category`), so Siri asks which; the Action Button
+  picker and History's filters read "Stove off · Bedtime" (`CheckLabels`).

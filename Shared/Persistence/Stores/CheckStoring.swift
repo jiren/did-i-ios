@@ -5,8 +5,8 @@ protocol CheckStoring: AnyObject {
     /// Every check in the whole list's order: category order, then each category's order.
     func checks() throws -> [CheckRecord]
     func check(id: UUID) throws -> CheckRecord?
-    /// Adds checks at the end of a category (Daily when nil), skipping empty names and ones that already exist in
-    /// any category.
+    /// Adds checks at the end of a category (Daily when nil), skipping empty names and ones that category already
+    /// has. Another category may have a task with the same name.
     @discardableResult
     func addChecks(_ drafts: [CheckDraft], to categoryID: UUID?) throws -> [CheckRecord]
     func rename(_ id: UUID, to name: String) throws

@@ -1,20 +1,17 @@
 import Foundation
 import Observation
 
-/// A task on New or Edit category, as typed: a new name, a task already in this category, or one moving here from
-/// another category.
+/// A task on New or Edit category, as typed: a new name, or a task already in this category.
 struct TaskDraft: Identifiable, Equatable {
     let id = UUID()
     var name: String
-    /// The saved check it edits or moves, if any.
+    /// The saved check it edits, if any.
     let checkID: UUID?
     /// Its name when loaded, to spot a rename.
     let savedName: String?
-    /// The category it moves from ("Daily"), when it lives elsewhere today.
-    let movesFrom: String?
 
     static func new(_ name: String) -> TaskDraft {
-        TaskDraft(name: name, checkID: nil, savedName: nil, movesFrom: nil)
+        TaskDraft(name: name, checkID: nil, savedName: nil)
     }
 }
 
@@ -60,7 +57,6 @@ final class CategoryEditorViewModel {
     /// Saved tasks of this category taken off the list, removed on save.
     @ObservationIgnored private var removedTasks: [TaskDraft] = []
     @ObservationIgnored private var categories: [CategoryRecord] = []
-    @ObservationIgnored private var checks: [CheckRecord] = []
     @ObservationIgnored private var isLoaded = false
 
     init(
@@ -90,7 +86,7 @@ final class CategoryEditorViewModel {
         guard !isLoaded else { return }
         isLoaded = true
         categories = (try? store.categories()) ?? []
-        checks = (try? store.checks()) ?? []
+        let checks = (try? store.checks()) ?? []
         weekday = today.weekday(in: calendar)
         monthDay = today.day
         date = today.adding(days: 1, calendar: calendar).noon(in: calendar)
@@ -118,7 +114,7 @@ final class CategoryEditorViewModel {
             reminderTime = time(minutes: minutes)
         }
         tasks = checks.filter { $0.categoryID == editedID }.map {
-            TaskDraft(name: $0.name, checkID: $0.id, savedName: $0.name, movesFrom: nil)
+            TaskDraft(name: $0.name, checkID: $0.id, savedName: $0.name)
         }
     }
 
@@ -199,11 +195,6 @@ final class CategoryEditorViewModel {
     /// "Date each year" or "Date".
     var dateLabel: String { repeatKind == .yearly ? String(localized: "Date each year") : String(localized: "Date") }
 
-    /// "In Daily · moves here" for a task that lives in another category.
-    func note(for task: TaskDraft) -> String? {
-        task.movesFrom.map { String(localized: "In \($0) · moves here") }
-    }
-
     // MARK: - Tasks
 
     var canAddTask: Bool { CheckName.cleaned(taskText) != nil }
@@ -220,12 +211,6 @@ final class CategoryEditorViewModel {
         guard !tasks.contains(where: { CheckName.key($0.name) == CheckName.key(name) }) else { return }
         if let removed = removedTasks.firstIndex(where: { CheckName.key($0.name) == CheckName.key(name) }) {
             tasks.append(removedTasks.remove(at: removed))
-            return
-        }
-        if let existing = checks.first(where: { CheckName.key($0.name) == CheckName.key(name) }),
-           existing.categoryID != editedID {
-            let from = categories.first { $0.id == existing.categoryID }?.name ?? CategoryDefaults.dailyName
-            tasks.append(TaskDraft(name: existing.name, checkID: existing.id, savedName: existing.name, movesFrom: from))
         } else {
             tasks.append(.new(name))
         }
@@ -235,7 +220,7 @@ final class CategoryEditorViewModel {
     func removeTask(_ id: UUID) {
         guard let index = tasks.firstIndex(where: { $0.id == id }) else { return }
         let task = tasks.remove(at: index)
-        if task.checkID != nil, task.movesFrom == nil { removedTasks.append(task) }
+        if task.checkID != nil { removedTasks.append(task) }
         removalQuestion = nil
     }
 
@@ -301,7 +286,7 @@ final class CategoryEditorViewModel {
         removalQuestion = nil
     }
 
-    /// Removes, renames, moves and adds tasks, then puts them in the list's order.
+    /// Removes, renames and adds tasks, then puts them in the list's order.
     private func saveTasks(in categoryID: UUID) throws {
         for task in removedTasks {
             if let checkID = task.checkID { try editor.remove(checkID) }
@@ -309,7 +294,6 @@ final class CategoryEditorViewModel {
         removedTasks = []
         for task in namedTasks {
             guard let checkID = task.checkID, let cleaned = CheckName.cleaned(task.name) else { continue }
-            if task.movesFrom != nil { try store.moveCheck(checkID, to: categoryID) }
             if cleaned != task.savedName { try store.rename(checkID, to: cleaned) }
         }
         try store.addChecks(namedTasks.filter { $0.checkID == nil }.map { CheckDraft(name: $0.name) }, to: categoryID)

@@ -62,6 +62,18 @@ struct AddChecksViewModelTests {
         #expect(try store.checks().first?.categoryID == bins.id)
     }
 
+    @Test func suggestionsFollowTheChosenCategory() throws {
+        try store.addChecks([CheckDraft(name: "Car locked")])
+        let bins = try store.addCategory(CategoryDraft(name: "Bin night"), tasks: [])
+        viewModel.load()
+        #expect(!viewModel.chips.contains("Car locked"))
+        viewModel.selectCategory(bins.id)
+        #expect(viewModel.chips.contains("Car locked"))
+        viewModel.toggle("Car locked")
+        #expect(viewModel.commit())
+        #expect(try store.checks().filter { $0.name == "Car locked" }.count == 2)
+    }
+
     @Test func anUnknownCategoryFallsBackToDaily() {
         let sheet = AddChecksViewModel(store: store, changes: changes, categoryID: UUID())
         sheet.load()

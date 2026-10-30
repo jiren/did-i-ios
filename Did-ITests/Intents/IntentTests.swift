@@ -101,6 +101,13 @@ struct IntentPerformTests {
         #expect(suggested.map(\.name) == ["Pill taken", "Plants watered", "Front door locked"])
     }
 
+    @Test func entitiesShowTheirCategory() async throws {
+        let bedtime = try store.addCategory(CategoryDraft(name: "Bedtime"), tasks: [CheckDraft(name: "Front door locked")])
+        let matches = try await CheckEntityQuery().entities(matching: "front door")
+        #expect(matches.count == 2)
+        #expect(Set(matches.compactMap(\.category)) == ["Daily", bedtime.name])
+    }
+
     @Test func checkLoggerDescribesTheLog() throws {
         let logged = try CheckLogger.log(checks[0].id, source: .siri)
         #expect(logged.checkName == "Front door locked")

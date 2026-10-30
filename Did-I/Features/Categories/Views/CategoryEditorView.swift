@@ -142,7 +142,7 @@ struct CategoryEditorView: View {
                     .foregroundStyle(Color.muted)
             }
             ForEach($viewModel.tasks) { $task in
-                CategoryTaskRow(name: $task.name, colour: viewModel.colour, note: viewModel.note(for: task)) {
+                CategoryTaskRow(name: $task.name, colour: viewModel.colour) {
                     viewModel.removeTask(task.id)
                 }
                 .focused($focus, equals: .taskName(task.id))

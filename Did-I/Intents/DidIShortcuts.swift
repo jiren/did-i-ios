@@ -34,9 +34,9 @@ struct DidIShortcuts: AppShortcutsProvider {
 
 /// Keeps Siri's phrase parameters and Spotlight in step with the checks.
 enum ShortcutsIndex {
-    static func update(with checks: [CheckRecord]) {
+    static func update(from store: SwiftDataStore) {
         DidIShortcuts.updateAppShortcutParameters()
-        let entities = checks.map(CheckEntity.init)
+        let entities = (try? CheckEntity.all(from: store)) ?? []
         Task {
             try? await CSSearchableIndex.default().deleteAppEntities(ofType: CheckEntity.self)
             try? await CSSearchableIndex.default().indexAppEntities(entities)

@@ -148,7 +148,7 @@ struct ComponentGallery: View {
         WeekdayPicker(selection: $weekday, colour: colour)
         SectionLabel(title: "Tasks")
         ForEach(["Passport packed", "Charger packed", "Windows closed"], id: \.self) { name in
-            CategoryTaskRow(name: .constant(name), colour: colour, note: name == "Windows closed" ? "In Daily · moves here" : nil) {}
+            CategoryTaskRow(name: .constant(name), colour: colour) {}
         }
         ScrollView(.horizontal) {
             HStack(spacing: 8) {

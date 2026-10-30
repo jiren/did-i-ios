@@ -89,3 +89,19 @@ struct CategoryTemplateTests {
         #expect(rule("trip") == .once(CalendarDay(year: 2026, month: 10, day: 30)))
     }
 }
+
+struct CheckLabelsTests {
+    @Test func aSharedNameNamesItsCategory() {
+        let bedtime = CategoryRecord(id: UUID(), name: "Bedtime", icon: .home, colour: .violet, rule: .daily, order: 1, isDefault: false)
+        let daily = CategoryRecord(id: CategoryDefaults.dailyID, name: "Daily", icon: .sun, colour: .violet, rule: .daily, order: 0, isDefault: true)
+        let checks = [
+            CheckRecord(id: UUID(), name: "Stove off", kind: .stove, order: 0, categoryID: daily.id, nudgesOnLeavingHome: false),
+            CheckRecord(id: UUID(), name: "stove off", kind: .stove, order: 1, categoryID: bedtime.id, nudgesOnLeavingHome: false),
+            CheckRecord(id: UUID(), name: "Pill taken", kind: .pill, order: 2, categoryID: daily.id, nudgesOnLeavingHome: false),
+        ]
+        let titles = CheckLabels.titles(for: checks, categories: [daily, bedtime])
+        #expect(titles[checks[0].id] == "Stove off · Daily")
+        #expect(titles[checks[1].id] == "stove off · Bedtime")
+        #expect(titles[checks[2].id] == "Pill taken")
+    }
+}

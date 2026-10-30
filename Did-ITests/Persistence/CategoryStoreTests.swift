@@ -43,8 +43,10 @@ struct CategoryStoreTests {
         #expect(bins.rule == .weekly(weekday: 6))
         #expect(bins.reminderMinutes == 20 * 60)
         #expect(bins.order == 1)
-        // "bins out" is already in Daily, so only Recycling out joins.
-        #expect(try store.checks().filter { $0.categoryID == bins.id }.map(\.name) == ["Recycling out"])
+        // Names are unique within a category: "bins out" joins although Daily has "Bins out".
+        #expect(try store.checks().filter { $0.categoryID == bins.id }.map(\.name) == ["Recycling out", "bins out"])
+        try store.addChecks([CheckDraft(name: "Recycling OUT")], to: bins.id)
+        #expect(try store.checks().filter { $0.categoryID == bins.id }.count == 2)
         #expect(try store.category(id: bins.id) == bins)
     }
 

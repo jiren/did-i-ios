@@ -4,6 +4,8 @@ import SwiftUI
 struct ActionButtonSettingsView: View {
     @Bindable var settings: AppSettings
     let checks: [CheckRecord]
+    /// "Stove off · Bedtime" where two categories share a name.
+    var titles: [UUID: String] = [:]
 
     var body: some View {
         ScrollView {
@@ -23,7 +25,7 @@ struct ActionButtonSettingsView: View {
                     ) { settings.actionButtonCheckID = nil }
                     ForEach(Array(checks.enumerated()), id: \.element.id) { position, check in
                         option(
-                            title: check.name,
+                            title: titles[check.id] ?? check.name,
                             hint: String(localized: "Logs straight away"),
                             swatch: TileSwatch.at(position: position),
                             isSelected: selectedID == check.id

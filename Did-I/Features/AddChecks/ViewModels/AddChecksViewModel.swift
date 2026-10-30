@@ -15,7 +15,7 @@ final class AddChecksViewModel {
     @ObservationIgnored private let store: any CheckStoring & CategoryStoring
     @ObservationIgnored private let changes: any ChangeNotifying
     @ObservationIgnored private var customs: [String] = []
-    @ObservationIgnored private var existingNames: [String] = []
+    @ObservationIgnored private var checks: [CheckRecord] = []
 
     /// Opens on `categoryID`, or Daily when nil.
     init(store: any CheckStoring & CategoryStoring, changes: any ChangeNotifying, categoryID: UUID? = nil) {
@@ -25,14 +25,21 @@ final class AddChecksViewModel {
     }
 
     func load() {
-        existingNames = (try? store.checks().map(\.name)) ?? []
+        checks = (try? store.checks()) ?? []
         categories = (try? store.categories()) ?? []
         if !categories.contains(where: { $0.id == categoryID }) { categoryID = CategoryDefaults.dailyID }
         rebuildChips()
     }
 
+    /// Suggestions follow the category: a name it already has is hidden.
     func selectCategory(_ id: UUID) {
         categoryID = id
+        rebuildChips()
+    }
+
+    /// The names the chosen category already has.
+    private var existingNames: [String] {
+        checks.filter { $0.categoryID == categoryID }.map(\.name)
     }
 
     private var categoryName: String {

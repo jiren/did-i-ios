@@ -27,3 +27,17 @@ nonisolated enum CheckName {
         name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
     }
 }
+
+/// What to call a task where tasks from every category are listed together.
+nonisolated enum CheckLabels {
+    /// "Stove off", or "Stove off · Bedtime" when another category has a task with the same name.
+    static func titles(for checks: [CheckRecord], categories: [CategoryRecord]) -> [UUID: String] {
+        let names = Dictionary(categories.map { ($0.id, $0.name) }, uniquingKeysWith: { first, _ in first })
+        let counts = Dictionary(grouping: checks, by: { CheckName.key($0.name) }).mapValues(\.count)
+        return Dictionary(uniqueKeysWithValues: checks.map { check in
+            let isShared = (counts[CheckName.key(check.name)] ?? 0) > 1
+            let category = names[check.categoryID] ?? CategoryDefaults.dailyName
+            return (check.id, isShared ? String(localized: "\(check.name) · \(category)") : check.name)
+        })
+    }
+}

@@ -163,27 +163,20 @@ struct WeekdayPicker: View {
     }
 }
 
-/// A task on New category: a dot in the category's colour, its name to edit in place, an optional note ("In Daily ·
-/// moves here") and a remove button.
+/// A task on New category: a dot in the category's colour, its name to edit in place, and a remove button.
 struct CategoryTaskRow: View {
     @Binding var name: String
     let colour: CategoryColour
-    var note: String?
     let onRemove: () -> Void
 
     var body: some View {
         HStack(spacing: 12) {
             Circle().fill(colour.background).frame(width: 10, height: 10).accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: 0) {
-                TextField(String(localized: "Task"), text: $name)
-                    .font(.didRowTitle)
-                    .submitLabel(.done)
-                    .accessibilityIdentifier("category.taskName.\(name)")
-                if let note {
-                    Text(note).font(.didFootnoteRegular).foregroundStyle(Color.muted)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            TextField(String(localized: "Task"), text: $name)
+                .font(.didRowTitle)
+                .submitLabel(.done)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityIdentifier("category.taskName.\(name)")
             Button(action: onRemove) {
                 Image(systemName: "xmark")
                     .font(.system(size: 14, weight: .bold))
