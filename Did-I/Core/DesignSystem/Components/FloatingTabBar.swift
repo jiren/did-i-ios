@@ -45,6 +45,8 @@ struct FloatingTabBar: View {
                 }
                 Text(title)
                     .font(isSelected ? .didEmphasis : .didSubheadline)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
             }
             .foregroundStyle(isSelected ? Color.onTile : Color.onChromeMuted)
             .padding(.leading, tab == .today && todayProgress != nil ? 12 : 18)

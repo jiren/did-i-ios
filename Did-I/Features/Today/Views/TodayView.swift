@@ -81,7 +81,6 @@ struct TodayView: View {
             VStack(alignment: .leading, spacing: 0) {
                 TodayHeader(dateText: viewModel.dateText, onSettings: actions.openSettings)
                 DayStrip(days: viewModel.strip, onSelect: viewModel.select)
-                    .padding(.horizontal, 20)
                     .padding(.top, 18)
                 CategoryFilter(
                     categories: viewModel.categories,

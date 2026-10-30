@@ -1,20 +1,36 @@
 import SwiftUI
 import TipKit
 
-/// The seven days from today.
+/// The seven days from today: one row as drawn, scrolling sideways at accessibility text sizes.
 struct DayStrip: View {
     let days: [DayAgenda.StripDay]
     let onSelect: (CalendarDay) -> Void
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     var body: some View {
-        HStack(spacing: 6) {
-            ForEach(days) { day in
-                DayStripCell(day: day) { onSelect(day.day) }
-                    .accessibilityIdentifier("strip.\(day.isToday ? "today" : "\(day.dayNumber)")")
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                ScrollView(.horizontal) {
+                    cells.padding(.horizontal, 20)
+                }
+                .scrollIndicators(.hidden)
+            } else {
+                cells.padding(.horizontal, 20)
             }
         }
         .accessibilityElement(children: .contain)
         .accessibilityLabel(Text("Pick a day"))
+    }
+
+    private var cells: some View {
+        HStack(spacing: 6) {
+            ForEach(days) { day in
+                DayStripCell(day: day) { onSelect(day.day) }
+                    .frame(width: dynamicTypeSize.isAccessibilitySize ? 104 : nil)
+                    .accessibilityIdentifier("strip.\(day.isToday ? "today" : "\(day.dayNumber)")")
+            }
+        }
     }
 }
 
@@ -85,11 +101,13 @@ struct TodaySectionView<Menu: View>: View {
     let onDelete: (UUID) -> Void
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @State private var width: CGFloat = 350
 
-    /// Three columns as drawn, two at the first accessibility sizes, one beyond.
+    /// Three columns as drawn, more on a wide column (iPad, landscape: about 130 pt a tile), two at the first
+    /// accessibility sizes, one beyond.
     private var columns: [GridItem] {
         let count = switch dynamicTypeSize {
-        case ..<DynamicTypeSize.accessibility1: 3
+        case ..<DynamicTypeSize.accessibility1: max(3, Int(width / 130))
         case ..<DynamicTypeSize.accessibility3: 2
         default: 1
         }
@@ -122,6 +140,7 @@ struct TodaySectionView<Menu: View>: View {
                 }
                 AddTaskTile(category: section.category, action: onAdd)
             }
+            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
         }
         .accessibilityElement(children: .contain)
         .accessibilityLabel(section.category.name)
