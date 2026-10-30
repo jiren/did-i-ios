@@ -1,14 +1,14 @@
 import SwiftUI
 
-/// Settings › Categories: tap to edit, drag to reorder, swipe to delete (never Daily).
-struct CategoriesSettingsView: View {
-    @State private var viewModel: CategoriesSettingsViewModel
+/// Categories, from Today's header: tap to edit, drag to reorder, swipe to delete (never Daily).
+struct CategoriesView: View {
+    @State private var viewModel: CategoriesViewModel
     let onNew: () -> Void
     let onEdit: (UUID) -> Void
 
     @Environment(StoreChangeHub.self) private var changes
 
-    init(viewModel: @autoclosure () -> CategoriesSettingsViewModel, onNew: @escaping () -> Void, onEdit: @escaping (UUID) -> Void) {
+    init(viewModel: @autoclosure () -> CategoriesViewModel, onNew: @escaping () -> Void, onEdit: @escaping (UUID) -> Void) {
         _viewModel = State(initialValue: viewModel())
         self.onNew = onNew
         self.onEdit = onEdit
@@ -17,7 +17,7 @@ struct CategoriesSettingsView: View {
     var body: some View {
         List {
             Section {
-                ScreenHeader(backTitle: String(localized: "Settings"), title: String(localized: "Categories"))
+                ScreenHeader(backTitle: String(localized: "Today"), title: String(localized: "Categories"))
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
             }
@@ -56,7 +56,7 @@ struct CategoriesSettingsView: View {
         .categoryDeletion($viewModel.deletion, onDelete: viewModel.delete)
     }
 
-    private func rowView(_ row: CategoriesSettingsViewModel.Row) -> some View {
+    private func rowView(_ row: CategoriesViewModel.Row) -> some View {
         Button { onEdit(row.id) } label: {
             HStack(spacing: 12) {
                 CategoryBadge(icon: row.category.icon, colour: row.category.colour, size: 36, cornerRadius: 12)

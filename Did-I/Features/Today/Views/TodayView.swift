@@ -27,25 +27,15 @@ struct TodayView: View {
     }
 
     var body: some View {
-        ScrollView {
-            if viewModel.isEmpty {
-                VStack(alignment: .leading, spacing: 0) {
-                    TodayHeader(dateText: viewModel.dateText, onSettings: actions.openSettings)
-                    TodayEmptyState(onAdd: { actions.addChecks(nil) })
-                        .padding(.horizontal, 20)
-                        .padding(.top, 22)
+        ScrollViewReader { scroller in
+            scrollView
+                .safeAreaInset(edge: .bottom) {
+                    bottomBar {
+                        viewModel.showToday()
+                        withAnimation(reduceMotion ? nil : .snappy) { scroller.scrollTo(Self.topID, anchor: .top) }
+                    }
                 }
-            } else {
-                calendar
-            }
         }
-        .scrollIndicators(.hidden)
-        .onScrollGeometryChange(for: Bool.self) { geometry in
-            geometry.contentOffset.y + geometry.contentInsets.top > headerHeight
-        } action: { _, isStuck in
-            isBarStuck = isStuck
-        }
-        .safeAreaInset(edge: .bottom) { bottomBar }
         .background(Color.ground)
         .toolbarVisibility(.hidden, for: .navigationBar)
         .sensoryFeedback(.success, trigger: viewModel.logCount)
@@ -76,10 +66,39 @@ struct TodayView: View {
         )
     }
 
+    /// The scroll position Today goes back to.
+    private static let topID = "today.top"
+
+    private var header: some View {
+        TodayHeader(dateText: viewModel.dateText, onCategories: actions.openCategories, onSettings: actions.openSettings)
+            .id(Self.topID)
+    }
+
+    private var scrollView: some View {
+        ScrollView {
+            if viewModel.isEmpty {
+                VStack(alignment: .leading, spacing: 0) {
+                    header
+                    TodayEmptyState(onAdd: { actions.addChecks(nil) })
+                        .padding(.horizontal, 20)
+                        .padding(.top, 22)
+                }
+            } else {
+                calendar
+            }
+        }
+        .scrollIndicators(.hidden)
+        .onScrollGeometryChange(for: Bool.self) { geometry in
+            geometry.contentOffset.y + geometry.contentInsets.top > headerHeight
+        } action: { _, isStuck in
+            isBarStuck = isStuck
+        }
+    }
+
     private var calendar: some View {
         LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
             VStack(alignment: .leading, spacing: 0) {
-                TodayHeader(dateText: viewModel.dateText, onSettings: actions.openSettings)
+                header
                 DayStrip(days: viewModel.strip, onSelect: viewModel.select)
                     .padding(.top, 18)
                 CategoryFilter(
@@ -109,6 +128,7 @@ struct TodayView: View {
         VStack(alignment: .leading, spacing: 26) {
             TipView(EditTileTip())
                 .tipBackground(Color.surface)
+                .autoDismissing(EditTileTip())
             ForEach(viewModel.sections) { section in
                 TodaySectionView(
                     section: section,
@@ -178,7 +198,7 @@ struct TodayView: View {
         } label: { Label("Remove", systemImage: "trash") }
     }
 
-    private var bottomBar: some View {
+    private func bottomBar(onSelectToday: @escaping () -> Void) -> some View {
         VStack(spacing: 12) {
             if let toast = viewModel.toast {
                 UndoToast(message: toast.message, onUndo: viewModel.undo)
@@ -189,6 +209,7 @@ struct TodayView: View {
                 selection: $tab,
                 todayProgress: viewModel.isEmpty ? nil : viewModel.todayProgress,
                 todayAccessibilityLabel: viewModel.isEmpty ? nil : viewModel.ringAccessibilityLabel,
+                onSelectToday: onSelectToday,
                 onAdd: { actions.addChecks(viewModel.addTarget) }
             )
         }
@@ -203,6 +224,7 @@ struct TodayActions {
     /// Opens the Add sheet on a category (Daily when nil).
     var addChecks: (UUID?) -> Void = { _ in }
     var openSettings: () -> Void = {}
+    var openCategories: () -> Void = {}
     var openCheck: (UUID) -> Void = { _ in }
     var newCategory: () -> Void = {}
     var editCategory: (UUID) -> Void = { _ in }

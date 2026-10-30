@@ -91,8 +91,8 @@ others ("Add checks", "3 checks planned"); the copy is ported as written, and th
 | **Undo toast** | Unchanged: "Logged · {name}" / "Photo saved · {name}" with Undo for 5 s, the 10 s refresh rule, a haptic. |
 | **Add sheet** | From the design: title "Add to {Category}", "Pick as many as you like.", an **Add to** row of category chips (the selected one filled with its colour), suggestion chips (Car locked, Tap off, Back door locked, Hair tool off, Lights off, Garage shut, Heater off, Keys packed, hiding names that exist in any category), "Something else?" with Add, and the button "Pick at least one" (disabled) / "Add 1 task to {Category}" / "Add {n} tasks to {Category}". It opens on the filtered category, the section's category (Add task), or Daily. A task's kind (its icon) still follows its name. |
 | **New category** | From `NewCategory.dc.html`: a full-screen page with a close (×) button and "New category": a live **preview card** in the chosen colour (icon, name or "New category", the repeat summary, "{n} tasks · Reminder at 8:00 PM"); **Name** ("e.g. Travel, Gym, Leaving work"); **Icon** (a 6-column grid); **Colour** (six swatches); **Repeat** chips with "On" weekday buttons (Weekly, Every 2 weeks), "Day of the month" (Monthly), or a date ("Date each year" / "Date"); **Tasks** (each with a colour dot and a remove button, plus "Add a task, e.g. Passport packed" and +); **Remind me at**; and **Create category**. Proposed: Create is disabled until there's a name; a name already used (ignoring case) is refused; the reminder is off until a time is set (the design's 8 PM is the time it starts at when turned on); the date picker defaults to the next matching day. |
-| **Manage categories** | Proposed (missing from the design): the same page as **Edit category** (Save instead of Create), opened from a filter chip's or a section header's context menu (Edit, Delete) and from **Settings › Categories**, a list to edit and drag to reorder. A task moves to another category from its tile's context menu and from Detail (**Category**). |
-| **Delete a category** | 2026-10-30, the user: **ask each time**: the confirmation offers "Delete category and its {n} tasks" (their logs and photos go too) or "Move {n} tasks to Daily". The default category can't be deleted. Proposed: a one-off ("On a date") category stays after its date: off Today, listed under **Past** in Settings › Categories until deleted. |
+| **Manage categories** | Proposed (missing from the design): the same page as **Edit category** (Save instead of Create), opened from a filter chip's or a section header's context menu (Edit, Delete) and from **Categories** (2026-10-30, the user: a button beside Settings at the top right of Today, no longer in Settings), a list to edit and drag to reorder. A task moves to another category from its tile's context menu and from Detail (**Category**). |
+| **Delete a category** | 2026-10-30, the user: **ask each time**: the confirmation offers "Delete category and its {n} tasks" (their logs and photos go too) or "Move {n} tasks to Daily". The default category can't be deleted. Proposed: a one-off ("On a date") category stays after its date: off Today, listed under **Past** in Categories until deleted. |
 | **Category reminders** | 2026-10-30, the user: **category only**: one reminder per category at its time on each due day, only if a task in it isn't logged that day ("Bin night — 2 left: Bins out, Recycling out"). The per-check reminder goes (the Detail row too); the migration gives Daily the earliest existing per-check reminder time. The budget (60 of iOS's 64), the background refresh and removal once the category is done carry over. Proposed: **Log it** shows only when one task is left; with more, a tap opens Today filtered to that category. |
 | **Other surfaces** | Proposed: **widgets** keep showing one check's latest log (the medium widget shows the first four tasks due today); **Siri**'s "Did I…?" answers "Not due today. Last done Friday, 7:05 AM" for a task not due; **Ask me which** lists today's due tasks first; the **leave-home nudge** counts only tasks due today; **History** gains a category filter. Detail, Logged, the Lock Screen and the Action Button page are unchanged in the design. |
 | **Data model** | Proposed: `SchemaV2` adds `CheckCategory` (id, name, icon, colour, repeat kind, weekday, year, month, day, reminder minutes, order, isDefault, timestamps) and `Check.category`, and drops `Check.reminderMinutes`, with a **custom migration stage** from V1: create Daily, put every check in it, and move the earliest reminder time to Daily. Stores hand out `CategoryRecord`s, as they do `CheckRecord`s. 2026-10-30, while building: the model is `CheckCategory`, because `Category` clashes with the Objective-C runtime's type of that name; Daily has a fixed id, so the app, the widget extension and the migration agree on it; days in rules are stored as calendar dates (year, month, day), not `Date`s, so a time-zone change can't move them; the category colour is a `TileSwatch`. |
@@ -430,3 +430,26 @@ catalog was empty (Xcode fills it only when building in the IDE), so it was sync
 extracted strings with `xcstringstool sync` (338 strings, no DEBUG ones), with English plural variants for the
 task, check, log and "left" counts. Screenshots: `design/review/today-{light,dark,ax}.png`,
 `new-category-{light,dark}.png`, `ipad-split.png`.
+
+## Follow-ups (2026-10-30, the user)
+
+Branch `feature/today-tab-and-categories-button`.
+
+- **The Today tab goes back to today.** Tapping **Today** in the floating bar, even while Today is showing,
+  selects today, clears the category filter and scrolls back to the top.
+- **Categories sits beside Settings.** A round Categories button (`square.grid.2x2.fill`) at the top right of
+  Today opens the categories list (edit, reorder, delete, Past). It's gone from Settings, and the screen is now
+  `CategoriesView` with "Today" as its back title.
+- **Tips go away on their own.** "Hold a tile to change it" and "Group your checks" hide about 5 seconds after
+  they first show, for good (`autoDismissing(_:after:)` in `DidITips.swift`). Proposed, taken without asking: not
+  while VoiceOver is running, so a tip can't vanish before it's read.
+
+Found while testing these (fixed on the same branch):
+- **Add task opened the sheet on Daily.** The sheet was `.sheet(isPresented:)` reading a category set in the same
+  tap; it's now `.sheet(item:)` with an `AddChecksRequest` that carries the category.
+- **Create category covered the field being typed.** While a field has focus, the floating Create button hides
+  and a **Done** button sits above the keyboard (it also adds a task still being typed); return in the task field
+  keeps you typing tasks.
+- **Test fixes.** The full run on 2026-10-30 went 169 passed, 4 failed, 1 skipped. The failures were a spliced
+  nudge test, a timing-sensitive toast test, and two category UI tests that tapped under the tab bar or the
+  keyboard. Those tests have been fixed and pass when rerun on their own.

@@ -1,9 +1,9 @@
 import Foundation
 import Observation
 
-/// Settings › Categories: every category to edit, reorder or delete, with one-offs whose date has gone under Past.
+/// Categories: every category to edit, reorder or delete, with one-offs whose date has gone under Past.
 @Observable
-final class CategoriesSettingsViewModel {
+final class CategoriesViewModel {
     struct Row: Identifiable, Equatable {
         var category: CategoryRecord
         /// "Every Friday · 2 tasks".

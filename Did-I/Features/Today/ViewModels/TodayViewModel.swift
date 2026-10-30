@@ -146,6 +146,13 @@ final class TodayViewModel {
         rebuild()
     }
 
+    /// The Today tab: today, every category.
+    func showToday() {
+        selectedDay = nil
+        filterID = nil
+        rebuild()
+    }
+
     /// Nil shows every category.
     func selectFilter(_ categoryID: UUID?) {
         filterID = categoryID

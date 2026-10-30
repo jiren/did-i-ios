@@ -135,15 +135,15 @@ struct CategoryEditorViewModelTests {
 }
 
 @MainActor
-struct CategoriesSettingsViewModelTests {
+struct CategoriesViewModelTests {
     private let clock = FixedTimeSource(TestTime.date(2026, 10, 29, 10, 42))
     private let store: SwiftDataStore
     private let changes = ChangeSpy()
-    private let viewModel: CategoriesSettingsViewModel
+    private let viewModel: CategoriesViewModel
 
     init() throws {
         store = SwiftDataStore(container: try .app(inMemory: true), timeSource: clock)
-        viewModel = CategoriesSettingsViewModel(
+        viewModel = CategoriesViewModel(
             store: store, editor: CategoryEditor(store: store, changes: changes, photos: nil), days: FixedDays(),
             timeSource: clock, locale: Locale(identifier: "en_US")
         )

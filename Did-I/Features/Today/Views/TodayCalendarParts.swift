@@ -64,6 +64,7 @@ struct CategoryFilter: View {
                 if let onNew {
                     NewCategoryChip(action: onNew)
                         .popoverTip(NewCategoryTip())
+                        .autoDismissing(NewCategoryTip())
                         .accessibilityIdentifier("filter.newCategory")
                 }
             }

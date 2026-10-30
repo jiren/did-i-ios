@@ -1,6 +1,6 @@
 import Foundation
 
-/// Delete and reorder categories and move tasks between them; shared by Today, Detail and Settings › Categories.
+/// Delete and reorder categories and move tasks between them; shared by Today, Detail and Categories.
 final class CategoryEditor {
     private let store: any CheckStoring & CategoryStoring
     private let changes: any ChangeNotifying

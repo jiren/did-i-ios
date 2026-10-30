@@ -18,6 +18,34 @@ struct NewCategoryTip: Tip {
     var rules: [Rule] { [#Rule(Self.$taskCount) { $0 >= 3 }] }
 }
 
+/// Hides a tip a few seconds after it first shows, for good: tips are one-time hints. Not while VoiceOver is
+/// running, so it can't vanish before it's read; the × or the tip's action still dismiss it.
+struct AutoDismissingTip<T: Tip>: ViewModifier {
+    let tip: T
+    let delay: Duration
+
+    @Environment(\.accessibilityVoiceOverEnabled) private var isVoiceOverOn
+
+    func body(content: Content) -> some View {
+        content.task(id: isVoiceOverOn) {
+            guard !isVoiceOverOn else { return }
+            // Wait until the tip is actually showing, so a tip whose rules haven't passed isn't used up.
+            for await shouldDisplay in tip.shouldDisplayUpdates where shouldDisplay {
+                try? await Task.sleep(for: delay)
+                guard !Task.isCancelled else { return }
+                tip.invalidate(reason: .displayCountExceeded)
+                return
+            }
+        }
+    }
+}
+
+extension View {
+    func autoDismissing<T: Tip>(_ tip: T, after delay: Duration = .seconds(5)) -> some View {
+        modifier(AutoDismissingTip(tip: tip, delay: delay))
+    }
+}
+
 enum DidITips {
     static func configure(forTesting: Bool) {
         if forTesting { Tips.hideAllTipsForTesting() }

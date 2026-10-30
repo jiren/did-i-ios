@@ -67,7 +67,7 @@ struct RemindersSettingsView: View {
                 }
                 section(
                     String(localized: "Category reminders"),
-                    footer: String(localized: "Each category reminds you on the days it’s due, only if something in it isn’t logged. Set its time in Settings › Categories.")
+                    footer: String(localized: "Each category reminds you on the days it’s due, only if something in it isn’t logged. Set its time on the category’s page (the Categories button on Today).")
                 ) {
                     lines(viewModel.reminderLines)
                 }

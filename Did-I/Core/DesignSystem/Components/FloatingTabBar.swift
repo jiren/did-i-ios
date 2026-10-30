@@ -11,6 +11,8 @@ struct FloatingTabBar: View {
     var todayProgress: Double?
     /// "Today: 4 of 8 checked".
     var todayAccessibilityLabel: String?
+    /// Every tap on Today, including when it's already selected (Today goes back to today).
+    var onSelectToday: (() -> Void)?
     let onAdd: () -> Void
 
     var body: some View {
@@ -38,6 +40,7 @@ struct FloatingTabBar: View {
         let isSelected = selection == tab
         return Button {
             selection = tab
+            if tab == .today { onSelectToday?() }
         } label: {
             HStack(spacing: 8) {
                 if tab == .today, let todayProgress {

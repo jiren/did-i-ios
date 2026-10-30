@@ -43,6 +43,19 @@ final class TodayUITests: XCTestCase {
     }
 
     @MainActor
+    func testTappingTodayReturnsToToday() throws {
+        let app = XCUIApplication.launched(arguments: ["-SeedSample"])
+        let tile = app.buttons["tile.Iron unplugged"]
+        XCTAssertTrue(tile.waitForExistence(timeout: 5))
+        app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'strip.' AND identifier != 'strip.today'"))
+            .element(boundBy: 0).tap()
+        XCTAssertTrue(tile.label.contains("upcoming"))
+        app.buttons["tabbar.today"].tap()
+        XCTAssertTrue(tile.label.contains("not logged"))
+        XCTAssertTrue(app.buttons["tile.Bins out"].exists)
+    }
+
+    @MainActor
     func testFilteringByACategory() throws {
         let app = XCUIApplication.launched(arguments: ["-SeedSample"])
         XCTAssertTrue(app.buttons["tile.Bins out"].waitForExistence(timeout: 5))

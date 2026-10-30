@@ -1,8 +1,9 @@
 import SwiftUI
 
-/// The date line, Settings and the "Did I?" title.
+/// The date line, Categories and Settings, and the "Did I?" title.
 struct TodayHeader: View {
     let dateText: String
+    let onCategories: () -> Void
     let onSettings: () -> Void
 
     var body: some View {
@@ -13,8 +14,12 @@ struct TodayHeader: View {
                     .foregroundStyle(Color.muted)
                     .accessibilityIdentifier("today.date")
                 Spacer()
-                RoundIconButton(systemName: "gearshape.fill", label: String(localized: "Settings"), action: onSettings)
-                    .accessibilityIdentifier("today.settings")
+                HStack(spacing: 10) {
+                    RoundIconButton(systemName: "square.grid.2x2.fill", label: String(localized: "Categories"), action: onCategories)
+                        .accessibilityIdentifier("today.categories")
+                    RoundIconButton(systemName: "gearshape.fill", label: String(localized: "Settings"), action: onSettings)
+                        .accessibilityIdentifier("today.settings")
+                }
             }
             Text("Did I?")
                 .font(.didHero)
