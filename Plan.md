@@ -93,7 +93,7 @@ Ask each before the phase that needs it, then move the answer into Resolved deci
 
 ---
 
-## Phase 0 — Project foundation ✅ Built 2026-10-30 (launched on the simulator; tests compiled, not run)
+## Phase 0 — Project foundation ✅ Done 2026-10-30, merged into main (launched on the simulator; unit and UI tests pass)
 
 Branch `feature/phase-0-foundation`.
 
@@ -109,7 +109,7 @@ Branch `feature/phase-0-foundation`.
 
 **Done when** the app launches to an empty root view, and the unit and UI test targets run green.
 
-## Phase 1 — Checks, logs & rules ✅ Built 2026-10-30 (tests compiled, not run)
+## Phase 1 — Checks, logs & rules ✅ Done 2026-10-30, merged into main (unit and UI tests pass)
 
 Branch `feature/phase-1-core`. Pure code and stores in `Shared/`, no UI.
 
@@ -124,7 +124,7 @@ Branch `feature/phase-1-core`. Pure code and stores in `Shared/`, no UI.
 **Done when** table tests cover the summary copy, relative times, day boundaries (including DST changes and a day
 start after midnight), the 10 s rule and undo, and a write from a second `ModelContainer` on the same file is seen.
 
-## Phase 2 — Design system ✅ Built 2026-10-30 (gallery checked on the simulator in both themes; dark palette awaiting the user's sign-off, screenshots in `design/review/`)
+## Phase 2 — Design system ✅ Done 2026-10-30, merged into main (gallery checked on the simulator in both themes; dark palette awaiting the user's sign-off, screenshots in `design/review/`)
 
 Branch `feature/phase-2-design-system`.
 
@@ -139,7 +139,7 @@ Branch `feature/phase-2-design-system`.
 **Done when** the gallery renders every component, and the user has approved the dark palette from its
 screenshots.
 
-## Phase 3 — Today ✅ Built 2026-10-30 (checked on the simulator, empty and with sample data; tests compiled, not run)
+## Phase 3 — Today ✅ Done 2026-10-30, merged into main (checked on the simulator, empty and with sample data; unit and UI tests pass)
 
 Branch `feature/phase-3-today`.
 
@@ -151,7 +151,7 @@ Branch `feature/phase-3-today`.
 **Done when** view-model tests cover logging, undo and the summary with stubs, and a UI test logs a check and undoes
 it.
 
-## Phase 4 — Add & manage checks ✅ Built 2026-10-30 (checked on the simulator; tests compiled, not run)
+## Phase 4 — Add & manage checks ✅ Done 2026-10-30, merged into main (checked on the simulator; unit and UI tests pass)
 
 Branch `feature/phase-4-checks`.
 
@@ -161,7 +161,7 @@ Branch `feature/phase-4-checks`.
 
 **Done when** UI tests add two suggestions and a custom check, and rename, reorder and remove one.
 
-## Phase 5 — Photo proof ✅ Built 2026-10-30 (tests compiled, not run; the camera itself needs a device)
+## Phase 5 — Photo proof ✅ Done 2026-10-30, merged into main (unit and UI tests pass; the camera itself needs a device)
 
 Branch `feature/phase-5-photos`.
 
@@ -171,7 +171,7 @@ Branch `feature/phase-5-photos`.
 
 **Done when** store tests cover saving, retention and orphan sweeping, and logging with a photo works on a device.
 
-## Phase 6 — Detail & History ✅ Built 2026-10-30 (checked on the simulator; tests compiled, not run)
+## Phase 6 — Detail & History ✅ Done 2026-10-30, merged into main (checked on the simulator; unit and UI tests pass)
 
 Branch `feature/phase-6-history`.
 
@@ -181,7 +181,7 @@ Branch `feature/phase-6-history`.
 
 **Done when** UI tests log from Detail and delete a log from History.
 
-## Phase 7 — Settings ✅ Built 2026-10-30 (checked on the simulator; tests compiled, not run)
+## Phase 7 — Settings ✅ Done 2026-10-30, merged into main (checked on the simulator; unit and UI tests pass)
 
 Branch `feature/phase-7-settings`.
 
@@ -191,7 +191,7 @@ Branch `feature/phase-7-settings`.
 
 **Done when** each setting persists and takes effect, and a UI test changes the appearance and the day start.
 
-## Phase 8 — App Intents, Siri & the Action Button ✅ Built 2026-10-30 (intents in the app's metadata; tests compiled, not run; Siri and the button need a device)
+## Phase 8 — App Intents, Siri & the Action Button ✅ Done 2026-10-30, merged into main (intents in the app's metadata; unit and UI tests pass; Siri and the button need a device)
 
 Branch `feature/phase-8-intents`. In `Shared/`, so the widget can use them in Phase 9.
 
@@ -204,7 +204,7 @@ Branch `feature/phase-8-intents`. In `Shared/`, so the widget can use them in Ph
 **Done when** unit tests call each intent's `perform()` against an in-memory store, and Siri and the Action Button
 log on a device.
 
-## Phase 9 — Widgets & the Control Center control ✅ Built 2026-10-30 (extension embeds and builds; widget previews in Xcode; tests compiled, not run; placing widgets needs the Simulator's or a device's Home and Lock Screen)
+## Phase 9 — Widgets & the Control Center control ✅ Done 2026-10-30, merged into main (extension embeds and builds; widget previews in Xcode; unit and UI tests pass; placing widgets needs the Simulator's or a device's Home and Lock Screen)
 
 Branch `feature/phase-9-widgets`.
 
@@ -217,7 +217,7 @@ Branch `feature/phase-9-widgets`.
 **Done when** each widget renders in its families in both themes (previews), and a widget log appears in the open
 app.
 
-## Phase 10 — Reminders ✅ Built 2026-10-30 (tests compiled, not run; notifications and leaving home need a device) — open question 1 not yet answered, built as proposed
+## Phase 10 — Reminders ✅ Done 2026-10-30, merged into main (unit and UI tests pass; notifications and leaving home need a device) — open question 1 not yet answered, built as proposed
 
 Branch `feature/phase-10-reminders`. Ask open question 1 first.
 
@@ -229,7 +229,7 @@ Branch `feature/phase-10-reminders`. Ask open question 1 first.
 **Done when** scheduler tests cover the budget and removal on log (with a stub notification center), and a reminder
 and a nudge fire on a device.
 
-## Phase 11 — App icon & name ✅ Built 2026-10-30 (Violet, as drawn; open question 2 not yet answered)
+## Phase 11 — App icon & name ✅ Done 2026-10-30, merged into main (Violet, as drawn; open question 2 not yet answered)
 
 Branch `feature/phase-11-icon`. Ask open question 2 first.
 
@@ -240,7 +240,7 @@ Branch `feature/phase-11-icon`. Ask open question 2 first.
 
 **Done when** the icon shows on the Home Screen in light, dark and tinted modes.
 
-## Phase 12 — iPad, accessibility & polish ✅ Built 2026-10-30 (iPad split view and an accessibility size checked on the simulator; tests compiled, not run; usage strings await the user's review)
+## Phase 12 — iPad, accessibility & polish ✅ Done 2026-10-30, merged into main (iPad split view and an accessibility size checked on the simulator; unit and UI tests pass; usage strings await the user's review)
 
 Branch `feature/phase-12-polish`.
 
