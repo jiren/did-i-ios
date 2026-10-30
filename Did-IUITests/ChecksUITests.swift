@@ -31,15 +31,16 @@ final class ChecksUITests: XCTestCase {
 
         tile.press(forDuration: 1.0)
         app.buttons["Rename"].tap()
-        let field = app.textFields["rename.field"]
+        // SwiftUI drops identifiers on an alert's text field; it's the alert's only one.
+        let field = app.alerts.firstMatch.textFields.firstMatch
         XCTAssertTrue(field.waitForExistence(timeout: 2))
         field.clearAndType("Oven off")
-        app.buttons["rename.save"].tap()
+        app.buttons["rename.save"].firstMatch.tap()
         XCTAssertTrue(app.buttons["tile.Oven off"].waitForExistence(timeout: 2))
 
         app.buttons["tile.Oven off"].press(forDuration: 1.0)
         app.buttons["Remove"].tap()
-        app.buttons["remove.confirm"].tap()
+        app.buttons["remove.confirm"].firstMatch.tap()
         XCTAssertFalse(app.buttons["tile.Oven off"].waitForExistence(timeout: 1))
     }
 }

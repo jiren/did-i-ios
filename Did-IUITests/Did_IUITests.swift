@@ -8,6 +8,6 @@ final class Did_IUITests: XCTestCase {
     @MainActor
     func testLaunchesToTheRootView() throws {
         let app = XCUIApplication.launched()
-        XCTAssertTrue(app.descendants(matching: .any)["root"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["tabbar.today"].waitForExistence(timeout: 5))
     }
 }
