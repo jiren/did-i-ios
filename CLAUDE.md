@@ -160,7 +160,7 @@ Views never reach past their view model, and services never import SwiftUI.
 ### Core of the app: checks and logs
 
 ```
-Category (@Model)  ──<  Check (@Model)  ──<  LogEntry (@Model)
+CheckCategory (@Model)  ──<  Check (@Model)  ──<  LogEntry (@Model)
  name, icon, colour,     name, kind, order,    date, source (app / widget / Action Button),
  repeat rule, reminder   leave-home nudge      optional photo
         │
@@ -233,7 +233,10 @@ use app-only APIs (the extension builds with `APPLICATION_EXTENSION_API_ONLY`). 
   Darwin notification) and refetches when it becomes active.
 - Keep models `final` and store enums (check kind, log source) as raw strings. Store photos as files or with
   `@Attribute(.externalStorage)`, not inline blobs.
-- Version the schema (`SchemaV1` + a migration plan) before the first change that lightweight migration can't infer.
+- The schema is versioned: `SchemaV1` holds frozen copies of the phase 0–12 models, and the app's `Check`,
+  `LogEntry` and `CheckCategory` are typealiases of `SchemaV2`'s. A schema change adds `SchemaV3` with copies of the
+  models and a stage in `DidIMigrationPlan`, and never edits an earlier version's models. Daily has a fixed id
+  (`CategoryDefaults.dailyID`).
 
 ### Concurrency
 

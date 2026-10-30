@@ -95,7 +95,7 @@ others ("Add checks", "3 checks planned"); the copy is ported as written, and th
 | **Delete a category** | 2026-10-30, the user: **ask each time**: the confirmation offers "Delete category and its {n} tasks" (their logs and photos go too) or "Move {n} tasks to Daily". The default category can't be deleted. Proposed: a one-off ("On a date") category stays after its date: off Today, listed under **Past** in Settings › Categories until deleted. |
 | **Category reminders** | 2026-10-30, the user: **category only**: one reminder per category at its time on each due day, only if a task in it isn't logged that day ("Bin night — 2 left: Bins out, Recycling out"). The per-check reminder goes (the Detail row too); the migration gives Daily the earliest existing per-check reminder time. The budget (60 of iOS's 64), the background refresh and removal once the category is done carry over. Proposed: **Log it** shows only when one task is left; with more, a tap opens Today filtered to that category. |
 | **Other surfaces** | Proposed: **widgets** keep showing one check's latest log (the medium widget shows the first four tasks due today); **Siri**'s "Did I…?" answers "Not due today. Last done Friday, 7:05 AM" for a task not due; **Ask me which** lists today's due tasks first; the **leave-home nudge** counts only tasks due today; **History** gains a category filter. Detail, Logged, the Lock Screen and the Action Button page are unchanged in the design. |
-| **Data model** | Proposed: `SchemaV2` adds `Category` (id, name, icon, colour, repeat kind, weekday, month day, date, anchor date, reminder minutes, order, isDefault, timestamps) and `Check.category`, and drops `Check.reminderMinutes`, with a **custom migration stage** from V1: create Daily, put every check in it, and move the earliest reminder time to Daily. Stores hand out `CategoryRecord`s, as they do `CheckRecord`s. |
+| **Data model** | Proposed: `SchemaV2` adds `CheckCategory` (id, name, icon, colour, repeat kind, weekday, year, month, day, reminder minutes, order, isDefault, timestamps) and `Check.category`, and drops `Check.reminderMinutes`, with a **custom migration stage** from V1: create Daily, put every check in it, and move the earliest reminder time to Daily. Stores hand out `CategoryRecord`s, as they do `CheckRecord`s. 2026-10-30, while building: the model is `CheckCategory`, because `Category` clashes with the Objective-C runtime's type of that name; Daily has a fixed id, so the app, the widget extension and the migration agree on it; days in rules are stored as calendar dates (year, month, day), not `Date`s, so a time-zone change can't move them; the category colour is a `TileSwatch`. |
 
 ## Open questions
 
@@ -295,9 +295,11 @@ The phases below follow the canvas update (see **Categories & calendar**). Each 
 
 Branch `feature/phase-13-categories-core`. Pure code and stores in `Shared/`, no UI.
 
-- `SchemaV2`: the `Category` model and `Check.category`, without `Check.reminderMinutes`; a custom migration stage
-  from V1 that creates Daily, moves every check into it, and gives it the earliest per-check reminder time.
-- `CategoryIcon` (the 12 icons and their SF Symbols), `CategoryColour` (the six tile colours), and `RepeatRule`
+- `SchemaV2`: the `CheckCategory` model and `Check.category`, without `Check.reminderMinutes`; a custom migration
+  stage from V1 that creates Daily, moves every check into it, and gives it the earliest per-check reminder time.
+  `SchemaV1` keeps frozen copies of the V1 models; the app's `Check`, `LogEntry` and `CheckCategory` are
+  `SchemaV2`'s.
+- `CategoryIcon` (the 12 icons and their SF Symbols), `TileSwatch` as the category colour, and `RepeatRule`
   (the six kinds, `isDue(on:)`, the next due day, and its labels: "Every Friday", "Monthly on the 1st", "Once · Fri,
   Nov 6").
 - `CategoryStoring` and its SwiftData implementation: add (with tasks), edit, reorder, delete with its tasks or
@@ -305,6 +307,9 @@ Branch `feature/phase-13-categories-core`. Pure code and stores in `Shared/`, no
 - `DayAgenda`: for a day and a filter, the due categories and their tasks, done states, the progress bar's copy
   and segments, the strip's dots, Coming up, and the Today ring; the tile colour by position in the whole list.
 - Update the callers that read `reminderMinutes` so everything builds; Phase 17 rebuilds reminders on categories.
+  Until then each check reminds at its category's time on the category's due days, and Detail's reminder row sets
+  the category's time. Today stays the flat list until Phase 15, which also seeds the design's four categories
+  for `-SeedSample`.
 
 **Done when** table tests cover every repeat rule (including the 31st in short months, Feb 29, every other week
 from its anchor, a day start after midnight and DST changes), the progress copy and Coming up; store tests cover
