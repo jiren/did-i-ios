@@ -29,8 +29,8 @@ nonisolated struct WidgetSnapshot: Sendable {
     )
 
     @MainActor
-    static func read(services: IntentServices, now: Date) -> WidgetSnapshot {
-        let boundary = services.settings.dayBoundary
+    static func read(services: IntentServices, now: Date, boundary: DayBoundary? = nil) -> WidgetSnapshot {
+        let boundary = boundary ?? services.settings.dayBoundary
         let records = (try? services.store?.checks()) ?? []
         let latest = (try? services.store?.latestLogs()) ?? [:]
         let checks = records.enumerated().map { position, check in

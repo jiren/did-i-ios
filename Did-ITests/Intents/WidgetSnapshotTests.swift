@@ -15,7 +15,8 @@ struct WidgetSnapshotTests {
         _ = try store.log(checks[1].id, source: .app, at: TestTime.date(2026, 10, 28, 22, 58), photoFileName: nil)
         let services = IntentServices(store: store, settings: settings, photos: PhotoStore(), timeSource: clock) {}
 
-        let snapshot = WidgetSnapshot.read(services: services, now: clock.now)
+        let boundary = DayBoundary(calendar: TestTime.calendar())
+        let snapshot = WidgetSnapshot.read(services: services, now: clock.now, boundary: boundary)
         #expect(snapshot.checks.map(\.loggedToday) == [TestTime.date(2026, 10, 29, 8, 42), nil])
         #expect(snapshot.checks.map(\.swatch) == [.violet, .sun])
         #expect(snapshot.hidesNames)

@@ -195,7 +195,11 @@ final class SwiftDataStore: CheckStoring, LogStoring {
     @discardableResult
     func deleteAllLogs() throws -> [String] {
         let photos = Array(try photoFileNames())
-        try context.delete(model: LogEntry.self)
+        // One by one: a batch delete fails on the LogEntry ↔ Check relationship.
+        for entry in try context.fetch(FetchDescriptor<LogEntry>()) {
+            entry.check?.updatedAt = timeSource.now
+            context.delete(entry)
+        }
         try context.save()
         return photos
     }
@@ -203,8 +207,10 @@ final class SwiftDataStore: CheckStoring, LogStoring {
     @discardableResult
     func deleteEverything() throws -> [String] {
         let photos = Array(try photoFileNames())
-        try context.delete(model: LogEntry.self)
-        try context.delete(model: Check.self)
+        // Their logs go with them (cascade).
+        for check in try allCheckModels() {
+            context.delete(check)
+        }
         try context.save()
         return photos
     }
