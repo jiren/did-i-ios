@@ -9,7 +9,8 @@ door? Did I take my pill?"). A *check* is one recurring thing; *logging* it reco
 photo as proof), so the answer is one glance away: in the app, on a Lock Screen widget, or after one press of the
 Action Button. Tagline: "tap once, stop wondering".
 
-Phases are built in order on stacked branches (see `Plan.md` for which are done). `Plan.md` (written 2026-10-30) holds the resolved decisions, the open questions and the
+Phases 0–12 are built and merged; phases 13–18 (categories and the calendar, from the 2026-10-30 canvas update)
+are next. See `Plan.md` for which are done. `Plan.md` (written 2026-10-30) holds the resolved decisions, the open questions and the
 phases 0–12, built in order; update it as phases finish. Ask about scope beyond it and the design (see **Design**)
 rather than inventing it.
 
@@ -37,7 +38,7 @@ don't apply here.
 | UI tests | XCTest / XCUITest | Swift Testing doesn't support UI automation |
 | Dependencies | Swift Package Manager | No CocoaPods or Carthage |
 
-None of these targets, capabilities or usage strings exist yet; each arrives in its `Plan.md` phase.
+All of these are in place (phases 0–12).
 
 **Don't add third-party dependencies unless asked.** Prefer first-party frameworks, and if a package seems
 necessary, confirm with the user first.
@@ -159,28 +160,32 @@ Views never reach past their view model, and services never import SwiftUI.
 ### Core of the app: checks and logs
 
 ```
-Check (@Model)  ──<  LogEntry (@Model)
- name, kind, order,    date, source (app / widget / Action Button),
- reminder on/off       optional photo
+Category (@Model)  ──<  Check (@Model)  ──<  LogEntry (@Model)
+ name, icon, colour,     name, kind, order,    date, source (app / widget / Action Button),
+ repeat rule, reminder   leave-home nudge      optional photo
         │
-        └─→ TodayViewModel: done today?, "N of M today", summary, recent ─→ TodayView
+        └─→ DayAgenda (a day + a filter): due categories, done states, progress, Coming up
+              ─→ TodayViewModel ─→ TodayView (7-day strip, sections, tiles)
             Widgets / App Intents read and write the same store (App Group)
 ```
 
-These are the design's rules, ported from `Main.dc.html`'s script; confirm them in `Plan.md` before relying on them:
+Phases 0–12 built a flat list of checks; phases 13–18 of `Plan.md` add categories and the calendar. These are the
+design's rules, ported from `Main.dc.html`'s and `NewCategory.dc.html`'s scripts; `Plan.md`'s **Categories &
+calendar** table is the authority:
 
-- **A check is "done" when it has a log today.** The Today header reads "{done} of {total} today", then
-  "All clear. Nothing to recheck." / "1 left: {name}" / "{n} left to check".
-- **Logging appends a log**, never overwrites; tapping a done tile logs it again. The camera button on a tile logs
-  with a photo ("Photo saved · {name}"), or retakes it. Every log shows an undo toast for 5 seconds that restores
-  the state before it.
-- **Tiles**: done tiles fill with the palette colour at their position (cycling Violet, Sun, Coral, Mint, Sky,
-  Pink), showing the time and "{ago}" (with "· photo"); undone tiles are dashed outlines reading "Tap to log" /
-  "Not yet today". Recent dots use the check's tile colour.
-- **Add checks** (sheet): pick several suggestion chips (Windows closed, Car locked, Tap off, Back door locked,
-  Hair tool off, Lights off, Garage shut, Charger unplugged, Heater off; hiding ones already added) and/or type a
-  custom one ("Something else?" + Add); the button reads "Pick at least one" (disabled) / "Add 1 check" /
-  "Add {n} checks". Known kinds (door, pill, stove, plug) have their own icon; others use a generic check.
+- **Every check belongs to one category**, which has an icon, a colour, a repeat rule (daily, weekly, every 2
+  weeks, monthly, yearly, on a date) and an optional "Remind me at" time. **Daily** always exists.
+- **A check is "done" on a day when it has a log in that day**; a category shows on the days its rule makes it due.
+  Today's progress bar reads "{done} of {total} done" with "{n} left" / "All clear" / "Free day" / "Upcoming".
+- **Logging appends a log**, never overwrites; tapping a done tile logs it again, but only on today. The camera
+  button on a tile logs with a photo ("Photo saved · {name}"), or retakes it. Every log shows an undo toast for
+  5 seconds that restores the state before it.
+- **Tiles**: done tiles fill with the palette colour at the check's position in the whole list (cycling Violet,
+  Sun, Coral, Mint, Sky, Pink) and show the time; undone tiles today are dashed outlines reading "Tap to log";
+  tiles on a later day read "Upcoming" and can't be logged.
+- **Add sheet**: "Add to" a category, suggestion chips (hiding names already used) and/or a custom one
+  ("Something else?" + Add); the button reads "Pick at least one" (disabled) / "Add {n} tasks to {Category}". A
+  check's kind (its icon) follows its name.
 - **Log sources are part of the data**: history rows read "Action Button · photo", "Lock Screen widget",
   "In the app", so every log records where it came from.
 
@@ -283,11 +288,15 @@ are `project/<Name>.dc.html` there; read them with the Artifact tool (`action: "
 into `design/` (outside the synchronized groups, never bundled); they don't render locally, because `support.js`
 isn't in the export, so read them as source. If the canvas changes, re-copy them rather than editing `design/`.
 
-- **`Main.dc.html` ("Today") is the app's home** and the interactive artboard: date, the "Did I?" title, the
-  "N of M today" chip and summary, the 2-column grid of check tiles plus an "Add checks" tile, the Recent list (latest
-  three, "See all" opens History), the undo toast, a floating bottom bar (Today / History / + Add), and the Add
-  checks sheet. Its script holds the sample checks, the tile palette, the suggestions and the copy. Port behaviour
-  and copy from it as written. `AddChecks.dc.html` is `Main` with the sheet open.
+- **`Main.dc.html` ("Today") is the app's home** and the interactive artboard (redesigned 2026-10-30): the date,
+  the "Did I?" title, a 7-day strip from today (dots for non-daily categories due), category filter chips and "New
+  category", a sticky progress bar, one section per due category (3-column tiles plus "Add task"), "Nothing due",
+  "Add checks", "Coming up", the undo toast, a floating bottom bar (Today with a progress ring / History / + Add),
+  and the Add sheet with "Add to" categories. Its script holds the sample categories and tasks, the repeat rules,
+  the tile palette, the suggestions and the copy. Port behaviour and copy from it as written. `AddChecks.dc.html`
+  is `Main` with the sheet open.
+- **`NewCategory.dc.html`**: the New category page: a preview card, name, icon grid, colour swatches, repeat
+  (with weekday, day-of-month or date), the tasks list, "Remind me at", and "Create category".
 - **`Detail.dc.html` (Check detail)**: violet header with back and Remove, "Locked at {time}" and "{day} · {ago}",
   the latest photo; a "Nudge me when I leave home — Only if it isn't logged yet" switch; the History timeline
   (time and source) with the log count; a "Log it again" button.

@@ -8,15 +8,16 @@
     "LockScreen.dc.html": {"h": 844, "radius": 48, "title": "Lock Screen widgets", "w": 390, "x": 940, "y": 0},
     "Logged.dc.html": {"h": 844, "radius": 48, "title": "Logged via Action Button", "w": 390, "x": 1410, "y": 0},
     "Main.dc.html": {"h": 844, "is_interactive": true, "radius": 48, "title": "Today", "w": 390, "x": 0, "y": 0},
+    "NewCategory.dc.html": {"h": 844, "is_interactive": true, "radius": 48, "title": "New category + schedule", "w": 390, "x": 2820, "y": 0},
     "Logo.dc.html": {"h": 900, "radius": 24, "title": "Logo & app icon", "w": 1440, "x": 0, "y": 1100}
   },
   "createdOnFiles": {"at": "2026-10-29T10:00:00Z", "v": 1},
   "designSystems": [],
   "launch": {"view": "canvas"},
   "notes": {
-    "title": {"kind": "title1", "maxW": 2740, "text": "Did I? — tap once, stop wondering", "w": 240, "x": 0, "y": -260}
+    "title": {"kind": "title1", "maxW": 3210, "text": "Did I? — tap once, stop wondering", "w": 240, "x": 0, "y": -260}
   },
-  "order": ["Main.dc.html", "AddChecks.dc.html", "LockScreen.dc.html", "Logged.dc.html", "ActionButton.dc.html", "Detail.dc.html", "Logo.dc.html"],
+  "order": ["Main.dc.html", "AddChecks.dc.html", "LockScreen.dc.html", "Logged.dc.html", "ActionButton.dc.html", "Detail.dc.html", "NewCategory.dc.html", "Logo.dc.html"],
   "pages": [],
   "title": "Did I? Micro-Logger"
 }

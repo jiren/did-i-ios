@@ -14,8 +14,12 @@ into `main` and pushed only after the user approves.
 - Phases 8–10 reach outside the app: App Intents, Siri and the Action Button; widgets and the Control Center
   control; reminders.
 - Phases 11–12 are the app's icon and name, and the iPad, accessibility and polish pass.
+- Phases 13–18 follow the canvas update of 2026-10-30: Today becomes a **7-day calendar of categories**, and
+  checks are grouped into **categories** with their own icon, colour, repeat schedule and reminder (see
+  **Categories & calendar** below). Phase 13 is the core, 14 the components, 15 the new Today, 16 category
+  management, 17 the reminders, intents and widgets that follow categories, and 18 the polish pass.
 
-Written 2026-10-30.
+Written 2026-10-30; phases 13–18 added the same day after the canvas changed.
 
 ---
 
@@ -34,13 +38,13 @@ user (dated), or *proposed, taken without asking* (change any of these by saying
 | **Dark palette** | Proposed (2026-10-30), pending the user's sign-off: ground `#14111F`, surface `#221E33`, sand and chrome `#2E2944`, ink (text) `#FFF6EA`, muted `#B9B2CC`, lines `#3A3452`, link `#B3A1FF`; the six tile colours, violet header and lavender stay as in light. Colour sets live in `Shared/DesignSystem/Palette.xcassets`. |
 | **Theme** | 2026-10-30, the user: a **dark theme** added to the light-only design, derived from its palette (ink ground, raised ink surfaces, the same bright tile colours, lavender muted text), with Appearance **System / Light / Dark** in Settings. Contrast checked in both. The user approves the dark colours from the Phase 2 gallery before Phase 3 builds on them. |
 | **Model** | A `Check` (name, kind, order, reminder settings) has many `LogEntry`s (date, source, optional photo). Proposed (2026-10-30, while building): kinds `door`, `car`, `garage`, `window`, `tap`, `light`, `pill`, `stove`, `plug`, `other` pick the SF Symbol, so every suggestion gets its own icon; a name's keywords pick the kind. Sources `app`, `lockScreenWidget`, `homeScreenWidget`, `actionButton`, `control`, `siri`, `shortcut`, `notification`; History shows them ("Action Button · photo", "Lock Screen widget", "In the app"). The state a log confirms comes from the name's last word ("Front door locked" → "Locked at 8:42 AM"), else "Logged". Stores hand out value records (`CheckRecord`, `LogRecord`), never models. |
-| **Today** | From `Main.dc.html`: a check is **done when it has a log today**. The header reads "{done} of {total} today", then "All clear. Nothing to recheck." / "1 left: {name}" / "{n} left to check". A 2-column grid of tiles, an "Add checks" tile, Recent (the latest 3, "See all"), and a floating bar: Today, History, + (Add checks). |
-| **Tiles** | From `Main.dc.html`: done tiles fill with the colour at their position, cycling Violet, Sun, Coral, Mint, Sky, Pink, and show the time and "{ago}" ("2h ago · photo"); undone tiles are dashed outlines reading "Tap to log" / "Not yet today". Tapping a tile logs it (again, if done); the camera button logs with a photo, or retakes it. Recent dots take the check's tile colour. |
+| **Today** | *Superseded by Categories & calendar (phase 15).* From `Main.dc.html`: a check is **done when it has a log today**. The header reads "{done} of {total} today", then "All clear. Nothing to recheck." / "1 left: {name}" / "{n} left to check". A 2-column grid of tiles, an "Add checks" tile, Recent (the latest 3, "See all"), and a floating bar: Today, History, + (Add checks). |
+| **Tiles** | *Superseded by Categories & calendar (phases 14–15); the colour cycle and the photo button stay.* From `Main.dc.html`: done tiles fill with the colour at their position, cycling Violet, Sun, Coral, Mint, Sky, Pink, and show the time and "{ago}" ("2h ago · photo"); undone tiles are dashed outlines reading "Tap to log" / "Not yet today". Tapping a tile logs it (again, if done); the camera button logs with a photo, or retakes it. Recent dots take the check's tile colour. |
 | **Logging & undo** | From the design: a log appends, never overwrites, and shows a toast ("Logged · {name}", "Photo saved · {name}") with **Undo** for 5 s. Proposed: logging the same check again within **10 s** refreshes that log's time instead of adding one, whatever the source (a double tap, a widget tapped twice); Undo still removes it. A haptic on every log (`.sensoryFeedback`). |
 | **Relative times** | Proposed (2026-10-30): "Just now" under a minute, "{m}m ago", "{h}h ago" / "{h}h {m}m ago", "{d}d ago"; the design's mock times mix these, so one rule applies everywhere. |
 | **Day boundary** | Proposed: "today" starts at midnight, with a **Day starts at** setting (midnight to 5 AM) for the 1 AM door check. Logs are stored as `Date`; "today" and relative times use the current calendar and time zone, so travel and DST just work. |
-| **Empty state** | Proposed (2026-10-30): "Nothing to check yet" with "Add the things you double-check — the front door, the stove, a pill. Then one tap each time, and you’ll never have to wonder." and an Add checks button. |
-| **Add checks** | From the design: a sheet of suggestion chips (Windows closed, Car locked, Tap off, Back door locked, Hair tool off, Lights off, Garage shut, Charger unplugged, Heater off), hiding ones already added, and "Something else?" with Add for a custom one; the button reads "Pick at least one" (disabled) / "Add 1 check" / "Add {n} checks". Proposed: a new install starts **empty** (no seeded checks), with an empty state that opens the sheet, and the design's four checks (Front door locked, Pill taken, Stove off, Iron unplugged) lead the suggestions. A suggestion's kind follows its name (door, pill, stove, plug), else `other`. |
+| **Empty state** | *Kept for a store with no checks at all; "Nothing due" covers an empty day (phase 15).* Proposed (2026-10-30): "Nothing to check yet" with "Add the things you double-check — the front door, the stove, a pill. Then one tap each time, and you’ll never have to wonder." and an Add checks button. |
+| **Add checks** | *Superseded by Categories & calendar (phase 16): the sheet gains "Add to" and new copy.* From the design: a sheet of suggestion chips (Windows closed, Car locked, Tap off, Back door locked, Hair tool off, Lights off, Garage shut, Charger unplugged, Heater off), hiding ones already added, and "Something else?" with Add for a custom one; the button reads "Pick at least one" (disabled) / "Add 1 check" / "Add {n} checks". Proposed: a new install starts **empty** (no seeded checks), with an empty state that opens the sheet, and the design's four checks (Front door locked, Pill taken, Stove off, Iron unplugged) lead the suggestions. A suggestion's kind follows its name (door, pill, stove, plug), else `other`. |
 | **Manage checks** | Proposed (missing from the design): from a tile's context menu (Details, Rename, Change icon, Move earlier / later, Remove) and from Detail: **rename** (an alert), **change icon** (a sheet of the ten kinds), **Remove** (a confirmation naming how many logs go with it; removes its logs and photos); drag a tile onto another to **reorder**. Move earlier / later is the VoiceOver-friendly way. |
 | **Detail** | From `Detail.dc.html`: a violet header with Back and Remove, "{state} at {time}" ("Locked at 8:42 AM") and "{day} · {ago}", the latest photo; the "Nudge me when I leave home — Only if it isn't logged yet" switch; the History timeline (time and source) with the log count; **Log it again**. Proposed: the header's verb comes from the name's last word (Locked, Taken, Off, Unplugged, else "Logged"), and the header takes the check's tile colour (violet for the first check, as drawn). An Edit menu beside Remove renames or re-icons; the timeline shows the latest 50 logs, with "See all in History" beyond that; hold a timeline row to delete it. |
 | **History** | The design's History tab and "See all" link to one check's Detail. Proposed: an **all-checks History** grouped by day, with a filter by check, each row opening its check; **swipe to delete** a wrong log (and its photo). |
@@ -54,8 +58,8 @@ user (dated), or *proposed, taken without asking* (change any of these by saying
 | **Widgets** | From `LockScreen.dc.html`: Lock Screen **circular** (icon and time) and **rectangular** ("DID I?", name, "{time} · {ago}"), each tapping to log again (`Button(intent:)`). 2026-10-30, the user: also Home Screen **small** (one check) and **medium** (four), and a **Control Center control** that logs a check (also assignable to the Action Button). Times use `Text(date, style: .relative)`, so timelines reload only after a log and at day start. Proposed: **Hide names on Lock Screen** (off by default) shows only icon and time, and names are `.privacySensitive()`. Fonts are bundled in the widget too; if they don't render on the Lock Screen, its widgets use the system font. |
 | **Widgets (built)** | 2026-10-30: `CheckWidget` (configurable: choose a check, else the first) for Lock Screen circular and rectangular and Home Screen small; `ChecksOverviewWidget` (medium, the first four); `LogCheckControl` (Control Center and the Action Button), whose logs read "Action Button or Control Center" since the two can't be told apart. Timelines hold now and the next day start. Target `DidIWidgets` (`com.elo.Did-I.Widgets`), with `Shared/` and the App Group. |
 | **Two processes, one store** | Proposed: widget and control intents run in the **widget extension's process**, so the app and the extension both write the store. After a write the extension posts a Darwin notification; the app reads the changes through SwiftData history (`fetchHistory`) and also refetches when it becomes active. |
-| **Reminders** | 2026-10-30, the user: a **time reminder** per check ("at 9 PM if Pill isn't logged"). Proposed: iOS keeps at most 64 pending local notifications, so reminders are scheduled a day ahead, nearest first, within a budget of 60, and rescheduled on every log, at launch and from a `BGAppRefreshTask`. Logging from anywhere (the app, a widget, a notification) removes that day's pending reminder. Notifications carry a **Log it** action that logs without opening the app. |
-| **Reminders (built)** | 2026-10-30: each check's page has "Remind me if it isn’t logged" (9 PM when turned on, then any time); Settings › Reminders shows notification access, home (set to where you are, within 150 m; move or forget), "Tell me when I’m good", and which checks remind or nudge. Notifications carry **Log it** (logs without opening, source "Notification"); a tap opens the check. A background app refresh (`com.elo.Did-I.reminders`) reschedules at the day change. |
+| **Reminders** | *Superseded: reminders move to categories (2026-10-30, the user; phase 17). The budget, rescheduling and Log it rules carry over.* 2026-10-30, the user: a **time reminder** per check ("at 9 PM if Pill isn't logged"). Proposed: iOS keeps at most 64 pending local notifications, so reminders are scheduled a day ahead, nearest first, within a budget of 60, and rescheduled on every log, at launch and from a `BGAppRefreshTask`. Logging from anywhere (the app, a widget, a notification) removes that day's pending reminder. Notifications carry a **Log it** action that logs without opening the app. |
+| **Reminders (built)** | *Superseded in phase 17: the check page's reminder row goes; Settings › Reminders lists categories.* 2026-10-30: each check's page has "Remind me if it isn’t logged" (9 PM when turned on, then any time); Settings › Reminders shows notification access, home (set to where you are, within 150 m; move or forget), "Tell me when I’m good", and which checks remind or nudge. Notifications carry **Log it** (logs without opening, source "Notification"); a tap opens the check. A background app refresh (`com.elo.Did-I.reminders`) reschedules at the day change. |
 | **Leave-home nudge** | From `Detail.dc.html` ("Nudge me when I leave home — Only if it isn't logged yet"). Proposed: home is set in Settings (use current location); a `CLMonitor`, recreated under the same name at every launch, watches it; on leaving, checks with the nudge on and no log today get a notification. The reassurance from `LockScreen.dc.html` ("{name} {state} — {time} / You already checked. You're good.") is optional, off by default. Needs Always location (open question 1). |
 | **Tips** | Proposed: TipKit tips, each shown once and none on the empty screen: hold a tile to edit it, add a Lock Screen widget, set up the Action Button. |
 | **Permissions** | Proposed: when the camera, location or notifications are refused, the feature's control explains why and links to Settings. Logging never needs a permission. |
@@ -63,6 +67,35 @@ user (dated), or *proposed, taken without asking* (change any of these by saying
 | **App Store basics** | Proposed: `PrivacyInfo.xcprivacy` (the `UserDefaults` and file-timestamp required reasons). The usage strings (camera, location when in use and always, notifications) are reviewed with the user in Phase 12. |
 | **Polish (built)** | 2026-10-30: regular width shows Today or History beside the chosen check (`NavigationSplitView`, both columns visible); the violet tile's secondary text is `#F1ECFF` (4.9:1 on violet, the design's `#E3DAFF` was 4.3:1); toasts are announced to VoiceOver and fade instead of sliding with Reduce Motion. |
 | **App icon** | From `Logo.dc.html`: a question mark whose dot is a check: a white stroke on Violet `#6B3BFF`, a Sun `#FFD23F` dot, an ink check. The dark icon is the Ink variant, the tinted one the monochrome Lock Screen glyph. At 44 px and below the check drops out. Colourway: open question 2. |
+
+## Categories & calendar (canvas update, 2026-10-30)
+
+The canvas changed after phases 0–12 were built: `Main.dc.html` was redesigned around a calendar and categories,
+and `NewCategory.dc.html` was added; the other artboards are unchanged. Both were re-copied into `design/`. The
+design calls a check in a category a **task** in places ("Add task", "Add 3 tasks to Daily") and a **check** in
+others ("Add checks", "3 checks planned"); the copy is ported as written, and the code keeps the name `Check`.
+
+| Topic | Decision |
+|---|---|
+| **Category** | From `NewCategory.dc.html`: a category has a **name**, an **icon** (12: suitcase, sun, home, bin, lock, pill, flame, plug, car, key, heart, globe), a **colour** (the six tile colours), a **repeat** rule, its **tasks** (checks), and a **Remind me at** time ("Only if something’s not logged"). Every check belongs to exactly one category. Categories have an order (the filter chips and sections follow it). Icons map to SF Symbols (`suitcase.fill`, `sun.max.fill`, `house.fill`, `trash.fill`, `lock.fill`, `pills.fill`, `flame.fill`, `powerplug.fill`, `car.fill`, `key.fill`, `heart.fill`, `globe`). |
+| **Repeat rules** | From the design: **Daily** ("Every day"), **Weekly** on a weekday ("Every Friday"), **Every 2 weeks** ("Every other Friday", counted from the week it was set), **Monthly** on a day ("Monthly on the 1st"), **Yearly** on a date ("Every year, Nov 6"), and **On a date**, once ("Once · Fri, Nov 6"). Proposed: a monthly day past the month's end (29–31) falls on its last day; Feb 29 yearly falls on Feb 28 in other years; due days use the **Day starts at** boundary and the current calendar, so DST and travel behave as for "today". |
+| **Default category** | Proposed: there is always one default category, **Daily** (sun, Violet, Every day), created on a new install and by the migration. It can be renamed and re-iconed, but not deleted and not rescheduled, so "Move tasks to Daily" always has a target. |
+| **Done** | From `Main.dc.html`: a task is **done on a day when it has a log in that day** (the Day starts at boundary). A category is **due** on a day when its repeat rule says so; only due categories show for that day. Proposed: a task can still be logged on a day it isn't due (from Siri, a widget, Detail or the Action Button); the log is kept and shown in History, but it counts only toward the day it falls on. |
+| **Today: calendar** | From `Main.dc.html` (2026-10-30, the user: **7 days ahead, as drawn**): a strip of seven days starting today ("Today", then "Sat", "Sun"…, with the date), each with up to three dots in the colours of the **non-daily** categories due that day (white on the selected day). Selecting a day shows that day. Past days aren't in the strip; History covers them. The date line reads "Today · Fri, Oct 30" or "Sat, Oct 31". |
+| **Today: filter** | From the design: chips **All** and one per category (its icon on its colour), then a dashed **New category** chip. A filter shows only that category's section. |
+| **Today: progress bar** | From the design: a card that **sticks** below the top as the page scrolls. Scope line: "Today", "{Category} · today", or "All · Sat, Oct 31" / "{Category} · Sat, Oct 31". Main line: "{done} of {total} done" today, "{n} checks planned" (or "1 check planned") on a later day, "Nothing due" with none. Pill: "{n} left", **All clear** (the card turns Mint, with a check), "Free day" (none due), "Upcoming" (a later day). Under it, one segment per task, filled with the task's tile colour once done. It's announced as a status. |
+| **Today: sections** | From the design: one section per due category, in category order: its icon on its colour, the name, the repeat label, and "{done}/{total}". Under it a **3-column grid** of square tiles and an **Add task** tile (dashed, the category's colour) that opens the Add sheet for that category. |
+| **Today: tiles** | From the design: a square tile with the task's icon on a circle, its name (two lines at most) and one short line: the time when done ("8:42 AM", with a check badge on the icon), "Tap to log" today, "Upcoming" on a later day. Done tiles fill with the tile colour; undone tiles today are dashed outlines; tiles on a later day are plain white and **can't be logged**. The camera button (44 pt target, top right) shows only today, logs with a photo or retakes it, with the yellow photo dot once a photo exists. Proposed: the tile colour cycles Violet, Sun, Coral, Mint, Sky, Pink by the task's position in the **whole list** (category order, then task order), not by its place on screen as the design's script does, so a task keeps its colour across days, filters, widgets and Detail. |
+| **Today: empty and upcoming** | From the design: with nothing due, a card **Nothing due** with "No checks scheduled for {date}." (or "{Category} isn’t due on {date}. Check Coming up below." when filtered). A dashed **Add checks** button under the sections. **Coming up**: the next three non-daily categories due within 31 days that aren't due on the selected day, each with its icon, "{n} checks · {repeat}", and "Tomorrow", a weekday (within a week) or "Nov 2"; tapping one within the strip selects that day. A store with no checks at all still shows the Phase 3 empty state. |
+| **Today: tab bar** | From the design: the **Today** tab carries a progress ring of today's due tasks ("Today: 4 of 8 checked" to VoiceOver); History and **+** (Add checks) as before. The **Recent** list is gone from Today (History has it). |
+| **Undo toast** | Unchanged: "Logged · {name}" / "Photo saved · {name}" with Undo for 5 s, the 10 s refresh rule, a haptic. |
+| **Add sheet** | From the design: title "Add to {Category}", "Pick as many as you like.", an **Add to** row of category chips (the selected one filled with its colour), suggestion chips (Car locked, Tap off, Back door locked, Hair tool off, Lights off, Garage shut, Heater off, Keys packed, hiding names that exist in any category), "Something else?" with Add, and the button "Pick at least one" (disabled) / "Add 1 task to {Category}" / "Add {n} tasks to {Category}". It opens on the filtered category, the section's category (Add task), or Daily. A task's kind (its icon) still follows its name. |
+| **New category** | From `NewCategory.dc.html`: a full-screen page with a close (×) button and "New category": a live **preview card** in the chosen colour (icon, name or "New category", the repeat summary, "{n} tasks · Reminder at 8:00 PM"); **Name** ("e.g. Travel, Gym, Leaving work"); **Icon** (a 6-column grid); **Colour** (six swatches); **Repeat** chips with "On" weekday buttons (Weekly, Every 2 weeks), "Day of the month" (Monthly), or a date ("Date each year" / "Date"); **Tasks** (each with a colour dot and a remove button, plus "Add a task, e.g. Passport packed" and +); **Remind me at**; and **Create category**. Proposed: Create is disabled until there's a name; a name already used (ignoring case) is refused; the reminder is off until a time is set (the design's 8 PM is the time it starts at when turned on); the date picker defaults to the next matching day. |
+| **Manage categories** | Proposed (missing from the design): the same page as **Edit category** (Save instead of Create), opened from a filter chip's or a section header's context menu (Edit, Delete) and from **Settings › Categories**, a list to edit and drag to reorder. A task moves to another category from its tile's context menu and from Detail (**Category**). |
+| **Delete a category** | 2026-10-30, the user: **ask each time**: the confirmation offers "Delete category and its {n} tasks" (their logs and photos go too) or "Move {n} tasks to Daily". The default category can't be deleted. Proposed: a one-off ("On a date") category stays after its date: off Today, listed under **Past** in Settings › Categories until deleted. |
+| **Category reminders** | 2026-10-30, the user: **category only**: one reminder per category at its time on each due day, only if a task in it isn't logged that day ("Bin night — 2 left: Bins out, Recycling out"). The per-check reminder goes (the Detail row too); the migration gives Daily the earliest existing per-check reminder time. The budget (60 of iOS's 64), the background refresh and removal once the category is done carry over. Proposed: **Log it** shows only when one task is left; with more, a tap opens Today filtered to that category. |
+| **Other surfaces** | Proposed: **widgets** keep showing one check's latest log (the medium widget shows the first four tasks due today); **Siri**'s "Did I…?" answers "Not due today. Last done Friday, 7:05 AM" for a task not due; **Ask me which** lists today's due tasks first; the **leave-home nudge** counts only tasks due today; **History** gains a category filter. Detail, Logged, the Lock Screen and the Action Button page are unchanged in the design. |
+| **Data model** | Proposed: `SchemaV2` adds `Category` (id, name, icon, colour, repeat kind, weekday, month day, date, anchor date, reminder minutes, order, isDefault, timestamps) and `Check.category`, and drops `Check.reminderMinutes`, with a **custom migration stage** from V1: create Daily, put every check in it, and move the earliest reminder time to Daily. Stores hand out `CategoryRecord`s, as they do `CheckRecord`s. |
 
 ## Open questions
 
@@ -90,6 +123,9 @@ Ask each before the phase that needs it, then move the answer into Resolved deci
 | Lock Screen widgets | `LockScreen.dc.html` | 9 |
 | Reassurance notification, leave-home nudge | `LockScreen.dc.html`, `Detail.dc.html` | 10 |
 | Logo and app icon | `Logo.dc.html` | 11 |
+| Today redesign: day strip, filter chips, sticky progress bar, category sections, 3-column tiles, Coming up, ring tab | `Main.dc.html` (2026-10-30 update) | 14–15 |
+| Add sheet with "Add to" categories | `Main.dc.html`, `AddChecks.dc.html` (2026-10-30 update) | 16 |
+| New category and its schedule | `NewCategory.dc.html` | 16 |
 
 ---
 
@@ -250,3 +286,103 @@ Branch `feature/phase-12-polish`.
 - Review the usage strings and the privacy manifest with the user.
 
 **Done when** a layout UI test passes on an iPad and at an accessibility text size, and the full suite is green.
+
+---
+
+The phases below follow the canvas update (see **Categories & calendar**). Each starts from an up-to-date `main`.
+
+## Phase 13 — Categories & schedules (core)
+
+Branch `feature/phase-13-categories-core`. Pure code and stores in `Shared/`, no UI.
+
+- `SchemaV2`: the `Category` model and `Check.category`, without `Check.reminderMinutes`; a custom migration stage
+  from V1 that creates Daily, moves every check into it, and gives it the earliest per-check reminder time.
+- `CategoryIcon` (the 12 icons and their SF Symbols), `CategoryColour` (the six tile colours), and `RepeatRule`
+  (the six kinds, `isDue(on:)`, the next due day, and its labels: "Every Friday", "Monthly on the 1st", "Once · Fri,
+  Nov 6").
+- `CategoryStoring` and its SwiftData implementation: add (with tasks), edit, reorder, delete with its tasks or
+  moving them to Daily, and move a task to another category. Daily always exists and can't be deleted.
+- `DayAgenda`: for a day and a filter, the due categories and their tasks, done states, the progress bar's copy
+  and segments, the strip's dots, Coming up, and the Today ring; the tile colour by position in the whole list.
+- Update the callers that read `reminderMinutes` so everything builds; Phase 17 rebuilds reminders on categories.
+
+**Done when** table tests cover every repeat rule (including the 31st in short months, Feb 29, every other week
+from its anchor, a day start after midnight and DST changes), the progress copy and Coming up; store tests cover
+delete-with-tasks and move-to-Daily; and a V1 store file on disk migrates to V2 with its checks, logs and reminder.
+
+## Phase 14 — Calendar & category components
+
+Branch `feature/phase-14-calendar-components`.
+
+- Components from `Main.dc.html`: the day strip cell (with dots), the category filter chip (with its icon on its
+  colour) and the dashed New category chip, the progress bar card (scope, main line, pill, segments, the Mint "All
+  clear" state), the section header, the 3-column square tile (done, undone, upcoming; check badge; camera button
+  with the photo dot), the Add task tile, the Coming up row, the Today tab's progress ring.
+- From `NewCategory.dc.html`: the preview card, the icon grid, the colour swatches, the repeat chips, the weekday
+  buttons, the task row.
+- Dark appearances for each, and the DEBUG gallery updated (both themes, default and accessibility sizes).
+
+**Done when** the gallery shows every new component in both themes, and the user has approved the screenshots in
+`design/review/`.
+
+## Phase 15 — Today as a calendar
+
+Branch `feature/phase-15-today-calendar`.
+
+- `TodayViewModel` over `DayAgenda`: the selected day, the filter, sections, the sticky progress bar, Nothing due,
+  Coming up, the ring, logging (today only) with the toast and undo; the selected day returns to today at the day
+  change and when the app comes back after a day change.
+- The screen as `Main.dc.html`: date line and title, strip, filter chips, the pinned progress bar
+  (`LazyVStack(pinnedViews:)`), the sections with their grids and Add task tiles, the Add checks button, Coming up,
+  and the tab bar's ring. The Recent list goes; the empty install keeps the Phase 3 empty state.
+- The split view on iPad keeps Today beside a task's Detail.
+
+**Done when** view-model tests cover the selected day, filters, done counts and logging only today (with stubs),
+and UI tests log and undo a task, switch to a later day (tiles read "Upcoming" and don't log) and filter by a
+category.
+
+## Phase 16 — Category management & the Add sheet
+
+Branch `feature/phase-16-category-management`.
+
+- New category as `NewCategory.dc.html`, and the same page as Edit category; validation (a name, no duplicates).
+- Entry points: the New category chip, a filter chip's and a section header's context menu (Edit, Delete), and
+  Settings › Categories (edit, drag to reorder, Past one-off categories).
+- Delete with the choice of deleting the tasks or moving them to Daily; move a task between categories from its
+  tile and from Detail (a **Category** row).
+- The Add sheet's **Add to** chips and new copy, opened for the right category; the suggestion list as drawn.
+- TipKit: a tip on the New category chip once there are three or more tasks.
+
+**Done when** view-model tests cover create, edit, validation and both delete choices, and UI tests create a weekly
+category with two tasks (it shows on its day in the strip), add tasks to it from its section, move a task to
+another category, and delete a category both ways.
+
+## Phase 17 — Reminders, intents & widgets follow categories
+
+Branch `feature/phase-17-category-reminders`.
+
+- Category reminders on due days, within the 60-request budget, removed once the category is done that day; the
+  copy with the tasks left; **Log it** only with one task left, else the tap opens Today on that category. The
+  check page's reminder row goes; Settings › Reminders lists categories with their times.
+- The leave-home nudge counts only tasks due today; Siri's "Did I…?" answers for tasks not due today; Ask me which
+  lists today's due tasks first; Spotlight indexes categories' tasks as before; the medium widget shows the first
+  four tasks due today; History gains a category filter.
+- Widget timelines also reload when categories change.
+
+**Done when** scheduler tests cover category reminders (due days only, the budget, removal), intent tests cover
+the new answers, and a category reminder fires on a device.
+
+## Phase 18 — Polish for the redesign
+
+Branch `feature/phase-18-calendar-polish`.
+
+- Dynamic Type: the tile grid goes from 3 columns to 2 and then 1 at accessibility sizes; the strip scrolls
+  sideways at large sizes; the progress bar wraps. VoiceOver copy from the design's `aria-label`s ("Sat, Oct 31,
+  2 extra categories due", "Add a task to Bin night", "Stove off, not logged — tap to log").
+- Reduce Motion for the sticky bar's shadow and the ring; contrast of the category colours in both themes (dark
+  text on Sun, Coral, Mint, Sky and Pink as drawn).
+- iPad: the strip and sections use the wider column (more tiles per row); landscape.
+- Strings in `Localizable.xcstrings`, plurals for task and check counts; screenshots of the new screens in
+  `design/review/`.
+
+**Done when** layout UI tests pass at an accessibility text size and on an iPad, and the full suite is green.

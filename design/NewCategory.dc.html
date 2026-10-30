@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Did I? — New category</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=DM+Sans:opsz,wght@9..40,400..700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#4B22E0}a:hover{color:#2E0FA8}
+button{font:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFF6EA; color: #17142A; font-family: 'DM Sans', system-ui, sans-serif; position: relative; overflow: hidden">
+
+<div style="position: absolute; inset: 0; overflow-y: auto; padding: 56px 20px 120px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px">
+
+<div style="display: flex; align-items: center; justify-content: space-between">
+<a href="Main.dc.html" aria-label="Cancel and go back" style="width: 44px; height: 44px; border-radius: 22px; background: #17142A; color: #FFFFFF; display: flex; align-items: center; justify-content: center">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+</a>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 22px; font-weight: 800">New category</h1>
+<span style="width: 44px"></span>
+</div>
+
+<div style="{{previewStyle}}">
+<span style="{{previewIconStyle}}"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{iconPath}}"></path></svg></span>
+<div style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 26px; font-weight: 800; line-height: 1.05">{{displayName}}</span>
+<span style="font-size: 14px; font-weight: 700">{{repeatSummary}}</span>
+<span style="font-size: 13px; font-weight: 600">{{taskCount}} · Reminder at {{timeLabel}}</span>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="cat-name" style="font-size: 14px; font-weight: 700">Name</label>
+<input id="cat-name" type="text" value="{{name}}" onChange="{{onName}}" placeholder="e.g. Travel, Gym, Leaving work" style="height: 52px; border-radius: 16px; border: 2px solid #17142A; background: #FFFFFF; padding: 0 14px; font: inherit; font-size: 17px; color: #17142A; box-sizing: border-box">
+</div>
+
+<div role="group" aria-label="Icon" style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 700">Icon</span>
+<div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{icons}}" as="ic" hint-placeholder-count="12">
+<button onClick="{{ic.pick}}" aria-label="{{ic.label}}" aria-pressed="{{ic.pressed}}" style="{{ic.style}}">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.d}}"></path></svg>
+</button>
+</sc-for>
+</div>
+</div>
+
+<div role="group" aria-label="Colour" style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 700">Colour</span>
+<div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{colors}}" as="co" hint-placeholder-count="6">
+<button onClick="{{co.pick}}" aria-label="{{co.label}}" aria-pressed="{{co.pressed}}" style="{{co.style}}"></button>
+</sc-for>
+</div>
+</div>
+
+<div role="group" aria-label="Repeat" style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 700">Repeat</span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{repeats}}" as="r" hint-placeholder-count="6">
+<button onClick="{{r.pick}}" aria-pressed="{{r.pressed}}" style="{{r.style}}">{{r.label}}</button>
+</sc-for>
+</div>
+
+<sc-if value="{{showWeekday}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 6px; margin-top: 6px">
+<span style="font-size: 13px; font-weight: 600; color: #5C5670">On</span>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{weekdays}}" as="w" hint-placeholder-count="7">
+<button onClick="{{w.pick}}" aria-label="{{w.full}}" aria-pressed="{{w.pressed}}" style="{{w.style}}">{{w.short}}</button>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{showMonthDay}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 10px; margin-top: 6px">
+<label for="month-day" style="font-size: 15px; font-weight: 600">Day of the month</label>
+<input id="month-day" type="number" min="1" max="31" value="{{monthDay}}" onChange="{{onMonthDay}}" style="width: 84px; height: 48px; border-radius: 14px; border: 2px solid #17142A; background: #FFFFFF; padding: 0 12px; font: inherit; font-size: 17px; color: #17142A; box-sizing: border-box">
+</div>
+</sc-if>
+
+<sc-if value="{{showDate}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 6px; margin-top: 6px">
+<label for="cat-date" style="font-size: 13px; font-weight: 600; color: #5C5670">{{dateLabel}}</label>
+<input id="cat-date" type="date" value="{{date}}" onChange="{{onDate}}" style="height: 52px; border-radius: 16px; border: 2px solid #17142A; background: #FFFFFF; padding: 0 14px; font: inherit; font-size: 17px; color: #17142A; box-sizing: border-box">
+</div>
+</sc-if>
+</div>
+
+<div role="group" aria-label="Tasks" style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; align-items: baseline">
+<span style="font-size: 14px; font-weight: 700">Tasks</span>
+<span style="font-size: 13px; font-weight: 600; color: #5C5670">{{taskCount}}</span>
+</div>
+<sc-for list="{{tasks}}" as="t" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 12px; background: #FFFFFF; border-radius: 16px; padding: 0 4px 0 14px; min-height: 52px">
+<span style="{{t.dotStyle}}"></span>
+<span style="flex-grow: 1; font-size: 16px; font-weight: 600">{{t.label}}</span>
+<button onClick="{{t.remove}}" aria-label="{{t.removeLabel}}" style="width: 44px; height: 44px; border-radius: 22px; border: none; background: transparent; color: #5C5670; display: flex; align-items: center; justify-content: center">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+</button>
+</div>
+</sc-for>
+<div style="display: flex; gap: 8px">
+<label for="task-name" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">New task</label>
+<input id="task-name" type="text" placeholder="Add a task, e.g. Passport packed" value="{{taskText}}" onChange="{{onTask}}" style="flex-grow: 1; min-width: 0; height: 52px; border-radius: 16px; border: 2px dashed #17142A; background: transparent; padding: 0 14px; font: inherit; font-size: 16px; color: #17142A; box-sizing: border-box">
+<button onClick="{{addTask}}" aria-label="Add task" style="width: 52px; height: 52px; border-radius: 16px; border: none; background: #17142A; color: #FFFFFF; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+</button>
+</div>
+</div>
+
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #FFFFFF; border-radius: 18px; padding: 10px 10px 10px 16px">
+<label for="cat-time" style="display: flex; flex-direction: column"><span style="font-size: 16px; font-weight: 700">Remind me at</span><span style="font-size: 13px; color: #5C5670">Only if something’s not logged</span></label>
+<input id="cat-time" type="time" value="{{time}}" onChange="{{onTime}}" style="height: 48px; border-radius: 14px; border: 2px solid #17142A; background: #FFF6EA; padding: 0 10px; font: inherit; font-size: 16px; color: #17142A; box-sizing: border-box">
+</div>
+</div>
+
+<div style="position: absolute; left: 20px; right: 20px; bottom: 28px">
+<a href="Main.dc.html" style="height: 62px; border-radius: 31px; background: #6B3BFF; color: #FFFFFF; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">Create category</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+var ICONS = [
+  ['suitcase', 'Suitcase', 'M4 8h16v11H4zM9 8V5h6v3M4 13h16'],
+  ['sun', 'Sun', 'M12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8zM12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4'],
+  ['home', 'Home', 'M3 11l9-7 9 7M5 10v10h14V10M10 20v-6h4v6'],
+  ['trash', 'Bin', 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3'],
+  ['lock', 'Lock', 'M5 11h14v10H5zM8 11V8a4 4 0 0 1 8 0v3'],
+  ['pill', 'Pill', 'M14 4.9a4.6 4.6 0 0 1 6.5 6.5l-9.1 9.1a4.6 4.6 0 0 1-6.5-6.5zM9.6 9.6l4.8 4.8'],
+  ['flame', 'Flame', 'M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 .3 2 1.2 3 2.5 3.5C11.5 9 11 6 12 3z'],
+  ['plug', 'Plug', 'M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0V8zM12 17v4'],
+  ['car', 'Car', 'M5 16h14v-4l-2-5H7l-2 5zM5 12h14M7 19v-3M17 19v-3'],
+  ['key', 'Key', 'M8 11a4 4 0 1 0 0 8a4 4 0 1 0 0-8zM10.8 12.2L20 3M17 6l3 3M14.5 8.5l2 2'],
+  ['heart', 'Heart', 'M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z'],
+  ['globe', 'Globe', 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18']
+];
+var COLORS = [['#6B3BFF', 'Violet', '#FFFFFF'], ['#FFD23F', 'Sun', '#17142A'], ['#FF7A59', 'Coral', '#17142A'], ['#2FD4A7', 'Mint', '#17142A'], ['#5BC0FF', 'Sky', '#17142A'], ['#FF8AD8', 'Pink', '#17142A']];
+var REPEATS = [['daily', 'Daily'], ['weekly', 'Weekly'], ['biweekly', 'Every 2 weeks'], ['monthly', 'Monthly'], ['yearly', 'Yearly'], ['date', 'On a date']];
+var WK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+var MO = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+function ord(n) { var s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
+function fmtDate(iso, withWeekday) {
+  var t = Date.parse(iso);
+  if (isNaN(t)) return 'pick a date';
+  var d = new Date(t);
+  return (withWeekday ? WK[d.getUTCDay()].slice(0, 3) + ', ' : '') + MO[d.getUTCMonth()] + ' ' + d.getUTCDate();
+}
+function fmtTime(v) {
+  var p = (v || '20:00').split(':'); var h = +p[0]; var m = p[1] || '00';
+  return ((h % 12) || 12) + ':' + m + (h < 12 ? ' AM' : ' PM');
+}
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { name: 'Weekend trip', icon: 'suitcase', color: '#5BC0FF', repeat: 'date', weekday: 5, monthDay: 1, date: '2026-11-06', time: '20:00', tasks: ['Passport packed', 'Charger packed', 'Windows closed'], taskText: '' };
+  }
+  renderVals() {
+    var self = this, st = this.state;
+    var fg = '#17142A';
+    COLORS.forEach(function (c) { if (c[0] === st.color) fg = c[2]; });
+    var iconPath = '';
+    var icons = ICONS.map(function (ic) {
+      var on = ic[0] === st.icon;
+      if (on) iconPath = ic[2];
+      return {
+        d: ic[2], label: ic[1] + ' icon', pressed: on ? 'true' : 'false',
+        style: 'height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; padding: 0; ' + (on ? 'border: 2px solid #17142A; background: ' + st.color + '; color: ' + fg + ';' : 'border: 2px solid transparent; background: #FFFFFF; color: #17142A;'),
+        pick: function () { self.setState({ icon: ic[0] }); }
+      };
+    });
+    var colors = COLORS.map(function (c) {
+      var on = c[0] === st.color;
+      return {
+        label: c[1], pressed: on ? 'true' : 'false',
+        style: 'height: 48px; border-radius: 24px; padding: 0; background: ' + c[0] + '; border: 3px solid ' + (on ? '#17142A' : 'transparent') + '; box-shadow: ' + (on ? 'inset 0 0 0 3px #FFF6EA' : 'none') + ';',
+        pick: function () { self.setState({ color: c[0] }); }
+      };
+    });
+    var repeats = REPEATS.map(function (r) {
+      var on = r[0] === st.repeat;
+      return {
+        label: r[1], pressed: on ? 'true' : 'false',
+        style: 'height: 44px; padding: 0 16px; border-radius: 22px; font-size: 15px; font-weight: 700; border: 2px solid #17142A; ' + (on ? 'background: #17142A; color: #FFFFFF;' : 'background: transparent; color: #17142A;'),
+        pick: function () { self.setState({ repeat: r[0] }); }
+      };
+    });
+    var weekdays = WK.map(function (w, i) {
+      var on = i === st.weekday;
+      return {
+        short: w.charAt(0), full: w, pressed: on ? 'true' : 'false',
+        style: 'height: 44px; border-radius: 22px; padding: 0; font-size: 15px; font-weight: 700; border: none; ' + (on ? 'background: ' + st.color + '; color: ' + fg + ';' : 'background: #FFFFFF; color: #17142A;'),
+        pick: function () { self.setState({ weekday: i }); }
+      };
+    });
+    var summary;
+    if (st.repeat === 'daily') summary = 'Every day';
+    else if (st.repeat === 'weekly') summary = 'Every ' + WK[st.weekday];
+    else if (st.repeat === 'biweekly') summary = 'Every other ' + WK[st.weekday];
+    else if (st.repeat === 'monthly') summary = 'Monthly on the ' + ord(Math.max(1, Math.min(31, +st.monthDay || 1)));
+    else if (st.repeat === 'yearly') summary = 'Every year on ' + fmtDate(st.date, false);
+    else summary = 'Once · ' + fmtDate(st.date, true);
+    return {
+      name: st.name,
+      displayName: st.name || 'New category',
+      iconPath: iconPath,
+      repeatSummary: summary,
+      timeLabel: fmtTime(st.time),
+      time: st.time,
+      date: st.date,
+      monthDay: st.monthDay,
+      previewStyle: 'display: flex; align-items: center; gap: 16px; padding: 18px; border-radius: 26px; background: ' + st.color + '; color: ' + fg + ';',
+      previewIconStyle: 'width: 64px; height: 64px; border-radius: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: ' + (fg === '#FFFFFF' ? 'rgba(255,255,255,0.18)' : 'rgba(23,20,42,0.10)') + ';',
+      icons: icons, colors: colors, repeats: repeats, weekdays: weekdays,
+      showWeekday: st.repeat === 'weekly' || st.repeat === 'biweekly',
+      showMonthDay: st.repeat === 'monthly',
+      showDate: st.repeat === 'yearly' || st.repeat === 'date',
+      dateLabel: st.repeat === 'yearly' ? 'Date each year' : 'Date',
+      tasks: st.tasks.map(function (label, i) {
+        return {
+          label: label,
+          removeLabel: 'Remove ' + label,
+          dotStyle: 'width: 10px; height: 10px; border-radius: 5px; flex-shrink: 0; background: ' + st.color + ';',
+          remove: function () { self.setState({ tasks: self.state.tasks.filter(function (_, j) { return j !== i; }) }); }
+        };
+      }),
+      taskCount: st.tasks.length === 1 ? '1 task' : st.tasks.length + ' tasks',
+      taskText: st.taskText,
+      onTask: function (e) { self.setState({ taskText: e.target.value }); },
+      addTask: function () {
+        var t = (self.state.taskText || '').trim();
+        if (!t) return;
+        self.setState({ tasks: self.state.tasks.concat([t]), taskText: '' });
+      },
+      onName: function (e) { self.setState({ name: e.target.value }); },
+      onDate: function (e) { self.setState({ date: e.target.value }); },
+      onTime: function (e) { self.setState({ time: e.target.value }); },
+      onMonthDay: function (e) { self.setState({ monthDay: e.target.value }); }
+    };
+  }
+}
+</script>
+</body>
+</html>
