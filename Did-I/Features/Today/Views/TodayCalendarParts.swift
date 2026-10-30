@@ -46,7 +46,7 @@ struct CategoryFilter: View {
 
     var body: some View {
         ScrollView(.horizontal) {
-            HStack(spacing: 8) {
+            HStack(spacing: 6) {
                 CategoryChip(title: String(localized: "All"), isSelected: selection == nil) { onSelect(nil) }
                     .accessibilityIdentifier("filter.all")
                 ForEach(categories) { category in
@@ -90,9 +90,11 @@ struct CategoryMenu: View {
     }
 }
 
-/// A due category: its heading, then a 3-column grid of tasks and Add task.
+/// A due category: its heading (tap to open or close it, + to add), then its tasks as a 3-column grid or a list.
 struct TodaySectionView<Menu: View>: View {
     let section: TodaySection
+    let layout: TodayLayout
+    let onToggle: () -> Void
     let onLog: (UUID) -> Void
     let onPhoto: (PhotoRequest) -> Void
     let onAdd: () -> Void
@@ -104,46 +106,64 @@ struct TodaySectionView<Menu: View>: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var width: CGFloat = 350
 
-    /// Three columns as drawn, more on a wide column (iPad, landscape: about 130 pt a tile), two at the first
-    /// accessibility sizes, one beyond.
+    /// Three columns as drawn, more on a wide column (iPad, landscape: about 130 pt a tile).
     private var columns: [GridItem] {
-        let count = switch dynamicTypeSize {
-        case ..<DynamicTypeSize.accessibility1: max(3, Int(width / 130))
-        case ..<DynamicTypeSize.accessibility3: 2
-        default: 1
-        }
-        return Array(repeating: GridItem(.flexible(), spacing: 10, alignment: .top), count: count)
+        Array(repeating: GridItem(.flexible(), spacing: 8, alignment: .top), count: max(3, Int(width / 130)))
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            CategorySectionHeader(category: section.category, repeatLabel: section.repeatLabel, progressText: section.progressText)
-                .contentShape(.rect)
-                .contextMenu { CategoryMenu(category: section.category, onEdit: onEdit, onDelete: onDelete) }
-                .accessibilityElement(children: .combine)
-                .accessibilityIdentifier("section.\(section.category.name)")
-            LazyVGrid(columns: columns, spacing: 10) {
-                ForEach(section.tiles) { tile in
-                    TaskTile(
-                        content: tile.content,
-                        onLog: { onLog(tile.id) },
-                        onPhoto: { onPhoto(PhotoRequest(checkID: tile.id, checkName: tile.content.name)) }
-                    )
-                    .contextMenu { menu(tile.id) }
-                    .draggable(tile.id.uuidString) {
-                        TileIcon(kind: tile.content.kind, swatch: tile.content.swatch, isDone: false)
+        VStack(alignment: .leading, spacing: 8) {
+            CategorySectionHeader(
+                category: section.category, meta: section.meta, progressText: section.progressText,
+                isAllDone: section.isAllDone, isExpanded: section.isExpanded, onToggle: onToggle, onAdd: onAdd
+            )
+            .contextMenu { CategoryMenu(category: section.category, onEdit: onEdit, onDelete: onDelete) }
+            if section.isExpanded {
+                // Square tiles in one column would be huge at accessibility sizes; rows grow with the text.
+                switch dynamicTypeSize.isAccessibilitySize ? .list : layout {
+                case .grid:
+                    LazyVGrid(columns: columns, spacing: 8) {
+                        ForEach(section.tiles) { tile in
+                            TaskTile(content: tile.content, onLog: { onLog(tile.id) }, onPhoto: { photo(tile) })
+                                .modifier(TaskInteractions(tile: tile, menu: menu, onDrop: onDrop))
+                        }
                     }
-                    .dropDestination(for: String.self) { items, _ in
-                        guard let dragged = items.first.flatMap(UUID.init(uuidString:)) else { return false }
-                        onDrop(dragged, tile.id)
-                        return true
+                    .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
+                case .list:
+                    LazyVStack(spacing: 6) {
+                        ForEach(section.tiles) { tile in
+                            TaskRow(content: tile.content, onLog: { onLog(tile.id) }, onPhoto: { photo(tile) })
+                                .modifier(TaskInteractions(tile: tile, menu: menu, onDrop: onDrop))
+                        }
                     }
                 }
-                AddTaskTile(category: section.category, action: onAdd)
             }
-            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
         }
         .accessibilityElement(children: .contain)
         .accessibilityLabel(section.category.name)
+    }
+
+    private func photo(_ tile: TodayTile) {
+        onPhoto(PhotoRequest(checkID: tile.id, checkName: tile.content.name))
+    }
+}
+
+/// A task's menu and drag to reorder, the same in the grid and the list.
+private struct TaskInteractions<Menu: View>: ViewModifier {
+    let tile: TodayTile
+    @ViewBuilder let menu: (UUID) -> Menu
+    let onDrop: (UUID, UUID) -> Void
+
+    func body(content: Content) -> some View {
+        content
+            .contextMenu { menu(tile.id) }
+            .draggable(tile.id.uuidString) {
+                TileIcon(kind: tile.content.kind, swatch: tile.content.swatch, isDone: false)
+            }
+            .dropDestination(for: String.self) { items, _ in
+                guard let dragged = items.first.flatMap(UUID.init(uuidString:)) else { return false }
+                onDrop(dragged, tile.id)
+                return true
+            }
     }
 }

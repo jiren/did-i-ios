@@ -54,17 +54,20 @@ struct ComponentGallery: View {
                 FloatingTabBar(selection: $tab) {}
     }
 
-    // MARK: - Calendar (phase 14)
+    // MARK: - Calendar (phase 14, compact in phase 19)
 
     @ViewBuilder
     private var calendarSection: some View {
         let today = GallerySample.agenda()
         let saturday = GallerySample.agenda(day: CalendarDay(year: 2026, month: 10, day: 31))
+        TodayHeader(dayTitle: today.dayTitle, daySub: today.daySub, layout: .grid, onToggleLayout: {}, onCategories: {}, onSettings: {})
+            .padding(.horizontal, -20)
         HStack(spacing: 6) {
             ForEach(today.strip) { day in DayStripCell(day: day) {} }
         }
+        ProgressBarCard(progress: today.progress, isToday: true, isStuck: true)
         ScrollView(.horizontal) {
-            HStack(spacing: 8) {
+            HStack(spacing: 6) {
                 CategoryChip(title: "All", isSelected: true) {}
                 ForEach(GallerySample.categories) { category in
                     CategoryChip(title: category.name, icon: category.icon, colour: category.colour, isSelected: false) {}
@@ -73,38 +76,54 @@ struct ComponentGallery: View {
             }
         }
         .scrollIndicators(.hidden)
-        ProgressBarCard(progress: today.progress, isToday: true, isStuck: true)
         ProgressBarCard(progress: GallerySample.agenda(allClear: true).progress, isToday: true)
         ProgressBarCard(progress: saturday.progress, isToday: false)
-        if let section = today.sections.first { sectionView(section) }
+        if let section = today.sections.first { sectionView(section, layout: .grid) }
     }
 
     @ViewBuilder
     private var agendaSection: some View {
         let today = GallerySample.agenda()
         let saturday = GallerySample.agenda(day: CalendarDay(year: 2026, month: 10, day: 31))
-        ForEach(today.sections.dropFirst()) { section in sectionView(section) }
+        if let daily = today.sections.first { sectionView(daily, layout: .list) }
+        ForEach(today.sections.dropFirst()) { section in sectionView(section, layout: .grid) }
+        if let allDone = GallerySample.agenda(allClear: true).sections.last {
+            sectionView(allDone, layout: .grid, isExpanded: false)
+        }
         Text("Sat, Oct 31").font(.didLabel).foregroundStyle(Color.muted)
-        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 3), spacing: 10) {
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
             ForEach(saturday.sections[0].tasks.prefix(2)) { task in
                 TaskTile(content: GallerySample.content(task, isToday: false), onLog: {}, onPhoto: {})
             }
         }
-        NothingDueCard(text: "Travel isn’t due on Fri, Oct 30. Check Coming up below.")
-        AddChecksButton {}
-        Text("Coming up").font(.didBarTitle).foregroundStyle(Color.ink)
-        ForEach(today.comingUp) { upcoming in ComingUpRow(upcoming: upcoming) {} }
+        TaskRow(content: GallerySample.content(saturday.sections[0].tasks[0], isToday: false), onLog: {}, onPhoto: {})
+        NothingDueCard(text: "Travel isn’t due on Fri, Oct 30. The dots on the days above show when it is.")
         FloatingTabBar(selection: $tab, todayProgress: 4 / 6, todayAccessibilityLabel: today.ringAccessibilityLabel) {}
     }
 
     @ViewBuilder
-    private func sectionView(_ section: DayAgenda.Section) -> some View {
-        CategorySectionHeader(category: section.category, repeatLabel: section.repeatLabel, progressText: section.progressText)
-        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 3), spacing: 10) {
-            ForEach(section.tasks) { task in
-                TaskTile(content: GallerySample.content(task, isToday: true), onLog: {}, onPhoto: {})
+    private func sectionView(_ section: DayAgenda.Section, layout: TodayLayout, isExpanded: Bool = true) -> some View {
+        CategorySectionHeader(
+            category: section.category,
+            meta: section.isAllDone ? "All done · last 10:27 AM" : section.repeatLabel,
+            progressText: section.isAllDone ? "✓ \(section.progressText)" : section.progressText,
+            isAllDone: section.isAllDone, isExpanded: isExpanded, onToggle: {}, onAdd: {}
+        )
+        if isExpanded {
+            switch layout {
+            case .grid:
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
+                    ForEach(section.tasks) { task in
+                        TaskTile(content: GallerySample.content(task, isToday: true), onLog: {}, onPhoto: {})
+                    }
+                }
+            case .list:
+                VStack(spacing: 6) {
+                    ForEach(section.tasks) { task in
+                        TaskRow(content: GallerySample.content(task, isToday: true), onLog: {}, onPhoto: {})
+                    }
+                }
             }
-            AddTaskTile(category: section.category) {}
         }
     }
 

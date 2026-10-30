@@ -30,22 +30,31 @@ struct TodayViewModelTests {
         TodayViewModel(
             checkStore: store, logStore: store, days: FixedDays(), timeSource: clock, changes: changes,
             editor: CheckEditor(store: store, changes: changes, photos: nil),
-            categoryEditor: CategoryEditor(store: store, changes: changes, photos: nil), locale: Locale(identifier: "en_US"),
+            categoryEditor: CategoryEditor(store: store, changes: changes, photos: nil), layout: LayoutSpy(),
+            locale: Locale(identifier: "en_US"),
             toastDuration: toastDuration
         )
     }
 
     private var tiles: [TodayTile] { viewModel.sections.flatMap(\.tiles) }
 
+    /// Sections list not-done tasks first, so find tiles by name.
+    private func tile(_ name: String) -> TodayTile {
+        tiles.first { $0.content.name == name }!
+    }
+
+    private var door: TodayTile { tile("Front door locked") }
+
     @Test func aNewDayShowsTodaysDueTasksUndone() {
         viewModel.reload()
-        #expect(viewModel.dateText == "Today · Thu, Oct 29")
+        #expect(viewModel.dayTitle == "Today")
+        #expect(viewModel.daySub == "Thu, Oct 29")
         #expect(viewModel.isToday)
         #expect(!viewModel.isEmpty)
         #expect(viewModel.sections.map(\.category.name) == ["Daily"])
         #expect(tiles.map(\.content.state) == [.toLog, .toLog, .toLog, .toLog])
         #expect(tiles.map(\.content.swatch) == [.violet, .sun, .coral, .mint])
-        #expect(tiles[0].content.accessibilityLabel == "Front door locked, not logged — tap to log")
+        #expect(door.content.accessibilityLabel == "Front door locked, not logged — tap to log")
         #expect(viewModel.progress.main == "0 of 4 done")
         #expect(viewModel.progress.pill == .left(4))
         #expect(viewModel.categories.map(\.name) == ["Daily", "Bin night"])
@@ -61,13 +70,13 @@ struct TodayViewModelTests {
     @Test func yesterdaysLogDoesNotCountToday() throws {
         _ = try store.log(checks[0].id, source: .app, at: TestTime.date(2026, 10, 28, 22, 58), photoFileName: nil)
         viewModel.reload()
-        #expect(tiles[0].content.isDone == false)
+        #expect(door.content.isDone == false)
     }
 
     @Test func loggingFillsTheTileAndShowsTheToast() {
         viewModel.reload()
         viewModel.log(checks[0].id)
-        let tile = tiles[0].content
+        let tile = door.content
         #expect(tile.isDone)
         #expect(tile.statusText.plainSpaces == "10:42 AM")
         #expect(tile.accessibilityLabel.plainSpaces == "Front door locked, logged 10:42 AM — tap to log again")
@@ -85,7 +94,7 @@ struct TodayViewModelTests {
         viewModel.log(checks[0].id)
         viewModel.undo()
         #expect(viewModel.toast == nil)
-        #expect(tiles[0].content.isDone == false)
+        #expect(door.content.isDone == false)
         #expect(changes.count == 2)
     }
 
@@ -100,19 +109,20 @@ struct TodayViewModelTests {
         viewModel.reload()
         viewModel.log(checks[0].id, photoFileName: "door.heic")
         #expect(viewModel.toast?.message == "Photo saved · Front door locked")
-        #expect(tiles[0].content.hasPhoto)
-        #expect(tiles[0].content.photoButtonLabel == "Retake photo for Front door locked")
+        #expect(door.content.hasPhoto)
+        #expect(door.content.photoButtonLabel == "Retake photo for Front door locked")
     }
 
     @Test func aLaterDayIsUpcomingAndCantBeLogged() {
         viewModel.reload()
         viewModel.select(Self.friday)
         #expect(!viewModel.isToday)
-        #expect(viewModel.dateText == "Fri, Oct 30")
+        #expect(viewModel.dayTitle == "Fri")
+        #expect(viewModel.daySub == "Oct 30")
         #expect(viewModel.sections.map(\.category.name) == ["Daily", "Bin night"])
         #expect(tiles.allSatisfy { $0.content.state == .upcoming })
-        #expect(tiles[4].content.accessibilityLabel == "Bins out, upcoming on Fri, Oct 30")
-        #expect(viewModel.progress.main == "6 checks planned")
+        #expect(tile("Bins out").content.accessibilityLabel == "Bins out, upcoming on Fri, Oct 30")
+        #expect(viewModel.progress.main == "6 tasks planned")
 
         viewModel.log(checks[0].id)
         #expect(viewModel.toast == nil)
@@ -124,7 +134,7 @@ struct TodayViewModelTests {
         viewModel.reload()
         viewModel.selectFilter(bins.id)
         #expect(viewModel.sections.isEmpty)
-        #expect(viewModel.nothingDueText == "Bin night isn’t due on Thu, Oct 29. Check Coming up below.")
+        #expect(viewModel.nothingDueText == "Bin night isn’t due on Thu, Oct 29. The dots on the days above show when it is.")
         #expect(viewModel.addTarget == bins.id)
         viewModel.select(Self.friday)
         #expect(viewModel.sections.map(\.category.name) == ["Bin night"])
@@ -141,20 +151,54 @@ struct TodayViewModelTests {
         viewModel.showToday()
         #expect(viewModel.isToday)
         #expect(viewModel.filterID == nil)
-        #expect(viewModel.dateText == "Today · Thu, Oct 29")
+        #expect(viewModel.daySub == "Thu, Oct 29")
         #expect(viewModel.sections.map(\.category.name) == ["Daily"])
     }
 
-    @Test func comingUpOpensItsDay() throws {
+    @Test func aSectionClosesOnceAllDoneAndRemembersATap() {
+        clock.now = TestTime.date(2026, 10, 30, 10)
+        viewModel.rebuild()
+        let binsOut = tile("Bins out").id
+        let recycling = tile("Recycling out").id
+        viewModel.log(binsOut)
+        #expect(viewModel.sections[1].isExpanded)
+        viewModel.log(recycling)
+        let section = viewModel.sections[1]
+        #expect(section.isAllDone)
+        #expect(!section.isExpanded)
+        #expect(section.progressText == "✓ 2/2")
+        #expect(section.meta.plainSpaces == "All done · last 10:00 AM")
+
+        viewModel.toggleSection(bins.id)
+        #expect(viewModel.sections[1].isExpanded)
+        viewModel.toggleSection(CategoryDefaults.dailyID)
+        #expect(!viewModel.sections[0].isExpanded)
+
+        // A new day forgets the taps.
+        clock.now = TestTime.date(2026, 10, 31, 9)
+        viewModel.rebuild()
+        #expect(viewModel.sections[0].isExpanded)
+    }
+
+    @Test func addingFromASectionOpensIt() {
         viewModel.reload()
-        let upcoming = try #require(viewModel.comingUp.first)
-        #expect(upcoming.category.name == "Bin night")
-        #expect(upcoming.when == "Tomorrow")
-        #expect(upcoming.detail == "2 checks · Every Friday")
-        viewModel.selectFilter(CategoryDefaults.dailyID)
-        viewModel.open(upcoming)
-        #expect(viewModel.dateText == "Fri, Oct 30")
-        #expect(viewModel.filterID == nil)
+        viewModel.toggleSection(CategoryDefaults.dailyID)
+        #expect(!viewModel.sections[0].isExpanded)
+        viewModel.expandSection(CategoryDefaults.dailyID)
+        #expect(viewModel.sections[0].isExpanded)
+    }
+
+    @Test func theLayoutToggleIsRemembered() {
+        let layout = LayoutSpy()
+        let model = TodayViewModel(
+            checkStore: store, logStore: store, days: FixedDays(), timeSource: clock, changes: changes,
+            editor: CheckEditor(store: store, changes: changes, photos: nil),
+            categoryEditor: CategoryEditor(store: store, changes: changes, photos: nil), layout: layout
+        )
+        #expect(model.layout == .grid)
+        model.toggleLayout()
+        #expect(model.layout == .list)
+        #expect(layout.todayLayout == .list)
     }
 
     @Test func theSelectedDayGoesBackToTodayWhenTheDayChanges() {
@@ -163,7 +207,7 @@ struct TodayViewModelTests {
         clock.now = TestTime.date(2026, 10, 30, 7)
         viewModel.rebuild()
         #expect(viewModel.isToday)
-        #expect(viewModel.dateText == "Today · Fri, Oct 30")
+        #expect(viewModel.daySub == "Fri, Oct 30")
         #expect(viewModel.sections.map(\.category.name) == ["Daily", "Bin night"])
     }
 
@@ -172,7 +216,7 @@ struct TodayViewModelTests {
         viewModel.log(checks[0].id)
         clock.now = TestTime.date(2026, 10, 30, 7)
         viewModel.rebuild()
-        #expect(tiles[0].content.isDone == false)
+        #expect(door.content.isDone == false)
     }
 
     @Test func movingStaysWithinTheCategory() {

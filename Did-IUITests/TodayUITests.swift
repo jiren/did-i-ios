@@ -56,6 +56,33 @@ final class TodayUITests: XCTestCase {
     }
 
     @MainActor
+    func testListLayoutLogsARow() throws {
+        let app = XCUIApplication.launched(arguments: ["-SeedSample"])
+        let row = app.buttons["tile.Iron unplugged"]
+        XCTAssertTrue(row.waitForExistence(timeout: 5))
+        app.buttons["today.layout"].tap()
+        XCTAssertEqual(app.buttons["today.layout"].label, "Show as grid")
+        XCTAssertTrue(row.label.contains("not logged"))
+        row.tap()
+        XCTAssertTrue(app.descendants(matching: .any)["today.toast"].waitForExistence(timeout: 2))
+        XCTAssertFalse(row.label.contains("not logged"))
+    }
+
+    @MainActor
+    func testCollapsingASection() throws {
+        let app = XCUIApplication.launched(arguments: ["-SeedSample"])
+        let tile = app.buttons["tile.Front door locked"]
+        XCTAssertTrue(tile.waitForExistence(timeout: 5))
+        let header = app.buttons["section.Daily"]
+        XCTAssertEqual(header.value as? String, "Expanded")
+        header.tap()
+        XCTAssertFalse(tile.waitForExistence(timeout: 1))
+        XCTAssertEqual(header.value as? String, "Collapsed")
+        header.tap()
+        XCTAssertTrue(tile.waitForExistence(timeout: 2))
+    }
+
+    @MainActor
     func testFilteringByACategory() throws {
         let app = XCUIApplication.launched(arguments: ["-SeedSample"])
         XCTAssertTrue(app.buttons["tile.Bins out"].waitForExistence(timeout: 5))

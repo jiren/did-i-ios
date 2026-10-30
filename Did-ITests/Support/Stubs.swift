@@ -10,3 +10,7 @@ final class FixedDays: DayBoundaryProviding {
     var dayBoundary: DayBoundary
     init(startHour: Int = 0) { dayBoundary = DayBoundary(calendar: TestTime.calendar(), startHour: startHour) }
 }
+
+final class LayoutSpy: TodayLayoutStoring {
+    var todayLayout: TodayLayout = .grid
+}

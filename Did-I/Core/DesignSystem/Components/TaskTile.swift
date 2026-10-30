@@ -38,7 +38,7 @@ struct TaskTileContent: Equatable {
 }
 
 /// A task in a category's 3-column grid (`Main.dc.html`): filled in its colour once done, a dashed outline while
-/// it can be logged, plain on a later day.
+/// it can be logged, plain on a later day. `TaskRow` is the same task in the list layout.
 struct TaskTile: View {
     let content: TaskTileContent
     let onLog: () -> Void
@@ -61,7 +61,7 @@ struct TaskTile: View {
         ZStack(alignment: .topLeading) {
             Color.clear.aspectRatio(1, contentMode: .fit)
             VStack(alignment: .leading, spacing: 2) {
-                icon
+                TaskIcon(content: content)
                 Spacer(minLength: 6)
                 Text(content.name)
                     .font(.didSmallTileName)
@@ -73,26 +73,95 @@ struct TaskTile: View {
                     .minimumScaleFactor(0.8)
                     .foregroundStyle(content.isDone ? content.swatch.secondary : Color.muted)
             }
-            .padding(10)
+            .padding(9)
         }
         .frame(maxWidth: .infinity, alignment: .topLeading)
         .foregroundStyle(content.isDone ? content.swatch.foreground : Color.ink)
         .background { background }
-        .contentShape(.rect(cornerRadius: 22))
+        .contentShape(.rect(cornerRadius: 20))
     }
 
-    private var icon: some View {
+    private var background: some View {
+        TaskFill(state: content.state, swatch: content.swatch, cornerRadius: 20)
+    }
+
+    private var photoButton: some View {
+        TaskPhotoButton(content: content, action: onPhoto)
+            .padding(2)
+    }
+}
+
+/// The same task as a 52 pt row, for Today's list layout (`Main.dc.html`, view "list").
+struct TaskRow: View {
+    let content: TaskTileContent
+    let onLog: () -> Void
+    let onPhoto: () -> Void
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        ZStack(alignment: .trailing) {
+            Button(action: onLog) {
+                HStack(spacing: 12) {
+                    TaskIcon(content: content)
+                    // At accessibility sizes the status goes under the name, and the name may wrap.
+                    if dynamicTypeSize.isAccessibilitySize {
+                        VStack(alignment: .leading, spacing: 2) { name.lineLimit(3); status }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.vertical, 8)
+                    } else {
+                        name.lineLimit(1).frame(maxWidth: .infinity, alignment: .leading)
+                        status
+                    }
+                }
+                .foregroundStyle(content.isDone ? content.swatch.foreground : Color.ink)
+                .padding(.leading, 10)
+                .padding(.trailing, content.canLog ? 56 : 14)
+                .frame(maxWidth: .infinity, minHeight: 52)
+                .background { TaskFill(state: content.state, swatch: content.swatch, cornerRadius: 16) }
+                .contentShape(.rect(cornerRadius: 16))
+            }
+            .buttonStyle(TilePressStyle())
+            .disabled(!content.canLog)
+            .accessibilityLabel(content.accessibilityLabel)
+            .accessibilityIdentifier("tile.\(content.name)")
+            if content.canLog {
+                TaskPhotoButton(content: content, action: onPhoto)
+                    .padding(.trailing, 4)
+            }
+        }
+    }
+}
+
+private extension TaskRow {
+    var name: some View {
+        Text(content.name).font(.didEmphasis)
+    }
+
+    var status: some View {
+        Text(content.statusText)
+            .font(.didMicro)
+            .lineLimit(1)
+            .foregroundStyle(content.isDone ? content.swatch.secondary : Color.muted)
+    }
+}
+
+/// A task's 30 pt icon disc, with the check badge once done.
+private struct TaskIcon: View {
+    let content: TaskTileContent
+
+    var body: some View {
         Image(systemName: content.kind.symbolName)
-            .font(.system(size: 14, weight: .semibold))
+            .font(.system(size: 13, weight: .semibold))
             .foregroundStyle(content.swatch.foreground)
-            .frame(width: 32, height: 32)
+            .frame(width: 30, height: 30)
             .background(content.isDone ? content.swatch.chip : content.swatch.background, in: .circle)
             .overlay(alignment: .bottomTrailing) {
                 if content.isDone {
                     Image(systemName: "checkmark")
                         .font(.system(size: 7, weight: .black))
                         .foregroundStyle(.white)
-                        .frame(width: 17, height: 17)
+                        .frame(width: 16, height: 16)
                         .background(Color.onTile, in: .circle)
                         .overlay(Circle().strokeBorder(.white, lineWidth: 2))
                         .offset(x: 5, y: 4)
@@ -100,31 +169,42 @@ struct TaskTile: View {
             }
             .accessibilityHidden(true)
     }
+}
 
-    @ViewBuilder
-    private var background: some View {
-        let shape = RoundedRectangle(cornerRadius: 22, style: .continuous)
-        switch content.state {
-        case .done: shape.fill(content.swatch.background)
+/// Done: the task's colour. To log: a dashed ink outline. A later day: plain.
+private struct TaskFill: View {
+    let state: TaskTileContent.State
+    let swatch: TileSwatch
+    let cornerRadius: CGFloat
+
+    var body: some View {
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+        switch state {
+        case .done: shape.fill(swatch.background)
         case .toLog: shape.strokeBorder(Color.ink, style: StrokeStyle(lineWidth: 2, dash: [6, 5]))
         case .upcoming: shape.fill(Color.surface)
         }
     }
+}
 
-    /// 30 pt, in a 44 pt target at the top right.
-    private var photoButton: some View {
-        Button(action: onPhoto) {
+/// The 28 pt camera, in a 44 pt target, with the sun dot once a photo exists.
+private struct TaskPhotoButton: View {
+    let content: TaskTileContent
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
             Image(systemName: "camera.fill")
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(photoForeground)
-                .frame(width: 30, height: 30)
-                .background(photoBackground, in: .circle)
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(foreground)
+                .frame(width: 28, height: 28)
+                .background(background, in: .circle)
                 .overlay(alignment: .topTrailing) {
                     if content.hasPhoto {
                         Circle()
                             .fill(Color.tileSun)
                             .overlay(Circle().strokeBorder(Color.onTile, lineWidth: 2))
-                            .frame(width: 12, height: 12)
+                            .frame(width: 11, height: 11)
                             .offset(x: 3, y: -3)
                     }
                 }
@@ -132,53 +212,17 @@ struct TaskTile: View {
                 .contentShape(.rect)
         }
         .buttonStyle(.plain)
-        .padding(2)
         .accessibilityLabel(content.photoButtonLabel)
         .accessibilityIdentifier("tile.\(content.name).photo")
     }
 
-    private var photoBackground: Color {
+    private var background: Color {
         if content.hasPhoto { return .onTile }
         return content.isDone ? content.swatch.chip : Color.ink.opacity(0.10)
     }
 
-    private var photoForeground: Color {
+    private var foreground: Color {
         if content.hasPhoto { return .white }
         return content.isDone ? content.swatch.foreground : .ink
-    }
-}
-
-/// The dashed "Add task" tile at the end of a category's grid.
-struct AddTaskTile: View {
-    let category: CategoryRecord
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            ZStack {
-                Color.clear.aspectRatio(1, contentMode: .fit)
-                VStack(spacing: 6) {
-                    Image(systemName: "plus")
-                        .font(.system(size: 15, weight: .heavy))
-                        .foregroundStyle(category.colour.foreground)
-                        .frame(width: 32, height: 32)
-                        .background(category.colour.background, in: .circle)
-                    Text("Add task")
-                        .font(.didFootnote)
-                        .foregroundStyle(Color.ink)
-                }
-                .padding(8)
-            }
-            .frame(maxWidth: .infinity)
-            .background(Color.surface, in: .rect(cornerRadius: 22, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .strokeBorder(Color.disabledFill, style: StrokeStyle(lineWidth: 2, dash: [6, 5]))
-            }
-            .contentShape(.rect(cornerRadius: 22))
-        }
-        .buttonStyle(TilePressStyle())
-        .accessibilityLabel(Text("Add a task to \(category.name)"))
-        .accessibilityIdentifier("section.\(category.name).add")
     }
 }

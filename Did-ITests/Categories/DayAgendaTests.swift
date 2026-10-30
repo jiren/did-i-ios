@@ -61,7 +61,8 @@ struct DayAgendaTests {
     @Test func todayShowsTheDueCategoriesWithProgress() {
         let agenda = sample.agenda()
         #expect(agenda.isToday)
-        #expect(agenda.dateLine == "Today · Fri, Oct 30")
+        #expect(agenda.dayTitle == "Today")
+        #expect(agenda.daySub == "Fri, Oct 30")
         #expect(agenda.sections.map(\.category.name) == ["Daily", "Bin night"])
         #expect(agenda.sections.map(\.progressText) == ["3/4", "1/2"])
         #expect(agenda.sections.map(\.repeatLabel) == ["Every day", "Every Friday"])
@@ -69,15 +70,32 @@ struct DayAgendaTests {
         #expect(agenda.progress.main == "4 of 6 done")
         #expect(agenda.progress.pill == .left(2))
         #expect(agenda.progress.pill.text == "2 left")
-        #expect(agenda.progress.segments.map(\.isDone) == [true, true, true, false, true, false])
+        #expect(agenda.progress.segments.map(\.isDone) == [false, true, true, true, false, true])
         #expect(agenda.nothingDueText == nil)
+        #expect(agenda.sections.map(\.isAllDone) == [false, false])
+    }
+
+    @Test func notDoneTasksComeFirst() {
+        let agenda = sample.agenda()
+        #expect(agenda.sections[0].tasks.map(\.check.name) == ["Iron unplugged", "Front door locked", "Pill taken", "Stove off"])
+        #expect(agenda.sections[1].tasks.map(\.check.name) == ["Recycling out", "Bins out"])
+    }
+
+    @Test func aSectionIsAllDoneOnceEveryTaskIsLogged() {
+        let agenda = sample.agenda(logs: [sample.log("Recycling out", at: TestTime.date(2026, 10, 30, 7, 6))])
+        let bins = agenda.sections[1]
+        #expect(bins.isAllDone)
+        #expect(bins.progressText == "2/2")
+        #expect(bins.lastLog?.date == TestTime.date(2026, 10, 30, 7, 6))
+        #expect(!sample.agenda(day: CalendarDay(year: 2026, month: 11, day: 6)).sections.contains { $0.isAllDone })
     }
 
     @Test func tileColoursFollowTheWholeList() {
         let agenda = sample.agenda()
-        #expect(agenda.sections.flatMap(\.tasks).map(\.swatch) == [.violet, .sun, .coral, .mint, .sky, .pink])
+        // Listed not-done first, but coloured by place in the whole list.
+        #expect(agenda.sections.flatMap(\.tasks).map(\.swatch) == [.mint, .violet, .sun, .coral, .pink, .sky])
         let filtered = sample.agenda(filter: sample.bins)
-        #expect(filtered.sections.flatMap(\.tasks).map(\.swatch) == [.sky, .pink])
+        #expect(filtered.sections.flatMap(\.tasks).map(\.swatch) == [.pink, .sky])
     }
 
     @Test func allClearOnceEveryDueTaskIsLogged() {
@@ -98,7 +116,7 @@ struct DayAgendaTests {
     @Test func aFilterShowsOneCategory() {
         let agenda = sample.agenda(filter: sample.bins)
         #expect(agenda.sections.map(\.category.name) == ["Bin night"])
-        #expect(agenda.progress.scope == "Bin night · today")
+        #expect(agenda.progress.scope == "Bin night")
         #expect(agenda.progress.main == "1 of 2 done")
         #expect(agenda.progress.pill == .left(1))
     }
@@ -107,61 +125,42 @@ struct DayAgendaTests {
         let saturday = CalendarDay(year: 2026, month: 10, day: 31)
         let agenda = sample.agenda(day: saturday)
         #expect(!agenda.isToday)
-        #expect(agenda.dateLine == "Sat, Oct 31")
+        #expect(agenda.dayTitle == "Sat")
+        #expect(agenda.daySub == "Oct 31")
         #expect(agenda.sections.map(\.category.name) == ["Daily"])
         #expect(agenda.sections[0].tasks.allSatisfy { !$0.isDone })
-        #expect(agenda.progress.scope == "All · Sat, Oct 31")
-        #expect(agenda.progress.main == "4 checks planned")
+        #expect(agenda.progress.scope == "Sat")
+        #expect(agenda.progress.main == "4 tasks planned")
         #expect(agenda.progress.pill == .upcoming)
-        #expect(sample.agenda(day: saturday, filter: sample.daily).progress.scope == "Daily · Sat, Oct 31")
+        #expect(sample.agenda(day: saturday, filter: sample.daily).progress.scope == "Daily")
     }
 
     @Test func aFilteredCategoryNotDueSaysSo() {
         let agenda = sample.agenda(filter: sample.travel)
         #expect(agenda.sections.isEmpty)
         #expect(agenda.progress.main == "Nothing due")
-        #expect(agenda.progress.pill == .freeDay)
-        #expect(agenda.progress.scope == "Travel · today")
-        #expect(agenda.nothingDueText == "Travel isn’t due on Fri, Oct 30. Check Coming up below.")
+        #expect(agenda.progress.pill == .free)
+        #expect(agenda.progress.pill.text == "Free")
+        #expect(agenda.progress.scope == "Travel")
+        #expect(agenda.nothingDueText == "Travel isn’t due on Fri, Oct 30. The dots on the days above show when it is.")
     }
 
     @Test func oneTaskPlanned() {
         let monday = CalendarDay(year: 2026, month: 11, day: 2)
         var sample = Sample()
         sample.checks = [sample.checks[8]]
-        #expect(sample.agenda(day: monday, filter: sample.travel).progress.main == "1 check planned")
+        #expect(sample.agenda(day: monday, filter: sample.travel).progress.main == "1 task planned")
     }
 
     @Test func theStripHasSevenDaysWithDotsForExtraCategories() {
         let strip = sample.agenda().strip
         #expect(strip.count == 7)
         #expect(strip.map(\.dayNumber) == [30, 31, 1, 2, 3, 4, 5])
-        #expect(strip.map(\.weekdayText) == ["Today", "Sat", "Sun", "Mon", "Tue", "Wed", "Thu"])
+        #expect(strip.map(\.weekdayText) == ["Today", "S", "S", "M", "T", "W", "T"])
         #expect(strip.map(\.dots) == [[.mint], [], [.coral], [.sky], [], [], []])
         #expect(strip.map(\.isSelected) == [true, false, false, false, false, false, false])
         #expect(strip[1].accessibilityLabel == "Sat, Oct 31")
-        #expect(strip[2].accessibilityLabel == "Sun, Nov 1, 1 extra categories due")
-    }
-
-    @Test func comingUpSkipsWhatsDueOnTheSelectedDay() {
-        let today = sample.agenda().comingUp
-        #expect(today.map(\.category.name) == ["Home safety", "Travel"])
-        #expect(today.map(\.when) == ["Sun", "Mon"])
-        #expect(today.map(\.detail) == ["2 checks · Monthly on the 1st", "4 checks · Once · Mon, Nov 2"])
-
-        let saturday = sample.agenda(day: CalendarDay(year: 2026, month: 10, day: 31)).comingUp
-        #expect(saturday.map(\.category.name) == ["Home safety", "Travel", "Bin night"])
-        #expect(saturday.map(\.when) == ["Sun", "Mon", "Nov 6"])
-        #expect(saturday.map(\.isInStrip) == [true, true, false])
-
-        let sunday = sample.agenda(day: CalendarDay(year: 2026, month: 11, day: 1)).comingUp
-        #expect(sunday.map(\.category.name) == ["Travel", "Bin night"])
-    }
-
-    @Test func comingUpSaysTomorrow() {
-        let agenda = sample.agenda(now: TestTime.date(2026, 10, 31, 9))
-        #expect(agenda.comingUp.first?.category.name == "Home safety")
-        #expect(agenda.comingUp.first?.when == "Tomorrow")
+        #expect(strip[2].accessibilityLabel == "Sun, Nov 1, also due: Home safety")
     }
 
     @Test func theRingCountsTodayWhateverIsSelected() {
@@ -181,7 +180,6 @@ struct DayAgendaTests {
             boundary: DayBoundary(calendar: Sample.calendar), locale: Locale(identifier: "en_US")
         )
         #expect(agenda.progress.main == "Nothing due")
-        #expect(agenda.progress.pill == .freeDay)
-        #expect(agenda.comingUp.isEmpty)
+        #expect(agenda.progress.pill == .free)
     }
 }

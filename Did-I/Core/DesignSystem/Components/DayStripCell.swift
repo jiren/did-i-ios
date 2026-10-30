@@ -1,17 +1,19 @@
 import SwiftUI
 
-/// A day in Today's 7-day strip (`Main.dc.html`): weekday, date and dots for the extra categories due.
+/// A day in Today's 7-day strip (`Main.dc.html`): its letter (or "Today"), the date, and dots for the extra
+/// categories due.
 struct DayStripCell: View {
     let day: DayAgenda.StripDay
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 2) {
+            VStack(spacing: 3) {
                 Text(day.weekdayText)
-                    .font(.didMicro)
+                    .font(.didStripWeekday)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
+                    .foregroundStyle(day.isSelected ? Color.onSelection : Color.muted)
                 Text(day.dayNumber, format: .number)
                     .font(.didStripDay)
                     .lineLimit(1)
@@ -21,16 +23,15 @@ struct DayStripCell: View {
                     ForEach(Array(day.dots.enumerated()), id: \.offset) { _, dot in
                         Circle()
                             .fill(day.isSelected ? Color.onSelection : dot.background)
-                            .frame(width: 6, height: 6)
+                            .frame(width: 5, height: 5)
                     }
                 }
-                .frame(height: 6)
+                .frame(height: 5)
             }
-            .foregroundStyle(day.isSelected ? Color.onSelection : Color.ink)
             .padding(.horizontal, 2)
-            .frame(maxWidth: .infinity, minHeight: 72)
-            .background(day.isSelected ? Color.selection : Color.surface, in: .rect(cornerRadius: 18, style: .continuous))
-            .contentShape(.rect(cornerRadius: 18))
+            .frame(maxWidth: .infinity, minHeight: 54)
+            .background(day.isSelected ? Color.selection : Color.surface, in: .rect(cornerRadius: 16, style: .continuous))
+            .contentShape(.rect(cornerRadius: 16))
         }
         .buttonStyle(TilePressStyle())
         .accessibilityLabel(day.accessibilityLabel)

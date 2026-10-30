@@ -71,7 +71,8 @@ struct TodayPhotoTests {
         let viewModel = TodayViewModel(
             checkStore: store, logStore: store, days: FixedDays(), timeSource: clock, changes: changes,
             editor: CheckEditor(store: store, changes: changes, photos: photos),
-            categoryEditor: CategoryEditor(store: store, changes: changes, photos: photos), photos: photos,
+            categoryEditor: CategoryEditor(store: store, changes: changes, photos: photos), layout: LayoutSpy(),
+            photos: photos,
             locale: Locale(identifier: "en_US"), toastDuration: .seconds(60)
         )
         viewModel.reload()

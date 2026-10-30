@@ -28,7 +28,7 @@ struct FloatingTabBar: View {
                     .background(Color.tileViolet, in: .circle)
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("Add checks")
+            .accessibilityLabel("Add tasks")
             .accessibilityIdentifier("tabbar.add")
         }
         .padding(.horizontal, 10)

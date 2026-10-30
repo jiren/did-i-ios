@@ -14,6 +14,7 @@ struct AppSettingsTests {
         #expect(settings.appearance == .system)
         #expect(settings.dayStartHour == 0)
         #expect(settings.keepPhotos == .thirtyDays)
+        #expect(settings.todayLayout == .grid)
         #expect(settings.actionButtonCheckID == nil)
         #expect(settings.actionButtonStrongHaptic)
         #expect(!settings.actionButtonOpensCamera)
@@ -27,6 +28,7 @@ struct AppSettingsTests {
         settings.appearance = .dark
         settings.dayStartHour = 4
         settings.keepPhotos = .forever
+        settings.todayLayout = .list
         settings.actionButtonCheckID = id
         settings.actionButtonStrongHaptic = false
         settings.hidesNamesOnLockScreen = true
@@ -35,6 +37,7 @@ struct AppSettingsTests {
         #expect(reread.appearance == .dark)
         #expect(reread.dayBoundary.startHour == 4)
         #expect(reread.keepPhotos == .forever)
+        #expect(reread.todayLayout == .list)
         #expect(reread.actionButtonCheckID == id)
         #expect(!reread.actionButtonStrongHaptic)
         #expect(reread.hidesNamesOnLockScreen)

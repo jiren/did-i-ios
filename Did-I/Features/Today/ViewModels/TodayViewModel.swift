@@ -7,24 +7,27 @@ protocol DayBoundaryProviding: AnyObject {
     var dayBoundary: DayBoundary { get }
 }
 
-extension AppSettings: DayBoundaryProviding {}
+extension AppSettings: DayBoundaryProviding, TodayLayoutStoring {}
 
 /// Today as a calendar (`Main.dc.html`): a day from the 7-day strip, a category filter, the due categories with
-/// their tasks, the progress bar and Coming up. Only today's tasks can be logged.
+/// their tasks (collapsible, as tiles or rows) and the progress bar. Only today's tasks can be logged.
 @Observable
 final class TodayViewModel {
-    /// "Today · Fri, Oct 30" or "Sat, Oct 31".
-    private(set) var dateText = ""
+    /// "Today" or "Sat".
+    private(set) var dayTitle = ""
+    /// "Fri, Oct 30" or "Oct 31".
+    private(set) var daySub = ""
     private(set) var strip: [DayAgenda.StripDay] = []
     /// Every category, for the filter chips.
     private(set) var categories: [CategoryRecord] = []
     /// The category shown alone, or nil for All.
     private(set) var filterID: UUID?
-    private(set) var progress = DayAgenda.Progress(scope: "", main: "", pill: .freeDay, segments: [])
+    private(set) var progress = DayAgenda.Progress(scope: "", main: "", pill: .free, segments: [])
     private(set) var sections: [TodaySection] = []
-    /// "No checks scheduled for Sat, Oct 31." when nothing is due.
+    /// "No tasks scheduled for Sat, Oct 31." when nothing is due.
     private(set) var nothingDueText: String?
-    private(set) var comingUp: [DayAgenda.Upcoming] = []
+    /// Tiles or rows; kept in settings.
+    private(set) var layout: TodayLayout = .grid
     private(set) var isToday = true
     /// Today's due tasks done, 0 to 1, for the tab bar's ring.
     private(set) var todayProgress = 0.0
@@ -46,6 +49,7 @@ final class TodayViewModel {
     @ObservationIgnored private let editor: CheckEditor
     @ObservationIgnored private let categoryEditor: CategoryEditor
     @ObservationIgnored private let photos: PhotoStore?
+    @ObservationIgnored private let layoutStore: any TodayLayoutStoring
     @ObservationIgnored private let locale: Locale
     @ObservationIgnored private let toastDuration: Duration
 
@@ -56,6 +60,8 @@ final class TodayViewModel {
     /// The day picked in the strip; nil means today, and it goes back to nil when the day changes.
     @ObservationIgnored private var selectedDay: CalendarDay?
     @ObservationIgnored private var agendaToday: CalendarDay?
+    /// Sections opened or closed by hand, until the day changes; others are closed when all done.
+    @ObservationIgnored private var expandedOverrides: [UUID: Bool] = [:]
 
     init(
         checkStore: any CheckStoring & CategoryStoring,
@@ -65,6 +71,7 @@ final class TodayViewModel {
         changes: any ChangeNotifying,
         editor: CheckEditor,
         categoryEditor: CategoryEditor,
+        layout: any TodayLayoutStoring,
         photos: PhotoStore? = nil,
         locale: Locale = .autoupdatingCurrent,
         toastDuration: Duration = .seconds(5)
@@ -76,6 +83,8 @@ final class TodayViewModel {
         self.changes = changes
         self.editor = editor
         self.categoryEditor = categoryEditor
+        self.layoutStore = layout
+        self.layout = layout.todayLayout
         self.photos = photos
         self.locale = locale
         self.toastDuration = toastDuration
@@ -105,7 +114,10 @@ final class TodayViewModel {
         let now = timeSource.now
         let boundary = days.dayBoundary
         let today = boundary.calendarDay(containing: now)
-        if let agendaToday, agendaToday != today { selectedDay = nil }
+        if let agendaToday, agendaToday != today {
+            selectedDay = nil
+            expandedOverrides = [:]
+        }
         if logsDay != nil, logsDay != today {
             reload()
             return
@@ -120,18 +132,25 @@ final class TodayViewModel {
 
         isEmpty = checks.isEmpty
         isToday = agenda.isToday
-        dateText = agenda.dateLine
+        dayTitle = agenda.dayTitle
+        daySub = agenda.daySub
         strip = agenda.strip
         progress = agenda.progress
         nothingDueText = agenda.nothingDueText
-        comingUp = agenda.comingUp
         todayProgress = agenda.todayTotal == 0 ? 0 : Double(agenda.todayDoneCount) / Double(agenda.todayTotal)
         ringAccessibilityLabel = agenda.ringAccessibilityLabel
         sections = agenda.sections.map { section in
-            TodaySection(
+            let meta = if section.isAllDone, let last = section.lastLog {
+                String(localized: "All done · last \(time.clockTime(last.date))")
+            } else {
+                section.repeatLabel
+            }
+            return TodaySection(
                 category: section.category,
-                repeatLabel: section.repeatLabel,
-                progressText: section.progressText,
+                meta: meta,
+                progressText: section.isAllDone ? "✓ \(section.progressText)" : section.progressText,
+                isAllDone: section.isAllDone,
+                isExpanded: expandedOverrides[section.id] ?? !section.isAllDone,
                 tiles: section.tasks.map { tile in
                     TodayTile(id: tile.id, content: Self.content(for: tile, isToday: agenda.isToday, dayName: dayName, time: time))
                 }
@@ -167,11 +186,23 @@ final class TodayViewModel {
         reload()
     }
 
-    /// A Coming up row: within the strip, it shows that day for every category.
-    func open(_ upcoming: DayAgenda.Upcoming) {
-        guard upcoming.isInStrip else { return }
-        filterID = nil
-        select(upcoming.day)
+    /// Opens or closes a section; the choice lasts until the day changes.
+    func toggleSection(_ categoryID: UUID) {
+        let isExpanded = sections.first { $0.id == categoryID }?.isExpanded ?? true
+        expandedOverrides[categoryID] = !isExpanded
+        rebuild()
+    }
+
+    /// Opens a section, as when tasks are added to it.
+    func expandSection(_ categoryID: UUID) {
+        expandedOverrides[categoryID] = true
+        rebuild()
+    }
+
+    /// Grid ⇄ list, remembered in settings.
+    func toggleLayout() {
+        layout = layout == .grid ? .list : .grid
+        layoutStore.todayLayout = layout
     }
 
     /// The category the Add sheet opens on: the filtered one, else Daily.

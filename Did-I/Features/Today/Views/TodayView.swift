@@ -1,8 +1,8 @@
 import SwiftUI
 import TipKit
 
-/// Today (`Main.dc.html`): the date and title, the 7-day strip, the category filter, the pinned progress bar, one
-/// section per due category, Coming up, and the floating bar.
+/// Today (`Main.dc.html`, compact): the day and buttons, the 7-day strip, the pinned progress bar and filters, one
+/// collapsible section per due category (tiles or rows), and the floating bar.
 struct TodayView: View {
     @State private var viewModel: TodayViewModel
     @State private var management: CheckManagementRequest?
@@ -18,6 +18,7 @@ struct TodayView: View {
 
     @Environment(StoreChangeHub.self) private var changes
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     init(viewModel: @autoclosure () -> TodayViewModel, tab: Binding<MainTab>, focus: CategoryFocus? = nil, actions: TodayActions) {
         _viewModel = State(initialValue: viewModel())
@@ -70,8 +71,11 @@ struct TodayView: View {
     private static let topID = "today.top"
 
     private var header: some View {
-        TodayHeader(dateText: viewModel.dateText, onCategories: actions.openCategories, onSettings: actions.openSettings)
-            .id(Self.topID)
+        TodayHeader(
+            dayTitle: viewModel.dayTitle, daySub: viewModel.daySub, layout: viewModel.layout,
+            onToggleLayout: viewModel.toggleLayout, onCategories: actions.openCategories, onSettings: actions.openSettings
+        )
+        .id(Self.topID)
     }
 
     private var scrollView: some View {
@@ -96,45 +100,59 @@ struct TodayView: View {
     }
 
     private var calendar: some View {
-        LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
+        // Pinned, the block would cover much of the screen at accessibility sizes.
+        LazyVStack(alignment: .leading, spacing: 0, pinnedViews: dynamicTypeSize.isAccessibilitySize ? [] : [.sectionHeaders]) {
             VStack(alignment: .leading, spacing: 0) {
                 header
                 DayStrip(days: viewModel.strip, onSelect: viewModel.select)
-                    .padding(.top, 18)
-                CategoryFilter(
-                    categories: viewModel.categories,
-                    selection: viewModel.filterID,
-                    onSelect: viewModel.selectFilter,
-                    onNew: actions.newCategory,
-                    onEdit: actions.editCategory,
-                    onDelete: { deletion = viewModel.deletionRequest(for: $0) }
-                )
-                .padding(.top, 14)
+                    .padding(.top, 12)
             }
             .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { headerHeight = $0 }
             Section {
                 content
             } header: {
-                ProgressBarCard(progress: viewModel.progress, isToday: viewModel.isToday, isStuck: isBarStuck)
-                    .padding(EdgeInsets(top: 14, leading: 20, bottom: 10, trailing: 20))
-                    .background(Color.ground)
-                    .accessibilityIdentifier("today.progress")
+                stickyBlock
             }
         }
         .padding(.bottom, 24)
     }
 
+    /// The progress bar and the filters, pinned together under the top as the page scrolls.
+    private var stickyBlock: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ProgressBarCard(progress: viewModel.progress, isToday: viewModel.isToday, isStuck: isBarStuck)
+                .padding(.horizontal, 20)
+                .accessibilityIdentifier("today.progress")
+            CategoryFilter(
+                categories: viewModel.categories,
+                selection: viewModel.filterID,
+                onSelect: viewModel.selectFilter,
+                onNew: actions.newCategory,
+                onEdit: actions.editCategory,
+                onDelete: { deletion = viewModel.deletionRequest(for: $0) }
+            )
+        }
+        .padding(.top, 12)
+        .padding(.bottom, 8)
+        .background(Color.ground)
+    }
+
     private var content: some View {
-        VStack(alignment: .leading, spacing: 26) {
+        VStack(alignment: .leading, spacing: 14) {
             TipView(EditTileTip())
                 .tipBackground(Color.surface)
                 .autoDismissing(EditTileTip())
             ForEach(viewModel.sections) { section in
                 TodaySectionView(
                     section: section,
+                    layout: viewModel.layout,
+                    onToggle: { viewModel.toggleSection(section.id) },
                     onLog: { viewModel.log($0) },
                     onPhoto: { photoCheck = $0 },
-                    onAdd: { actions.addChecks(section.category.id) },
+                    onAdd: {
+                        viewModel.expandSection(section.id)
+                        actions.addChecks(section.category.id)
+                    },
                     menu: { menu(for: $0) },
                     onDrop: { viewModel.move($0, to: $1) },
                     onEdit: actions.editCategory,
@@ -144,19 +162,6 @@ struct TodayView: View {
             if let text = viewModel.nothingDueText {
                 NothingDueCard(text: text)
             }
-            AddChecksButton { actions.addChecks(viewModel.addTarget) }
-                .accessibilityIdentifier("today.addChecks")
-            if !viewModel.comingUp.isEmpty {
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Coming up")
-                        .font(.didBarTitle)
-                        .foregroundStyle(Color.ink)
-                        .accessibilityAddTraits(.isHeader)
-                    ForEach(viewModel.comingUp) { upcoming in
-                        ComingUpRow(upcoming: upcoming) { viewModel.open(upcoming) }
-                    }
-                }
-            }
             if let message = viewModel.errorMessage {
                 Text(message)
                     .font(.didFootnote)
@@ -164,7 +169,7 @@ struct TodayView: View {
             }
         }
         .padding(.horizontal, 20)
-        .padding(.top, 10)
+        .padding(.top, 8)
     }
 
     @ViewBuilder

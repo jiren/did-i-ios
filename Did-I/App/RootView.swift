@@ -149,6 +149,7 @@ struct RootView: View {
                     changes: environment.changes,
                     editor: environment.checkEditor,
                     categoryEditor: environment.categoryEditor,
+                    layout: environment.settings,
                     photos: environment.photos
                 ),
                 tab: $tab,

@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// Today's sticky progress card (`Main.dc.html`): scope, "4 of 6 done", the pill and one segment per task. Mint
-/// once all clear.
+/// Today's sticky progress card (`Main.dc.html`): one line of scope, "4 of 6 done" and the pill, then one segment
+/// per task. Mint once all clear.
 struct ProgressBarCard: View {
     let progress: DayAgenda.Progress
     /// Today's tasks can be logged, so the pill is ink and sun; a later day's is sand.
@@ -12,16 +12,17 @@ struct ProgressBarCard: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 8) {
             ViewThatFits(in: .horizontal) {
-                HStack(spacing: 10) { titles; Spacer(minLength: 0); pill }
-                VStack(alignment: .leading, spacing: 8) { titles; pill }
+                HStack(spacing: 8) { scope; main; Spacer(minLength: 0); pill }
+                VStack(alignment: .leading, spacing: 6) { scope; main; pill }
             }
+            .padding(.horizontal, 4)
             if !progress.segments.isEmpty {
-                segments
+                segments.padding(.horizontal, 4)
             }
         }
-        .padding(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 12))
+        .padding(EdgeInsets(top: 10, leading: 8, bottom: 8, trailing: 8))
         .foregroundStyle(progress.isAllClear ? Color.onTile : Color.ink)
         .background(progress.isAllClear ? Color.tileMint : Color.surface, in: .rect(cornerRadius: 20, style: .continuous))
         .shadow(color: .black.opacity(isStuck ? 0.14 : 0), radius: 9, y: 6)
@@ -31,26 +32,29 @@ struct ProgressBarCard: View {
         .accessibilityAddTraits(.updatesFrequently)
     }
 
-    private var titles: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text(progress.scope.uppercased())
-                .font(.didMicro)
-                .tracking(0.6)
-                .foregroundStyle(progress.isAllClear ? Color.tileMintSub : Color.muted)
-            Text(progress.main)
-                .font(.didBarTitle)
-        }
+    private var scope: some View {
+        Text(progress.scope.uppercased())
+            .font(.didMicro)
+            .tracking(0.5)
+            .lineLimit(1)
+            .foregroundStyle(progress.isAllClear ? Color.tileMintSub : Color.muted)
+    }
+
+    private var main: some View {
+        Text(progress.main)
+            .font(.didBarTitle)
+            .lineLimit(1)
     }
 
     private var pill: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 5) {
             if progress.isAllClear {
-                Image(systemName: "checkmark").font(.system(size: 13, weight: .heavy))
+                Image(systemName: "checkmark").font(.system(size: 11, weight: .heavy))
             }
-            Text(progress.pill.text).font(.didEmphasis)
+            Text(progress.pill.text).font(.didPill)
         }
-        .padding(.horizontal, 14)
-        .frame(minHeight: 36)
+        .padding(.horizontal, 11)
+        .frame(minHeight: 28)
         .foregroundStyle(pillForeground)
         .background(pillBackground, in: .capsule)
         .fixedSize()
@@ -61,7 +65,7 @@ struct ProgressBarCard: View {
             ForEach(progress.segments) { tile in
                 Capsule()
                     .fill(tile.isDone ? tile.swatch.background : Color.ink.opacity(0.12))
-                    .frame(height: 6)
+                    .frame(height: 5)
             }
         }
         .accessibilityHidden(true)

@@ -9,6 +9,8 @@ struct RoundIconButton: View {
         case onColor
         /// Sand disc (the sheet's close button).
         case sand
+        /// White disc (Today's grid/list toggle).
+        case surface
     }
 
     let systemName: String
@@ -33,7 +35,7 @@ struct RoundIconButton: View {
         switch style {
         case .chrome: .onChrome
         case .onColor: .white
-        case .sand: .ink
+        case .sand, .surface: .ink
         }
     }
 
@@ -42,6 +44,7 @@ struct RoundIconButton: View {
         case .chrome: .chrome
         case .onColor: .white.opacity(0.18)
         case .sand: .sand
+        case .surface: .surface
         }
     }
 }

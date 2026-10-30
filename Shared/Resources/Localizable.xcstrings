@@ -1,164 +1,141 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "%@" : {
-
-    },
-    "%@ at %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ at %2$@"
+  "sourceLanguage": "en",
+  "strings": {
+    "%@": {},
+    "%@ at %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ at %2$@"
           }
         }
       }
     },
-    "%@ done" : {
-
-    },
-    "%@ icon" : {
-
-    },
-    "%@ isn’t due on %@. Check Coming up below." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ isn’t due on %2$@. Check Coming up below."
+    "%@ icon": {},
+    "%@ isn’t due on %@. The dots on the days above show when it is.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ isn’t due on %2$@. The dots on the days above show when it is."
           }
         }
       }
     },
-    "%@ isn’t due today." : {
-
-    },
-    "%@ · %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ · %2$@"
+    "%@ isn’t due today.": {},
+    "%@ · %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ · %2$@"
           }
         }
       }
     },
-    "%@ · No reminder" : {
-
-    },
-    "%@ · Reminder at %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ · Reminder at %2$@"
+    "%@ · No reminder": {},
+    "%@ · Reminder at %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ · Reminder at %2$@"
           }
         }
       }
     },
-    "%@ · photo" : {
-
-    },
-    "%@ · today" : {
-
-    },
-    "%@ — %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ — %2$@"
+    "%@ · photo": {},
+    "%@ — %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ — %2$@"
           }
         }
       }
     },
-    "%@, %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@, %2$@"
+    "%@, %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@, %2$@"
           }
         }
       }
     },
-    "%@, %@, %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@, %2$@, %3$@"
+    "%@, %@, %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@, %2$@, %3$@"
           }
         }
       }
     },
-    "%@, %lld extra categories due" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@, %2$lld extra categories due"
+    "%@, also due: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@, also due: %2$@"
           }
         }
       }
     },
-    "%@, logged %@ — tap to log again" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@, logged %2$@ — tap to log again"
+    "%@, logged %@ — tap to log again": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@, logged %2$@ — tap to log again"
           }
         }
       }
     },
-    "%@, not logged — tap to log" : {
-
-    },
-    "%@, upcoming on %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@, upcoming on %2$@"
+    "%@, not logged — tap to log": {},
+    "%@, upcoming on %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@, upcoming on %2$@"
           }
         }
       }
     },
-    "%@." : {
-
-    },
-    "%@: logged at %@. Tap to log again." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@: logged at %2$@. Tap to log again."
+    "%@.": {},
+    "%@: logged at %@. Tap to log again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@: logged at %2$@. Tap to log again."
           }
         }
       }
     },
-    "%@: not logged today. Tap to log." : {
-
-    },
-    "%lld AM" : {
-
-    },
-    "%lld checks planned" : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld check planned"
+    "%@: not logged today. Tap to log.": {},
+    "%lld AM": {},
+    "%lld checks planned": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld check planned"
                 }
               },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld checks planned"
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld checks planned"
                 }
               }
             }
@@ -166,21 +143,22 @@
         }
       }
     },
-    "%lld checks · %@" : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld check · %@"
+    "%lld checks · %@": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld check · %@"
                 }
               },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld checks · %@"
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld checks · %@"
                 }
               }
             }
@@ -188,21 +166,21 @@
         }
       }
     },
-    "%lld left" : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld left"
+    "%lld left": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld left"
                 }
               },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld left"
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld left"
                 }
               }
             }
@@ -210,21 +188,21 @@
         }
       }
     },
-    "%lld left: %@" : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld left: %@"
+    "%lld left: %@": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld left: %@"
                 }
               },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld left: %@"
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld left: %@"
                 }
               }
             }
@@ -232,21 +210,21 @@
         }
       }
     },
-    "%lld logs" : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld log"
+    "%lld logs": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld log"
                 }
               },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld logs"
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld logs"
                 }
               }
             }
@@ -254,41 +232,41 @@
         }
       }
     },
-    "%lld of %lld done" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$lld of %2$lld done"
+    "%lld of %lld done": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld of %2$lld done"
           }
         }
       }
     },
-    "%lld of %lld today" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$lld of %2$lld today"
+    "%lld of %lld today": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld of %2$lld today"
           }
         }
       }
     },
-    "%lld tasks" : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld task"
+    "%lld tasks": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld task"
                 }
               },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld tasks"
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld tasks"
                 }
               }
             }
@@ -296,82 +274,21 @@
         }
       }
     },
-    "%lldd ago" : {
-
-    },
-    "%lldh %lldm ago" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$lldh %2$lldm ago"
-          }
-        }
-      }
-    },
-    "%lldh ago" : {
-
-    },
-    "%lldm ago" : {
-
-    },
-    "1 check planned" : {
-
-    },
-    "1 check · %@" : {
-
-    },
-    "1 log" : {
-
-    },
-    "1 task" : {
-
-    },
-    "30 days" : {
-
-    },
-    "7 days" : {
-
-    },
-    "A category can repeat weekly, monthly or once — like bin night or a trip." : {
-
-    },
-    "A nudge only when something isn’t logged yet." : {
-
-    },
-    "A press logs" : {
-
-    },
-    "About" : {
-
-    },
-    "Action Button" : {
-
-    },
-    "Action Button Press" : {
-
-    },
-    "Action Button or Control Center" : {
-
-    },
-    "Add" : {
-
-    },
-    "Add %lld tasks to %@" : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Add %lld task to %@"
+    "%lld tasks planned": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld task planned"
                 }
               },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Add %lld tasks to %@"
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld tasks planned"
                 }
               }
             }
@@ -379,231 +296,47 @@
         }
       }
     },
-    "Add 1 task to %@" : {
-
-    },
-    "Add a Photo to a Log" : {
-
-    },
-    "Add a check in Did I?" : {
-
-    },
-    "Add a check in Did I? first." : {
-
-    },
-    "Add a photo" : {
-
-    },
-    "Add a photo as proof" : {
-
-    },
-    "Add a task to %@" : {
-
-    },
-    "Add a task, e.g. Passport packed" : {
-
-    },
-    "Add checks" : {
-
-    },
-    "Add task" : {
-
-    },
-    "Add the things you double-check — the front door, the stove, a pill. Then one tap each time, and you’ll never have to wonder." : {
-
-    },
-    "Add to" : {
-
-    },
-    "Add to %@" : {
-
-    },
-    "Add to category" : {
-
-    },
-    "After a press" : {
-
-    },
-    "All" : {
-
-    },
-    "All clear" : {
-
-    },
-    "Allow" : {
-
-    },
-    "Also notify for checks already logged" : {
-
-    },
-    "Appearance" : {
-
-    },
-    "Ask me which" : {
-
-    },
-    "Back door locked" : {
-
-    },
-    "Back to %@" : {
-
-    },
-    "Back to Today" : {
-
-    },
-    "Bin" : {
-
-    },
-    "Camera access is off" : {
-
-    },
-    "Cancel" : {
-
-    },
-    "Cancel and go back" : {
-
-    },
-    "Car" : {
-
-    },
-    "Car locked" : {
-
-    },
-    "Categories" : {
-
-    },
-    "Category" : {
-
-    },
-    "Category reminders" : {
-
-    },
-    "Change icon" : {
-
-    },
-    "Check" : {
-
-    },
-    "Check ID" : {
-
-    },
-    "Checked" : {
-
-    },
-    "Checks with “Nudge me when I leave home” on remind you as you leave, if they aren’t logged yet. This needs location access set to Always; your location stays on this device." : {
-
-    },
-    "Choose a Check" : {
-
-    },
-    "Close" : {
-
-    },
-    "Colour" : {
-
-    },
-    "Coming up" : {
-
-    },
-    "Coral" : {
-
-    },
-    "Couldn’t change that check." : {
-
-    },
-    "Couldn’t change that." : {
-
-    },
-    "Couldn’t delete that category." : {
-
-    },
-    "Couldn’t delete that log." : {
-
-    },
-    "Couldn’t delete your data." : {
-
-    },
-    "Couldn’t find where you are. Try again outside or near a window." : {
-
-    },
-    "Couldn’t log %@." : {
-
-    },
-    "Couldn’t move this check." : {
-
-    },
-    "Couldn’t read this check." : {
-
-    },
-    "Couldn’t read your checks." : {
-
-    },
-    "Couldn’t read your history." : {
-
-    },
-    "Couldn’t remove this check." : {
-
-    },
-    "Couldn’t reorder your categories." : {
-
-    },
-    "Couldn’t save that photo." : {
-
-    },
-    "Couldn’t save the category." : {
-
-    },
-    "Couldn’t undo that." : {
-
-    },
-    "Create category" : {
-
-    },
-    "DID I?" : {
-
-    },
-    "Daily" : {
-
-    },
-    "Dark" : {
-
-    },
-    "Data" : {
-
-    },
-    "Date" : {
-
-    },
-    "Date each year" : {
-
-    },
-    "Day of the month" : {
-
-    },
-    "Day starts at" : {
-
-    },
-    "Delete" : {
-
-    },
-    "Delete category" : {
-
-    },
-    "Delete category and its %lld tasks" : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Delete category and its task"
+    "%lldd ago": {},
+    "%lldh %lldm ago": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lldh %2$lldm ago"
+          }
+        }
+      }
+    },
+    "%lldh ago": {},
+    "%lldm ago": {},
+    "1 log": {},
+    "1 task": {},
+    "1 task planned": {},
+    "30 days": {},
+    "7 days": {},
+    "A category can repeat weekly, monthly or once — like bin night or a trip.": {},
+    "A nudge only when something isn’t logged yet.": {},
+    "A press logs": {},
+    "About": {},
+    "Action Button": {},
+    "Action Button Press": {},
+    "Action Button or Control Center": {},
+    "Add": {},
+    "Add %lld tasks to %@": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Add %lld task to %@"
                 }
               },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Delete category and its %lld tasks"
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Add %lld tasks to %@"
                 }
               }
             }
@@ -611,183 +344,93 @@
         }
       }
     },
-    "Delete category and its task" : {
-
-    },
-    "Delete everything, checks too" : {
-
-    },
-    "Delete log" : {
-
-    },
-    "Delete logs and photos" : {
-
-    },
-    "Delete your data?" : {
-
-    },
-    "Delete “%@”?" : {
-
-    },
-    "Deleted tasks take their logs and photos with them." : {
-
-    },
-    "Details" : {
-
-    },
-    "Did I Do It?" : {
-
-    },
-    "Did I?" : {
-
-    },
-    "Did I? couldn’t open your checks" : {
-
-    },
-    "Did I? couldn’t open your checks." : {
-
-    },
-    "Did I? · Log a check" : {
-
-    },
-    "Done" : {
-
-    },
-    "Each category reminds you on the days it’s due, only if something in it isn’t logged. Set its time on the category’s page (the Categories button on Today)." : {
-
-    },
-    "Edit category" : {
-
-    },
-    "Edit check" : {
-
-    },
-    "Every %@" : {
-
-    },
-    "Every 2 weeks" : {
-
-    },
-    "Every day" : {
-
-    },
-    "Every log and photo is deleted." : {
-
-    },
-    "Every other %@" : {
-
-    },
-    "Every year, %@" : {
-
-    },
-    "Everything is deleted." : {
-
-    },
-    "Feel it, so you don’t doubt it" : {
-
-    },
-    "Filter by category" : {
-
-    },
-    "Flame" : {
-
-    },
-    "Forever" : {
-
-    },
-    "Forget home" : {
-
-    },
-    "Free day" : {
-
-    },
-    "Front door locked" : {
-
-    },
-    "Garage" : {
-
-    },
-    "Garage shut" : {
-
-    },
-    "Give it a name." : {
-
-    },
-    "Globe" : {
-
-    },
-    "Group your checks" : {
-
-    },
-    "Hair tool off" : {
-
-    },
-    "Heart" : {
-
-    },
-    "Heater off" : {
-
-    },
-    "Hide names on Lock Screen" : {
-
-    },
-    "History" : {
-
-    },
-    "Hold a tile to change it" : {
-
-    },
-    "Hold and drag to reorder. Daily is always there." : {
-
-    },
-    "Home" : {
-
-    },
-    "Home Screen widget" : {
-
-    },
-    "Home is set to where you are now." : {
-
-    },
-    "Home location and nudges" : {
-
-    },
-    "Icon" : {
-
-    },
-    "Icon for “%@”" : {
-
-    },
-    "In the Settings app, open Action Button, swipe to Controls, and choose Did I? › Log a check." : {
-
-    },
-    "In the app" : {
-
-    },
-    "Iron unplugged" : {
-
-    },
-    "It has no logs yet." : {
-
-    },
-    "It has no tasks." : {
-
-    },
-    "Its %lld logs and their photos are deleted too." : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Its log and its photo are deleted too."
+    "Add 1 task to %@": {},
+    "Add a Photo to a Log": {},
+    "Add a check in Did I?": {},
+    "Add a check in Did I? first.": {},
+    "Add a photo": {},
+    "Add a photo as proof": {},
+    "Add a task to %@": {},
+    "Add a task, e.g. Passport packed": {},
+    "Add checks": {},
+    "Add task": {},
+    "Add tasks": {},
+    "Add the things you double-check — the front door, the stove, a pill. Then one tap each time, and you’ll never have to wonder.": {},
+    "Add to": {},
+    "Add to %@": {},
+    "Add to category": {},
+    "After a press": {},
+    "All": {},
+    "All clear": {},
+    "All done · last %@": {},
+    "Allow": {},
+    "Also notify for checks already logged": {},
+    "Appearance": {},
+    "Ask me which": {},
+    "Back door locked": {},
+    "Back to %@": {},
+    "Back to Today": {},
+    "Bin": {},
+    "Camera access is off": {},
+    "Cancel": {},
+    "Cancel and go back": {},
+    "Car": {},
+    "Car locked": {},
+    "Categories": {},
+    "Category": {},
+    "Category reminders": {},
+    "Change icon": {},
+    "Check": {},
+    "Check ID": {},
+    "Checked": {},
+    "Checks with “Nudge me when I leave home” on remind you as you leave, if they aren’t logged yet. This needs location access set to Always; your location stays on this device.": {},
+    "Choose a Check": {},
+    "Close": {},
+    "Collapsed": {},
+    "Colour": {},
+    "Coral": {},
+    "Couldn’t change that check.": {},
+    "Couldn’t change that.": {},
+    "Couldn’t delete that category.": {},
+    "Couldn’t delete that log.": {},
+    "Couldn’t delete your data.": {},
+    "Couldn’t find where you are. Try again outside or near a window.": {},
+    "Couldn’t log %@.": {},
+    "Couldn’t move this check.": {},
+    "Couldn’t read this check.": {},
+    "Couldn’t read your checks.": {},
+    "Couldn’t read your history.": {},
+    "Couldn’t remove this check.": {},
+    "Couldn’t reorder your categories.": {},
+    "Couldn’t save that photo.": {},
+    "Couldn’t save the category.": {},
+    "Couldn’t undo that.": {},
+    "Create category": {},
+    "DID I?": {},
+    "Daily": {},
+    "Dark": {},
+    "Data": {},
+    "Date": {},
+    "Date each year": {},
+    "Day of the month": {},
+    "Day starts at": {},
+    "Delete": {},
+    "Delete category": {},
+    "Delete category and its %lld tasks": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Delete category and its task"
                 }
               },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Its %lld logs and their photos are deleted too."
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Delete category and its %lld tasks"
                 }
               }
             }
@@ -795,130 +438,76 @@
         }
       }
     },
-    "Just now" : {
-
-    },
-    "Keep photos" : {
-
-    },
-    "Key" : {
-
-    },
-    "Keys packed" : {
-
-    },
-    "Leaving home" : {
-
-    },
-    "Leaving home? %@" : {
-
-    },
-    "Light" : {
-
-    },
-    "Lights off" : {
-
-    },
-    "Location access is off. Turn it on in Settings to set home." : {
-
-    },
-    "Lock" : {
-
-    },
-    "Lock Screen widget" : {
-
-    },
-    "Log %@ with a photo" : {
-
-    },
-    "Log ID" : {
-
-    },
-    "Log a Check" : {
-
-    },
-    "Log a check" : {
-
-    },
-    "Log from a Widget" : {
-
-    },
-    "Log it" : {
-
-    },
-    "Log it again" : {
-
-    },
-    "Log it below, or from Today." : {
-
-    },
-    "Log with the Action Button" : {
-
-    },
-    "Log with the Did I? Control" : {
-
-    },
-    "Logged" : {
-
-    },
-    "Logged %@ at %@." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Logged %1$@ at %2$@."
-          }
-        }
-      }
-    },
-    "Logged with Action Button" : {
-
-    },
-    "Logged · %@" : {
-
-    },
-    "Logging" : {
-
-    },
-    "Logs before this count for the day before, so a door checked at 1 AM still counts for last night." : {
-
-    },
-    "Logs stay as long as you keep them; only their photos go." : {
-
-    },
-    "Logs straight away" : {
-
-    },
-    "Logs the check you picked in Did I? › Settings › Action Button, or asks which." : {
-
-    },
-    "Midnight" : {
-
-    },
-    "Mint" : {
-
-    },
-    "Monthly" : {
-
-    },
-    "Monthly on the %@" : {
-
-    },
-    "Move %lld tasks to Daily" : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Move %lld task to Daily"
+    "Delete category and its task": {},
+    "Delete everything, checks too": {},
+    "Delete log": {},
+    "Delete logs and photos": {},
+    "Delete your data?": {},
+    "Delete “%@”?": {},
+    "Deleted tasks take their logs and photos with them.": {},
+    "Details": {},
+    "Did I Do It?": {},
+    "Did I?": {},
+    "Did I? couldn’t open your checks": {},
+    "Did I? couldn’t open your checks.": {},
+    "Did I? · Log a check": {},
+    "Done": {},
+    "Each category reminds you on the days it’s due, only if something in it isn’t logged. Set its time on the category’s page (the Categories button on Today).": {},
+    "Edit category": {},
+    "Edit check": {},
+    "Every %@": {},
+    "Every 2 weeks": {},
+    "Every day": {},
+    "Every log and photo is deleted.": {},
+    "Every other %@": {},
+    "Every year, %@": {},
+    "Everything is deleted.": {},
+    "Expanded": {},
+    "Feel it, so you don’t doubt it": {},
+    "Filter by category": {},
+    "Flame": {},
+    "Forever": {},
+    "Forget home": {},
+    "Free": {},
+    "Front door locked": {},
+    "Garage": {},
+    "Garage shut": {},
+    "Give it a name.": {},
+    "Globe": {},
+    "Group your checks": {},
+    "Hair tool off": {},
+    "Heart": {},
+    "Heater off": {},
+    "Hide names on Lock Screen": {},
+    "History": {},
+    "Hold a tile to change it": {},
+    "Hold and drag to reorder. Daily is always there.": {},
+    "Home": {},
+    "Home Screen widget": {},
+    "Home is set to where you are now.": {},
+    "Home location and nudges": {},
+    "Icon": {},
+    "Icon for “%@”": {},
+    "In the Settings app, open Action Button, swipe to Controls, and choose Did I? › Log a check.": {},
+    "In the app": {},
+    "Iron unplugged": {},
+    "It has no logs yet.": {},
+    "It has no tasks.": {},
+    "Its %lld logs and their photos are deleted too.": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Its log and its photo are deleted too."
                 }
               },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Move %lld tasks to Daily"
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Its %lld logs and their photos are deleted too."
                 }
               }
             }
@@ -926,408 +515,225 @@
         }
       }
     },
-    "Move 1 task to Daily" : {
-
-    },
-    "Move earlier" : {
-
-    },
-    "Move here" : {
-
-    },
-    "Move later" : {
-
-    },
-    "Move to" : {
-
-    },
-    "Name" : {
-
-    },
-    "Needed for reminders and nudges" : {
-
-    },
-    "New category" : {
-
-    },
-    "New task" : {
-
-    },
-    "No camera here" : {
-
-    },
-    "No checks scheduled for %@." : {
-
-    },
-    "No logs yet. Tap a check on Today to log it." : {
-
-    },
-    "None yet" : {
-
-    },
-    "Not due today. Last done %@." : {
-
-    },
-    "Not logged yet" : {
-
-    },
-    "Not logged yet today. Check it, then tap Log it." : {
-
-    },
-    "Not now" : {
-
-    },
-    "Not set" : {
-
-    },
-    "Not yet today" : {
-
-    },
-    "Not yet today · tap to log" : {
-
-    },
-    "Not yet today. The last time was %@." : {
-
-    },
-    "Nothing due" : {
-
-    },
-    "Nothing to check yet" : {
-
-    },
-    "Nothing to undo." : {
-
-    },
-    "Notification" : {
-
-    },
-    "Notifications" : {
-
-    },
-    "Nudge me when I leave home" : {
-
-    },
-    "Nudged when leaving home" : {
-
-    },
-    "Off. Turn them on in Settings." : {
-
-    },
-    "On" : {
-
-    },
-    "On a date" : {
-
-    },
-    "Once · %@" : {
-
-    },
-    "One press logs it. Pick what a press does." : {
-
-    },
-    "Only if it isn’t logged yet" : {
-
-    },
-    "Only if something’s not logged" : {
-
-    },
-    "Open Settings" : {
-
-    },
-    "Open a Check" : {
-
-    },
-    "Open camera" : {
-
-    },
-    "Past" : {
-
-    },
-    "Photo saved · %@" : {
-
-    },
-    "Pick a check to see its history" : {
-
-    },
-    "Pick a day" : {
-
-    },
-    "Pick as many as you like." : {
-
-    },
-    "Pick at least one" : {
-
-    },
-    "Pill" : {
-
-    },
-    "Pill taken" : {
-
-    },
-    "Pink" : {
-
-    },
-    "Plug" : {
-
-    },
-    "Privacy" : {
-
-    },
-    "Proof photo, %@" : {
-
-    },
-    "Proof photo, %@. Opens full screen." : {
-
-    },
-    "Quick picker of your checks" : {
-
-    },
-    "Records that you just did it, with the time." : {
-
-    },
-    "Remind me at" : {
-
-    },
-    "Reminder time" : {
-
-    },
-    "Reminders" : {
-
-    },
-    "Remove" : {
-
-    },
-    "Remove %@" : {
-
-    },
-    "Remove check" : {
-
-    },
-    "Remove this check" : {
-
-    },
-    "Remove “%@”?" : {
-
-    },
-    "Rename" : {
-
-    },
-    "Rename check" : {
-
-    },
-    "Rename it, pick another icon, move it or remove it. Drag to reorder." : {
-
-    },
-    "Repeat" : {
-
-    },
-    "Retake photo for %@" : {
-
-    },
-    "Retake the photo" : {
-
-    },
-    "Save" : {
-
-    },
-    "See all in History" : {
-
-    },
-    "See when you last did it, and log it with a tap." : {
-
-    },
-    "Set to here" : {
-
-    },
-    "Set up the button" : {
-
-    },
-    "Set · within 150 m" : {
-
-    },
-    "Settings" : {
-
-    },
-    "Siri" : {
-
-    },
-    "Siri or Shortcuts" : {
-
-    },
-    "Sky" : {
-
-    },
-    "Snap proof right away" : {
-
-    },
-    "Something else?" : {
-
-    },
-    "Source" : {
-
-    },
-    "Stove off" : {
-
-    },
-    "Strong haptic" : {
-
-    },
-    "Suitcase" : {
-
-    },
-    "Sun" : {
-
-    },
-    "System" : {
-
-    },
-    "Tap" : {
-
-    },
-    "Tap a tile to log it; hold it or choose Details to open it here." : {
-
-    },
-    "Tap off" : {
-
-    },
-    "Tap to log" : {
-
-    },
-    "Tasks" : {
-
-    },
-    "Tell me when I’m good" : {
-
-    },
-    "Tells you when you last logged a check." : {
-
-    },
-    "That check isn’t in Did I? any more." : {
-
-    },
-    "The check this widget shows and logs." : {
-
-    },
-    "The first four checks due today. Tap one to log it." : {
-
-    },
-    "There’s already a category called “%@”." : {
-
-    },
-    "This can’t be undone." : {
-
-    },
-    "This device has no camera, so proof photos aren’t available. Logging still works." : {
-
-    },
-    "This iPhone has no Action Button. The same choice applies to the Did I? control in Control Center." : {
-
-    },
-    "This photo is no longer kept." : {
-
-    },
-    "Today" : {
-
-    },
-    "Today · %@" : {
-
-    },
-    "Today: %lld of %lld checked" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Today: %1$lld of %2$lld checked"
+    "Just now": {},
+    "Keep photos": {},
+    "Key": {},
+    "Keys packed": {},
+    "Leaving home": {},
+    "Leaving home? %@": {},
+    "Light": {},
+    "Lights off": {},
+    "Location access is off. Turn it on in Settings to set home.": {},
+    "Lock": {},
+    "Lock Screen widget": {},
+    "Log %@ with a photo": {},
+    "Log ID": {},
+    "Log a Check": {},
+    "Log a check": {},
+    "Log from a Widget": {},
+    "Log it": {},
+    "Log it again": {},
+    "Log it below, or from Today.": {},
+    "Log with the Action Button": {},
+    "Log with the Did I? Control": {},
+    "Logged": {},
+    "Logged %@ at %@.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Logged %1$@ at %2$@."
           }
         }
       }
     },
-    "Today’s checks" : {
-
-    },
-    "Tomorrow" : {
-
-    },
-    "Turn it on in Settings to add proof photos. Logging works without one." : {
-
-    },
-    "Turn the nudge on from a check’s page." : {
-
-    },
-    "Undo" : {
-
-    },
-    "Undo a Log" : {
-
-    },
-    "Undone." : {
-
-    },
-    "Undone. Nothing was logged." : {
-
-    },
-    "Upcoming" : {
-
-    },
-    "Version %@ (%@)" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Version %1$@ (%2$@)"
+    "Logged with Action Button": {},
+    "Logged · %@": {},
+    "Logging": {},
+    "Logs before this count for the day before, so a door checked at 1 AM still counts for last night.": {},
+    "Logs stay as long as you keep them; only their photos go.": {},
+    "Logs straight away": {},
+    "Logs the check you picked in Did I? › Settings › Action Button, or asks which.": {},
+    "Midnight": {},
+    "Mint": {},
+    "Monthly": {},
+    "Monthly on the %@": {},
+    "Move %lld tasks to Daily": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Move %lld task to Daily"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Move %lld tasks to Daily"
+                }
+              }
+            }
           }
         }
       }
     },
-    "Violet" : {
-
-    },
-    "Water" : {
-
-    },
-    "Weekly" : {
-
-    },
-    "Which check?" : {
-
-    },
-    "Widgets show only the icon and time" : {
-
-    },
-    "Window" : {
-
-    },
-    "Yearly" : {
-
-    },
-    "Yes. %@ at %@, %@." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Yes. %1$@ at %2$@, %3$@."
+    "Move 1 task to Daily": {},
+    "Move earlier": {},
+    "Move here": {},
+    "Move later": {},
+    "Move to": {},
+    "Name": {},
+    "Needed for reminders and nudges": {},
+    "New category": {},
+    "New task": {},
+    "No camera here": {},
+    "No logs yet. Tap a check on Today to log it.": {},
+    "No tasks scheduled for %@.": {},
+    "None yet": {},
+    "Not due today. Last done %@.": {},
+    "Not logged yet": {},
+    "Not logged yet today. Check it, then tap Log it.": {},
+    "Not now": {},
+    "Not set": {},
+    "Not yet today": {},
+    "Not yet today · tap to log": {},
+    "Not yet today. The last time was %@.": {},
+    "Nothing due": {},
+    "Nothing to check yet": {},
+    "Nothing to undo.": {},
+    "Notification": {},
+    "Notifications": {},
+    "Nudge me when I leave home": {},
+    "Nudged when leaving home": {},
+    "Off. Turn them on in Settings.": {},
+    "On": {},
+    "On a date": {},
+    "Once · %@": {},
+    "One press logs it. Pick what a press does.": {},
+    "Only if it isn’t logged yet": {},
+    "Only if something’s not logged": {},
+    "Open Settings": {},
+    "Open a Check": {},
+    "Open camera": {},
+    "Past": {},
+    "Photo saved · %@": {},
+    "Pick a check to see its history": {},
+    "Pick a day": {},
+    "Pick as many as you like.": {},
+    "Pick at least one": {},
+    "Pill": {},
+    "Pill taken": {},
+    "Pink": {},
+    "Plug": {},
+    "Privacy": {},
+    "Proof photo, %@": {},
+    "Proof photo, %@. Opens full screen.": {},
+    "Quick picker of your checks": {},
+    "Records that you just did it, with the time.": {},
+    "Remind me at": {},
+    "Reminder time": {},
+    "Reminders": {},
+    "Remove": {},
+    "Remove %@": {},
+    "Remove check": {},
+    "Remove this check": {},
+    "Remove “%@”?": {},
+    "Rename": {},
+    "Rename check": {},
+    "Rename it, pick another icon, move it or remove it. Drag to reorder.": {},
+    "Repeat": {},
+    "Retake photo for %@": {},
+    "Retake the photo": {},
+    "Save": {},
+    "See all in History": {},
+    "See when you last did it, and log it with a tap.": {},
+    "Set to here": {},
+    "Set up the button": {},
+    "Set · within 150 m": {},
+    "Settings": {},
+    "Show as grid": {},
+    "Show as list": {},
+    "Siri": {},
+    "Siri or Shortcuts": {},
+    "Sky": {},
+    "Snap proof right away": {},
+    "Something else?": {},
+    "Source": {},
+    "Stove off": {},
+    "Strong haptic": {},
+    "Suitcase": {},
+    "Sun": {},
+    "System": {},
+    "Tap": {},
+    "Tap a tile to log it; hold it or choose Details to open it here.": {},
+    "Tap off": {},
+    "Tap to log": {},
+    "Tasks": {},
+    "Tell me when I’m good": {},
+    "Tells you when you last logged a check.": {},
+    "That check isn’t in Did I? any more.": {},
+    "The check this widget shows and logs.": {},
+    "The first four checks due today. Tap one to log it.": {},
+    "There’s already a category called “%@”.": {},
+    "This can’t be undone.": {},
+    "This device has no camera, so proof photos aren’t available. Logging still works.": {},
+    "This iPhone has no Action Button. The same choice applies to the Did I? control in Control Center.": {},
+    "This photo is no longer kept.": {},
+    "Today": {},
+    "Today: %lld of %lld checked": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Today: %1$lld of %2$lld checked"
           }
         }
       }
     },
-    "Yesterday" : {
-
+    "Today’s checks": {},
+    "Turn it on in Settings to add proof photos. Logging works without one.": {},
+    "Turn the nudge on from a check’s page.": {},
+    "Undo": {},
+    "Undo a Log": {},
+    "Undone.": {},
+    "Undone. Nothing was logged.": {},
+    "Upcoming": {},
+    "Version %@ (%@)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Version %1$@ (%2$@)"
+          }
+        }
+      }
     },
-    "You already checked. You’re good." : {
-
+    "Violet": {},
+    "Water": {},
+    "Weekly": {},
+    "Which check?": {},
+    "Widgets show only the icon and time": {},
+    "Window": {},
+    "Yearly": {},
+    "Yes. %@ at %@, %@.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Yes. %1$@ at %2$@, %3$@."
+          }
+        }
+      }
     },
-    "You haven’t logged %@ yet." : {
-
-    },
-    "Your checks, logs and photos stay on this device. Bricolage Grotesque and DM Sans are used under the SIL Open Font License." : {
-
-    },
-    "e.g. Cat fed" : {
-
-    },
-    "e.g. Travel, Gym, Leaving work" : {
-
-    }
+    "Yesterday": {},
+    "You already checked. You’re good.": {},
+    "You haven’t logged %@ yet.": {},
+    "Your checks, logs and photos stay on this device. Bricolage Grotesque and DM Sans are used under the SIL Open Font License.": {},
+    "e.g. Cat fed": {},
+    "e.g. Travel, Gym, Leaving work": {}
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

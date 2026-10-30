@@ -50,6 +50,11 @@ final class AppSettings {
         didSet { defaults.set(reassuresOnLeavingHome, forKey: Key.reassuresOnLeavingHome) }
     }
 
+    /// Tiles or rows on Today; kept so the choice sticks.
+    var todayLayout: TodayLayout {
+        didSet { defaults.set(todayLayout.rawValue, forKey: Key.todayLayout) }
+    }
+
     init(defaults: UserDefaults) {
         self.defaults = defaults
         appearance = defaults.string(forKey: Key.appearance).flatMap(Appearance.init) ?? .system
@@ -66,6 +71,7 @@ final class AppSettings {
         reassuresOnLeavingHome = defaults.bool(forKey: Key.reassuresOnLeavingHome)
         keepPhotos = defaults.string(forKey: Key.keepPhotos).flatMap(KeepPhotos.init) ?? .thirtyDays
         dayStartHour = min(max(defaults.integer(forKey: Key.dayStartHour), 0), DayBoundary.latestStartHour)
+        todayLayout = defaults.string(forKey: Key.todayLayout).flatMap(TodayLayout.init) ?? .grid
     }
 
     var dayBoundary: DayBoundary {
@@ -83,6 +89,7 @@ final class AppSettings {
         static let homeLatitude = "homeLatitude"
         static let homeLongitude = "homeLongitude"
         static let reassuresOnLeavingHome = "reassuresOnLeavingHome"
+        static let todayLayout = "todayLayout"
     }
 }
 
