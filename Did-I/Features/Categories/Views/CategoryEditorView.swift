@@ -41,14 +41,30 @@ struct CategoryEditorView: View {
         }
         .scrollDismissesKeyboard(.interactively)
         .safeAreaInset(edge: .bottom) {
-            Button(viewModel.commitTitle) {
-                if viewModel.save() { dismiss() }
+            // Hidden while typing, so it can't cover the field being edited; Done above the keyboard brings it back.
+            if focus == nil {
+                Button(viewModel.commitTitle) {
+                    if viewModel.save() { dismiss() }
+                }
+                .buttonStyle(PillButtonStyle(variant: .brand))
+                .disabled(!viewModel.canSave)
+                .padding(.horizontal, 20)
+                .padding(.top, 10)
+                .padding(.bottom, 12)
+                .background(Color.ground)
+                .accessibilityIdentifier("category.save")
             }
-            .buttonStyle(PillButtonStyle(variant: .brand))
-            .disabled(!viewModel.canSave)
-            .padding(.horizontal, 20)
-            .padding(.bottom, 12)
-            .accessibilityIdentifier("category.save")
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button(String(localized: "Done")) {
+                    viewModel.addTask()
+                    focus = nil
+                }
+                .font(.didEmphasis)
+                .accessibilityIdentifier("category.keyboardDone")
+            }
         }
         .background(Color.ground)
         .task { viewModel.load() }
@@ -114,7 +130,8 @@ struct CategoryEditorView: View {
                     .submitLabel(.next)
                     .onSubmit {
                         viewModel.addTask()
-                        focus = .task
+                        // After the submit has resigned the field, so return keeps you typing tasks.
+                        Task { focus = .task }
                     }
                     .padding(.horizontal, 14)
                     .frame(minHeight: 52)

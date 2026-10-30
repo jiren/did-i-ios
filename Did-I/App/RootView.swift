@@ -9,6 +9,12 @@ enum Route: Hashable {
     case categories
 }
 
+/// The Add sheet, opened on a category (Daily when nil).
+struct AddChecksRequest: Identifiable {
+    let id = UUID()
+    let categoryID: UUID?
+}
+
 /// The category page: a new category, or one being edited.
 enum CategoryEditorRequest: Identifiable, Hashable {
     case new
@@ -29,9 +35,8 @@ struct RootView: View {
 
     @State private var tab: MainTab = .today
     @State private var path: [Route] = []
-    @State private var isAddingChecks = false
-    /// The category the Add sheet adds to; Daily when nil.
-    @State private var addChecksCategory: UUID?
+    /// The Add sheet, with the category it adds to; an item so the sheet always gets this tap's category.
+    @State private var addChecks: AddChecksRequest?
     @State private var categoryEditor: CategoryEditorRequest?
     /// Today shown on one category, from a category reminder.
     @State private var categoryFocus: CategoryFocus?
@@ -49,9 +54,9 @@ struct RootView: View {
 
     var body: some View {
         shell
-            .sheet(isPresented: $isAddingChecks) {
+            .sheet(item: $addChecks) { request in
                 AddChecksSheet(
-                    viewModel: AddChecksViewModel(store: environment.store, changes: environment.changes, categoryID: addChecksCategory)
+                    viewModel: AddChecksViewModel(store: environment.store, changes: environment.changes, categoryID: request.categoryID)
                 )
             }
             .fullScreenCover(item: $categoryEditor) { request in
@@ -81,19 +86,19 @@ struct RootView: View {
             .task {
                 IntentServices.shared.openCheck = { id in
                     logged = nil
-                    isAddingChecks = false
+                    addChecks = nil
                     open(id, replacing: true)
                 }
                 IntentServices.shared.openCategory = { id in
                     logged = nil
-                    isAddingChecks = false
+                    addChecks = nil
                     categoryEditor = nil
                     tab = .today
                     path = []
                     categoryFocus = CategoryFocus(categoryID: id)
                 }
                 IntentServices.shared.showLogged = { request in
-                    isAddingChecks = false
+                    addChecks = nil
                     logged = request
                 }
                 openForDebugging()
@@ -150,10 +155,10 @@ struct RootView: View {
                 focus: categoryFocus,
                 actions: TodayActions(
                     addChecks: { category in
-                        addChecksCategory = category
-                        isAddingChecks = true
+                        addChecks = AddChecksRequest(categoryID: category)
                     },
                     openSettings: { isSplit ? (path = [.settings]) : path.append(.settings) },
+                    openCategories: { isSplit ? (path = [.categories]) : path.append(.categories) },
                     openCheck: { open($0, replacing: false) },
                     newCategory: { categoryEditor = .new },
                     editCategory: { categoryEditor = .edit($0) }
@@ -173,8 +178,7 @@ struct RootView: View {
                 tab: $tab,
                 onOpenCheck: { open($0, replacing: false) },
                 onAddChecks: {
-                    addChecksCategory = nil
-                    isAddingChecks = true
+                    addChecks = AddChecksRequest(categoryID: nil)
                 }
             )
             .id(historyFilter)
@@ -191,14 +195,13 @@ struct RootView: View {
                 viewModel: SettingsViewModel(store: environment.store, changes: environment.changes, photos: environment.photos),
                 settings: environment.settings,
                 onOpenActionButton: { path.append(.actionButton) },
-                onOpenReminders: { path.append(.reminders) },
-                onOpenCategories: { path.append(.categories) }
+                onOpenReminders: { path.append(.reminders) }
             )
         case .actionButton:
             ActionButtonSettingsView(settings: environment.settings, checks: (try? environment.store.checks()) ?? [])
         case .categories:
-            CategoriesSettingsView(
-                viewModel: CategoriesSettingsViewModel(
+            CategoriesView(
+                viewModel: CategoriesViewModel(
                     store: environment.store, editor: environment.categoryEditor, days: environment.settings,
                     timeSource: environment.timeSource
                 ),
@@ -251,12 +254,12 @@ struct RootView: View {
     private func openForDebugging() {
         #if DEBUG
         switch environment.configuration.debugOpen {
-        case "addChecks": isAddingChecks = true
+        case "addChecks": addChecks = AddChecksRequest(categoryID: nil)
         case "history": tab = .history
         case "settings": path = [.settings]
         case "actionButton": path = [.settings, .actionButton]
         case "reminders": path = [.settings, .reminders]
-        case "categories": path = [.settings, .categories]
+        case "categories": path = [.categories]
         case "newCategory": categoryEditor = .new
         case "detail":
             if let first = try? environment.store.checks().first { open(first.id, replacing: true) }
