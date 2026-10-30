@@ -62,4 +62,15 @@ extension Font {
     static let didFootnoteRegular = Typography.text(13, relativeTo: .footnote)
     /// Uppercase section labels, 13.
     static let didLabel = Typography.text(13, .bold, relativeTo: .caption)
+
+    /// The New category preview's name, 26.
+    static let didPreviewTitle = Typography.display(26, relativeTo: .title)
+    /// The progress bar's main line and Coming up's heading, 20.
+    static let didBarTitle = Typography.display(20, relativeTo: .title3)
+    /// A day number in the 7-day strip, 20.
+    static let didStripDay = Typography.display(20, relativeTo: .title3)
+    /// A task's name on a square tile, 14.
+    static let didSmallTileName = Typography.display(14, .bold, relativeTo: .subheadline)
+    /// Strip weekdays, the bar's scope and a tile's status line, 12.
+    static let didMicro = Typography.text(12, .bold, relativeTo: .caption2)
 }

@@ -7,6 +7,10 @@ enum MainTab: Hashable {
 /// Today's floating bar: Today, History and the round Add button, on Liquid Glass tinted ink.
 struct FloatingTabBar: View {
     @Binding var selection: MainTab
+    /// Today's due tasks done, 0 to 1, for the ring on the Today tab; nil hides the ring.
+    var todayProgress: Double?
+    /// "Today: 4 of 8 checked".
+    var todayAccessibilityLabel: String?
     let onAdd: () -> Void
 
     var body: some View {
@@ -35,16 +39,23 @@ struct FloatingTabBar: View {
         return Button {
             selection = tab
         } label: {
-            Text(title)
-                .font(isSelected ? .didEmphasis : .didSubheadline)
-                .foregroundStyle(isSelected ? Color.onTile : Color.onChromeMuted)
-                .padding(.horizontal, 18)
-                .frame(minHeight: 48)
-                .background(isSelected ? Color.tileSun : Color.clear, in: .capsule)
-                .contentShape(.capsule)
+            HStack(spacing: 8) {
+                if tab == .today, let todayProgress {
+                    ProgressRing(fraction: todayProgress, colour: isSelected ? .onTile : .onChromeMuted)
+                }
+                Text(title)
+                    .font(isSelected ? .didEmphasis : .didSubheadline)
+            }
+            .foregroundStyle(isSelected ? Color.onTile : Color.onChromeMuted)
+            .padding(.leading, tab == .today && todayProgress != nil ? 12 : 18)
+            .padding(.trailing, 18)
+            .frame(minHeight: 48)
+            .background(isSelected ? Color.tileSun : Color.clear, in: .capsule)
+            .contentShape(.capsule)
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityLabel(tab == .today ? todayAccessibilityLabel ?? title : title)
         .accessibilityIdentifier(tab == .today ? "tabbar.today" : "tabbar.history")
     }
 }

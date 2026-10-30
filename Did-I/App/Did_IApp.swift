@@ -41,8 +41,8 @@ struct Did_IApp: App {
         switch launch {
         case .success(let environment):
             #if DEBUG
-            if configuration.showsGallery {
-                ComponentGallery(startsAtControls: configuration.galleryStartsAtControls)
+            if let page = configuration.galleryPage {
+                ComponentGallery(page: page)
             } else {
                 RootView(environment: environment)
             }
