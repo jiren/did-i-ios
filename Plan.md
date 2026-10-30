@@ -291,7 +291,7 @@ Branch `feature/phase-12-polish`.
 
 The phases below follow the canvas update (see **Categories & calendar**). Each starts from an up-to-date `main`.
 
-## Phase 13 — Categories & schedules (core)
+## Phase 13 — Categories & schedules (core) ✅ Done 2026-10-30, merged into main (builds; migration checked on the simulator's real V1 store; tests not yet run)
 
 Branch `feature/phase-13-categories-core`. Pure code and stores in `Shared/`, no UI.
 
@@ -315,7 +315,7 @@ Branch `feature/phase-13-categories-core`. Pure code and stores in `Shared/`, no
 from its anchor, a day start after midnight and DST changes), the progress copy and Coming up; store tests cover
 delete-with-tasks and move-to-Daily; and a V1 store file on disk migrates to V2 with its checks, logs and reminder.
 
-## Phase 14 — Calendar & category components (built 2026-10-30 on top of the unmerged phase 13 branch; awaiting the user's approval of the screenshots)
+## Phase 14 — Calendar & category components ✅ Done 2026-10-30, merged into main (the user said to continue; gallery checked in both themes and at an accessibility size; tests not yet run)
 
 Branch `feature/phase-14-calendar-components`.
 
