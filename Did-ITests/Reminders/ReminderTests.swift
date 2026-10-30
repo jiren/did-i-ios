@@ -96,17 +96,18 @@ struct LeaveHomeNudgeTests {
         let stove = check("Stove off", nudge: true)
         let pill = check("Pill taken")
         let nudges = LeaveHomeNudge.notifications(
-            checks: [door, stove, pill], dueIDs: [door.id, stove.id, pill.id], latestLogs: [door.id: log(door, at: TestTime.date(2026, 10, 29, 8, 42))],
+            checks: [door, stove, pill], dueIDs: [door.id, stove.id, pill.id],
+            latestLogs: [door.id: log(door, at: TestTime.date(2026, 10, 29, 8, 42))],
             now: now, time: time, reassures: false
         )
         #expect(nudges.map(\.checkID) == [stove.id])
+        #expect(nudges.first?.title == "Leaving home? Stove off")
     }
 
     @Test func aTaskNotDueTodayDoesntNudge() {
         let bins = check("Bins out", nudge: true)
         let nudges = LeaveHomeNudge.notifications(checks: [bins], dueIDs: [], latestLogs: [:], now: now, time: time, reassures: false)
         #expect(nudges.isEmpty)
-        #expect(nudges.first?.title == "Leaving home? Stove off")
     }
 
     @Test func reassuresWhenAsked() {

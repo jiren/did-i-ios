@@ -133,6 +133,18 @@ struct TodayViewModelTests {
         #expect(viewModel.addTarget == nil)
     }
 
+    @Test func theTodayTabReturnsToToday() {
+        viewModel.reload()
+        viewModel.select(Self.friday)
+        viewModel.selectFilter(bins.id)
+        #expect(!viewModel.isToday)
+        viewModel.showToday()
+        #expect(viewModel.isToday)
+        #expect(viewModel.filterID == nil)
+        #expect(viewModel.dateText == "Today · Thu, Oct 29")
+        #expect(viewModel.sections.map(\.category.name) == ["Daily"])
+    }
+
     @Test func comingUpOpensItsDay() throws {
         viewModel.reload()
         let upcoming = try #require(viewModel.comingUp.first)
@@ -221,7 +233,10 @@ struct TodayViewModelTests {
         let quick = Self.makeViewModel(store: store, clock: clock, changes: changes, toastDuration: .milliseconds(10))
         quick.reload()
         quick.log(checks[0].id)
-        try await Task.sleep(for: .milliseconds(200))
+        // Poll rather than wait a fixed time: parallel simulators can be slow.
+        for _ in 0..<40 where quick.toast != nil {
+            try await Task.sleep(for: .milliseconds(50))
+        }
         #expect(quick.toast == nil)
     }
 }
