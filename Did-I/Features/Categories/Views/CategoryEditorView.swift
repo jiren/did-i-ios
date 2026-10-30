@@ -52,6 +52,9 @@ struct CategoryEditorView: View {
         }
         .background(Color.ground)
         .task { viewModel.load() }
+        .onChange(of: viewModel.remindsMe) { _, isOn in
+            if isOn { Task { await NotificationPermission.request() } }
+        }
     }
 
     private var header: some View {

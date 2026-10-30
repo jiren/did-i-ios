@@ -41,9 +41,6 @@ struct DetailView: View {
                     categoryRow
                         .padding(.horizontal, 20)
                         .padding(.top, 8)
-                    reminderRow
-                        .padding(.horizontal, 20)
-                        .padding(.top, 8)
                 }
                 history
                     .padding(.horizontal, 24)
@@ -180,40 +177,6 @@ struct DetailView: View {
         .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
         .frame(minHeight: 52)
         .background(Color.surface, in: .rect(cornerRadius: 18, style: .continuous))
-    }
-
-    private var reminderRow: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            SwitchRow(
-                title: String(localized: "Remind me if it isn’t logged"),
-                subtitle: viewModel.reminderDate == nil ? String(localized: "Off") : String(localized: "Every day at this time"),
-                symbolName: "clock.fill",
-                isOn: Binding(
-                    get: { viewModel.reminderDate != nil },
-                    set: { isOn in
-                        if isOn {
-                            viewModel.enableReminder()
-                            Task { await NotificationPermission.request() }
-                        } else {
-                            viewModel.setReminder(nil)
-                        }
-                    }
-                )
-            )
-            .accessibilityIdentifier("detail.reminder")
-            if let date = viewModel.reminderDate {
-                DatePicker(
-                    String(localized: "Reminder time"),
-                    selection: Binding(get: { date }, set: { viewModel.setReminder($0) }),
-                    displayedComponents: .hourAndMinute
-                )
-                .font(.didRowTitle)
-                .foregroundStyle(Color.ink)
-                .padding(.horizontal, 16)
-                .frame(minHeight: 52)
-                .background(Color.surface, in: .rect(cornerRadius: 18, style: .continuous))
-            }
-        }
     }
 
     private var history: some View {

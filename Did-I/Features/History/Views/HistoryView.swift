@@ -78,6 +78,18 @@ struct HistoryView: View {
     }
 
     private var filterBar: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if viewModel.categories.count > 1 {
+                CategoryFilter(
+                    categories: viewModel.categories, selection: viewModel.selectedCategoryID,
+                    onSelect: viewModel.selectCategory
+                )
+            }
+            checkFilter
+        }
+    }
+
+    private var checkFilter: some View {
         ScrollView(.horizontal) {
             HStack(spacing: 8) {
                 ForEach(viewModel.filters) { filter in

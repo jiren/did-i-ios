@@ -27,7 +27,7 @@ struct OverviewProvider: TimelineProvider {
             let now = Date()
             let snapshot = WidgetSnapshot.read(services: IntentServices.shared, now: now)
             let tomorrow = WidgetSnapshot(
-                checks: snapshot.checks.map { WidgetCheck(id: $0.id, name: $0.name, kind: $0.kind, swatch: $0.swatch, loggedToday: nil) },
+                checks: snapshot.checks.map(\.nextDay),
                 hidesNames: snapshot.hidesNames,
                 nextDayStart: snapshot.nextDayStart
             )
@@ -39,7 +39,7 @@ struct OverviewProvider: TimelineProvider {
     }
 }
 
-/// Up to four checks on the Home Screen; tap one to log it.
+/// Up to four checks due today on the Home Screen; tap one to log it.
 struct ChecksOverviewWidget: Widget {
     static let kind = "ChecksOverviewWidget"
 
@@ -48,7 +48,7 @@ struct ChecksOverviewWidget: Widget {
             OverviewView(snapshot: entry.snapshot)
         }
         .configurationDisplayName("Today’s checks")
-        .description("Your first four checks. Tap one to log it.")
+        .description("The first four checks due today. Tap one to log it.")
         .supportedFamilies([.systemMedium])
     }
 }
@@ -56,8 +56,8 @@ struct ChecksOverviewWidget: Widget {
 struct OverviewView: View {
     let snapshot: WidgetSnapshot
 
-    private var checks: [WidgetCheck] { Array(snapshot.checks.prefix(4)) }
-    private var doneCount: Int { snapshot.checks.filter { $0.loggedToday != nil }.count }
+    private var checks: [WidgetCheck] { Array(snapshot.dueToday.prefix(4)) }
+    private var doneCount: Int { snapshot.dueToday.filter { $0.loggedToday != nil }.count }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -66,7 +66,7 @@ struct OverviewView: View {
                     .font(Typography.display(17, relativeTo: .headline))
                     .foregroundStyle(Color.ink)
                 Spacer()
-                Text("\(doneCount) of \(snapshot.checks.count) today")
+                Text("\(doneCount) of \(snapshot.dueToday.count) today")
                     .font(Typography.text(12, .bold, relativeTo: .caption))
                     .foregroundStyle(Color.tileSun)
                     .padding(.horizontal, 8)

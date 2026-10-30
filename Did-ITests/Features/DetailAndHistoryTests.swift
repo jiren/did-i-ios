@@ -112,6 +112,21 @@ struct HistoryViewModelTests {
         #expect(viewModel.sections.flatMap(\.rows).map(\.checkName) == ["Pill taken"])
     }
 
+    @Test func filtersByCategory() throws {
+        let pills = try store.addCategory(CategoryDraft(name: "Pills"), tasks: [])
+        try store.moveCheck(checks[1].id, to: pills.id)
+        let viewModel = makeViewModel()
+        viewModel.reload()
+        #expect(viewModel.categories.map(\.name) == ["Daily", "Pills"])
+        viewModel.select(checks[0].id)
+        viewModel.selectCategory(pills.id)
+        #expect(viewModel.selectedCheckID == nil)
+        #expect(viewModel.filters.map(\.title) == ["All", "Pill taken"])
+        #expect(viewModel.sections.flatMap(\.rows).map(\.checkName) == ["Pill taken"])
+        viewModel.selectCategory(nil)
+        #expect(viewModel.sections.flatMap(\.rows).count == 3)
+    }
+
     @Test func deletesALog() throws {
         let photos = PhotoRemovalSpy()
         let viewModel = HistoryViewModel(

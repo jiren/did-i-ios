@@ -26,6 +26,10 @@ struct LastLogIntent: AppIntent {
         let store = try services.requireStore()
         guard let check = try store.check(id: checkID) else { throw IntentError.checkNotFound }
         let latest = try store.logs(for: checkID, limit: 1).first?.date
-        return LastLogAnswer.text(checkName: check.name, latest: latest, now: services.timeSource.now, time: services.relativeTime)
+        let now = services.timeSource.now
+        return LastLogAnswer.text(
+            checkName: check.name, latest: latest, now: now, time: services.relativeTime,
+            isDueToday: try services.dueIDs(on: now).contains(checkID)
+        )
     }
 }

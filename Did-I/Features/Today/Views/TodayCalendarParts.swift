@@ -18,14 +18,15 @@ struct DayStrip: View {
     }
 }
 
-/// All, then a chip per category (hold one to edit or delete it), then New category.
+/// All, then a chip per category (hold one to edit or delete it), then New category. History passes no `onNew`,
+/// so it shows the chips alone.
 struct CategoryFilter: View {
     let categories: [CategoryRecord]
     let selection: UUID?
     let onSelect: (UUID?) -> Void
-    let onNew: () -> Void
-    let onEdit: (UUID) -> Void
-    let onDelete: (UUID) -> Void
+    var onNew: (() -> Void)?
+    var onEdit: ((UUID) -> Void)?
+    var onDelete: ((UUID) -> Void)?
 
     var body: some View {
         ScrollView(.horizontal) {
@@ -37,12 +38,18 @@ struct CategoryFilter: View {
                         title: category.name, icon: category.icon, colour: category.colour,
                         isSelected: selection == category.id
                     ) { onSelect(category.id) }
-                    .contextMenu { CategoryMenu(category: category, onEdit: onEdit, onDelete: onDelete) }
+                    .contextMenu {
+                        if let onEdit, let onDelete {
+                            CategoryMenu(category: category, onEdit: onEdit, onDelete: onDelete)
+                        }
+                    }
                     .accessibilityIdentifier("filter.\(category.name)")
                 }
-                NewCategoryChip(action: onNew)
-                    .popoverTip(NewCategoryTip())
-                    .accessibilityIdentifier("filter.newCategory")
+                if let onNew {
+                    NewCategoryChip(action: onNew)
+                        .popoverTip(NewCategoryTip())
+                        .accessibilityIdentifier("filter.newCategory")
+                }
             }
             .padding(.horizontal, 20)
         }

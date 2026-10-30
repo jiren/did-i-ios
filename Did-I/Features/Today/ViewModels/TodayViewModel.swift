@@ -152,6 +152,14 @@ final class TodayViewModel {
         rebuild()
     }
 
+    /// Today, showing one category alone (a category reminder's tap).
+    func focus(on categoryID: UUID) {
+        selectedDay = nil
+        // `reload` drops it if the category has gone.
+        filterID = categoryID
+        reload()
+    }
+
     /// A Coming up row: within the strip, it shows that day for every category.
     func open(_ upcoming: DayAgenda.Upcoming) {
         guard upcoming.isInStrip else { return }

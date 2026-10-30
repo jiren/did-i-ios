@@ -20,6 +20,22 @@ struct LastLogAnswerTests {
     @Test func neverLogged() {
         #expect(LastLogAnswer.text(checkName: "Stove off", latest: nil, now: now, time: time) == "You haven’t logged Stove off yet.")
     }
+
+    @Test func notDueToday() {
+        let answer = LastLogAnswer.text(
+            checkName: "Bins out", latest: TestTime.date(2026, 10, 23, 7, 5), now: now, time: time, isDueToday: false
+        )
+        #expect(answer.plainSpaces.hasPrefix("Not due today. Last done "))
+        #expect(answer.plainSpaces.hasSuffix("7:05 AM."))
+        #expect(LastLogAnswer.text(checkName: "Bins out", latest: nil, now: now, time: time, isDueToday: false) == "Bins out isn’t due today.")
+    }
+
+    @Test func aLogTodayAnswersYesEvenWhenNotDue() {
+        let answer = LastLogAnswer.text(
+            checkName: "Bins out", latest: TestTime.date(2026, 10, 29, 8, 42), now: now, time: time, isDueToday: false
+        )
+        #expect(answer.hasPrefix("Yes."))
+    }
 }
 
 /// Intents read `IntentServices.shared`, so these run one at a time with their own store.
@@ -72,6 +88,17 @@ struct IntentPerformTests {
         let matches = try await CheckEntityQuery().entities(matching: "door")
         #expect(matches.map(\.name) == ["Front door locked"])
         #expect(try await CheckEntityQuery().entities(for: [checks[1].id]).map(\.name) == ["Pill taken"])
+    }
+
+    @Test func askMeWhichListsTodaysDueTasksFirst() async throws {
+        // Sunday, Nov 1 is never today in these tests' week, so its category isn't due.
+        let sunday = try store.addCategory(
+            CategoryDraft(name: "Sunday", rule: .once(CalendarDay(year: 2026, month: 11, day: 1))),
+            tasks: [CheckDraft(name: "Plants watered")]
+        )
+        try store.moveCheck(checks[0].id, to: sunday.id)
+        let suggested = try await CheckEntityQuery().suggestedEntities()
+        #expect(suggested.map(\.name) == ["Pill taken", "Plants watered", "Front door locked"])
     }
 
     @Test func checkLoggerDescribesTheLog() throws {

@@ -65,15 +65,14 @@ struct RemindersSettingsView: View {
                 if let message = viewModel.locationMessage {
                     Text(message).font(.didFootnoteRegular).foregroundStyle(Color.muted)
                 }
-                section(String(localized: "On each check"), footer: String(localized: "Set a reminder time or the leaving-home nudge on a check’s page.")) {
-                    let lines = viewModel.reminderLines + viewModel.nudgeNames.map { String(localized: "\($0) · when leaving home") }
-                    if lines.isEmpty {
-                        SettingsRow(title: String(localized: "None yet")) { EmptyView() }
-                    } else {
-                        ForEach(lines, id: \.self) { line in
-                            SettingsRow(title: line) { EmptyView() }
-                        }
-                    }
+                section(
+                    String(localized: "Category reminders"),
+                    footer: String(localized: "Each category reminds you on the days it’s due, only if something in it isn’t logged. Set its time in Settings › Categories.")
+                ) {
+                    lines(viewModel.reminderLines)
+                }
+                section(String(localized: "Nudged when leaving home"), footer: String(localized: "Turn the nudge on from a check’s page.")) {
+                    lines(viewModel.nudgeNames)
                 }
             }
             .padding(.horizontal, 20)
@@ -83,6 +82,17 @@ struct RemindersSettingsView: View {
         .background(Color.ground)
         .toolbarVisibility(.hidden, for: .navigationBar)
         .task { await viewModel.load() }
+    }
+
+    @ViewBuilder
+    private func lines(_ lines: [String]) -> some View {
+        if lines.isEmpty {
+            SettingsRow(title: String(localized: "None yet")) { EmptyView() }
+        } else {
+            ForEach(lines, id: \.self) { line in
+                SettingsRow(title: line) { EmptyView() }
+            }
+        }
     }
 
     private var notificationSubtitle: String {

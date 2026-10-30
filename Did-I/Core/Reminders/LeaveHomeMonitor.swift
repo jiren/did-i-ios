@@ -70,9 +70,14 @@ final class LeaveHomeMonitor {
     }
 
     private func leftHome() async {
-        guard let checks = try? store.checks(), let latest = try? store.latestLogs() else { return }
+        guard let checks = try? store.checks(), let categories = try? store.categories(),
+              let latest = try? store.latestLogs() else { return }
+        let boundary = settings.dayBoundary
+        let due = DueTasks.ids(
+            on: boundary.calendarDay(containing: timeSource.now), categories: categories, checks: checks, calendar: boundary.calendar
+        )
         let nudges = LeaveHomeNudge.notifications(
-            checks: checks, latestLogs: latest, now: timeSource.now,
+            checks: checks, dueIDs: due, latestLogs: latest, now: timeSource.now,
             time: RelativeTime(boundary: settings.dayBoundary), reassures: settings.reassuresOnLeavingHome
         )
         await scheduler.post(nudges)

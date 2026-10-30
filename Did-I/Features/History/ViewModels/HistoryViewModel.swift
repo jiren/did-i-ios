@@ -26,7 +26,7 @@ struct HistoryFilter: Identifiable, Equatable {
     var title: String
 }
 
-/// Every log, grouped by day, optionally for one check.
+/// Every log, grouped by day, optionally for one category or one check.
 @Observable
 final class HistoryViewModel {
     static let limit = 1000
@@ -34,9 +34,12 @@ final class HistoryViewModel {
     private(set) var sections: [HistorySection] = []
     private(set) var filters: [HistoryFilter] = []
     private(set) var selectedCheckID: UUID?
+    /// Every category, for the category chips (shown once there's more than Daily).
+    private(set) var categories: [CategoryRecord] = []
+    private(set) var selectedCategoryID: UUID?
     private(set) var errorMessage: String?
 
-    @ObservationIgnored private let checkStore: any CheckStoring
+    @ObservationIgnored private let checkStore: any CheckStoring & CategoryStoring
     @ObservationIgnored private let logStore: any LogStoring
     @ObservationIgnored private let days: any DayBoundaryProviding
     @ObservationIgnored private let timeSource: any TimeSource
@@ -45,7 +48,7 @@ final class HistoryViewModel {
     @ObservationIgnored private let locale: Locale
 
     init(
-        checkStore: any CheckStoring,
+        checkStore: any CheckStoring & CategoryStoring,
         logStore: any LogStoring,
         days: any DayBoundaryProviding,
         timeSource: any TimeSource,
@@ -71,13 +74,26 @@ final class HistoryViewModel {
         reload()
     }
 
+    /// Nil shows every category; choosing one clears a check from another.
+    func selectCategory(_ categoryID: UUID?) {
+        selectedCategoryID = categoryID
+        reload()
+    }
+
     func reload() {
         do {
             let checks = try checkStore.checks()
-            if let selected = selectedCheckID, !checks.contains(where: { $0.id == selected }) { selectedCheckID = nil }
+            categories = try checkStore.categories()
+            if let selected = selectedCategoryID, !categories.contains(where: { $0.id == selected }) { selectedCategoryID = nil }
+            let shown = selectedCategoryID.map { id in checks.filter { $0.categoryID == id } } ?? checks
+            if let selected = selectedCheckID, !shown.contains(where: { $0.id == selected }) { selectedCheckID = nil }
             filters = [HistoryFilter(id: nil, title: String(localized: "All"))]
-                + checks.map { HistoryFilter(id: $0.id, title: $0.name) }
-            let logs = try logStore.logs(for: selectedCheckID, limit: Self.limit)
+                + shown.map { HistoryFilter(id: $0.id, title: $0.name) }
+            var logs = try logStore.logs(for: selectedCheckID, limit: Self.limit)
+            if selectedCheckID == nil, selectedCategoryID != nil {
+                let ids = Set(shown.map(\.id))
+                logs = logs.filter { ids.contains($0.checkID) }
+            }
             sections = Self.group(logs, checks: checks, boundary: days.dayBoundary, now: timeSource.now, locale: locale)
             errorMessage = nil
         } catch {

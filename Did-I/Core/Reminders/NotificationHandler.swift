@@ -1,7 +1,8 @@
 import Foundation
 import UserNotifications
 
-/// Handles taps on reminders and nudges: Log it logs without opening the app; a tap opens the check.
+/// Handles taps on reminders and nudges: Log it logs without opening the app; a tap opens the category on Today
+/// (category reminders) or the check (nudges).
 final class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
     private let store: SwiftDataStore
     private let changes: StoreChangeHub
@@ -21,12 +22,17 @@ final class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         let info = response.notification.request.content.userInfo
-        guard let raw = info[ReminderScheduler.checkIDKey] as? String, let checkID = UUID(uuidString: raw) else { return }
-        if response.actionIdentifier == ReminderScheduler.logActionIdentifier {
+        let checkID = (info[ReminderScheduler.checkIDKey] as? String).flatMap(UUID.init(uuidString:))
+        let categoryID = (info[ReminderScheduler.categoryIDKey] as? String).flatMap(UUID.init(uuidString:))
+        if response.actionIdentifier == ReminderScheduler.logActionIdentifier, let checkID {
             _ = try? store.log(checkID, source: .notification, at: timeSource.now, photoFileName: nil)
             changes.didChange()
         } else if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
-            IntentServices.shared.openCheck?(checkID)
+            if let categoryID {
+                IntentServices.shared.openCategory?(categoryID)
+            } else if let checkID {
+                IntentServices.shared.openCheck?(checkID)
+            }
         }
     }
 }

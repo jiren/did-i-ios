@@ -26,8 +26,9 @@ struct CheckEntityQuery: EntityStringQuery {
         try await allChecks().filter { identifiers.contains($0.id) }
     }
 
+    /// Today's due tasks first, for "Ask me which" and Siri's list.
     func suggestedEntities() async throws -> [CheckEntity] {
-        try await allChecks()
+        try await dueFirst()
     }
 
     func entities(matching string: String) async throws -> [CheckEntity] {
@@ -41,5 +42,13 @@ struct CheckEntityQuery: EntityStringQuery {
     @MainActor
     private func allChecks() throws -> [CheckEntity] {
         try IntentServices.shared.requireStore().checks().map(CheckEntity.init)
+    }
+
+    @MainActor
+    private func dueFirst() throws -> [CheckEntity] {
+        let services = IntentServices.shared
+        let checks = try services.requireStore().checks()
+        let due = try services.dueIDs(on: services.timeSource.now)
+        return (checks.filter { due.contains($0.id) } + checks.filter { !due.contains($0.id) }).map(CheckEntity.init)
     }
 }

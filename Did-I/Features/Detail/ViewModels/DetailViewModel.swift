@@ -16,7 +16,7 @@ final class DetailViewModel {
     static let timelineLimit = 50
 
     private(set) var check: CheckRecord?
-    /// The check's category, whose reminder the reminder row sets until phase 17 moves it to the category page.
+    /// The check's category, shown in the Category row.
     private(set) var category: CategoryRecord?
     /// Every category, for moving the check to another.
     private(set) var categories: [CategoryRecord] = []
@@ -142,33 +142,6 @@ final class DetailViewModel {
         } catch {
             errorMessage = String(localized: "Couldn’t move this check.")
         }
-    }
-
-    static let defaultReminderMinutes = 21 * 60
-
-    /// The reminder time as today's date, for the time picker.
-    var reminderDate: Date? {
-        guard let minutes = category?.reminderMinutes else { return nil }
-        return days.dayBoundary.calendar.date(bySettingHour: minutes / 60, minute: minutes % 60, second: 0, of: timeSource.now)
-    }
-
-    /// Turns the category's "if not logged" reminder on (at 9 PM, or `date`) or off.
-    func setReminder(_ date: Date?) {
-        guard let categoryID = category?.id else { return }
-        let calendar = days.dayBoundary.calendar
-        let minutes = date.map { calendar.component(.hour, from: $0) * 60 + calendar.component(.minute, from: $0) }
-        do {
-            try checkStore.setReminder(minutes: minutes, forCategory: categoryID)
-            category?.reminderMinutes = minutes
-            changes.didChange()
-        } catch {
-            errorMessage = String(localized: "Couldn’t change the reminder.")
-        }
-    }
-
-    func enableReminder() {
-        let minutes = Self.defaultReminderMinutes
-        setReminder(days.dayBoundary.calendar.date(bySettingHour: minutes / 60, minute: 0, second: 0, of: timeSource.now))
     }
 
     func logAgain() {

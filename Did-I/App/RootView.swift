@@ -33,6 +33,8 @@ struct RootView: View {
     /// The category the Add sheet adds to; Daily when nil.
     @State private var addChecksCategory: UUID?
     @State private var categoryEditor: CategoryEditorRequest?
+    /// Today shown on one category, from a category reminder.
+    @State private var categoryFocus: CategoryFocus?
     /// The check shown beside Today on regular width.
     @State private var selectedCheck: UUID?
     @State private var columns: NavigationSplitViewVisibility = .all
@@ -81,6 +83,14 @@ struct RootView: View {
                     logged = nil
                     isAddingChecks = false
                     open(id, replacing: true)
+                }
+                IntentServices.shared.openCategory = { id in
+                    logged = nil
+                    isAddingChecks = false
+                    categoryEditor = nil
+                    tab = .today
+                    path = []
+                    categoryFocus = CategoryFocus(categoryID: id)
                 }
                 IntentServices.shared.showLogged = { request in
                     isAddingChecks = false
@@ -137,6 +147,7 @@ struct RootView: View {
                     photos: environment.photos
                 ),
                 tab: $tab,
+                focus: categoryFocus,
                 actions: TodayActions(
                     addChecks: { category in
                         addChecksCategory = category

@@ -22,4 +22,19 @@ struct WidgetSnapshotTests {
         #expect(snapshot.hidesNames)
         #expect(snapshot.nextDayStart > clock.now)
     }
+
+    @Test func theOverviewShowsOnlyTasksDueToday() throws {
+        let clock = FixedTimeSource(TestTime.date(2026, 10, 29, 10, 51))
+        let store = SwiftDataStore(container: try .app(inMemory: true), timeSource: clock)
+        let settings = AppSettings(defaults: UserDefaults(suiteName: "WidgetSnapshotTests-\(UUID().uuidString)")!)
+        _ = try store.addChecks([CheckDraft(name: "Front door locked")])
+        _ = try store.addCategory(CategoryDraft(name: "Bin night", rule: .weekly(weekday: 6)), tasks: [CheckDraft(name: "Bins out")])
+        let services = IntentServices(store: store, settings: settings, photos: PhotoStore(), timeSource: clock) {}
+
+        // Thursday: the bins are due tomorrow.
+        let snapshot = WidgetSnapshot.read(services: services, now: clock.now, boundary: DayBoundary(calendar: TestTime.calendar()))
+        #expect(snapshot.checks.map(\.name) == ["Front door locked", "Bins out"])
+        #expect(snapshot.dueToday.map(\.name) == ["Front door locked"])
+        #expect(snapshot.checks.map(\.nextDay).filter(\.isDueToday).map(\.name) == ["Front door locked", "Bins out"])
+    }
 }

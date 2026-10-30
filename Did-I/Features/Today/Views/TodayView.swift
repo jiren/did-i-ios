@@ -12,14 +12,17 @@ struct TodayView: View {
     @State private var headerHeight: CGFloat = 300
     @State private var isBarStuck = false
     @Binding var tab: MainTab
+    /// A category to show alone on today, from a category reminder.
+    let focus: CategoryFocus?
     let actions: TodayActions
 
     @Environment(StoreChangeHub.self) private var changes
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    init(viewModel: @autoclosure () -> TodayViewModel, tab: Binding<MainTab>, actions: TodayActions) {
+    init(viewModel: @autoclosure () -> TodayViewModel, tab: Binding<MainTab>, focus: CategoryFocus? = nil, actions: TodayActions) {
         _viewModel = State(initialValue: viewModel())
         _tab = tab
+        self.focus = focus
         self.actions = actions
     }
 
@@ -54,6 +57,9 @@ struct TodayView: View {
             }
         }
         .onChange(of: changes.version) { viewModel.reload() }
+        .onChange(of: focus, initial: true) { _, focus in
+            if let focus { viewModel.focus(on: focus.categoryID) }
+        }
         .onChange(of: viewModel.taskCount, initial: true) { _, count in NewCategoryTip.taskCount = count }
         .categoryDeletion($deletion, onDelete: viewModel.deleteCategory)
         .onChange(of: viewModel.toast) { _, toast in
@@ -201,6 +207,12 @@ struct TodayActions {
     var openCheck: (UUID) -> Void = { _ in }
     var newCategory: () -> Void = {}
     var editCategory: (UUID) -> Void = { _ in }
+}
+
+/// A request to show one category on today; a new one each time, so the same category can be asked for again.
+struct CategoryFocus: Equatable {
+    let id = UUID()
+    let categoryID: UUID
 }
 
 /// The check a proof photo is being taken for.

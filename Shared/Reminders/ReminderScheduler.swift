@@ -8,11 +8,15 @@ protocol NotificationScheduling: AnyObject {
     func removePending(_ identifiers: [String])
 }
 
-/// Keeps the pending "if not logged" reminders matching the checks and today's logs.
+/// Keeps the pending category reminders matching the categories, their tasks and today's logs.
 final class ReminderScheduler {
+    /// A reminder or nudge for one task, with Log it.
     static let categoryIdentifier = "CHECK_REMINDER"
+    /// A category reminder with more than one task left: a tap opens Today on the category.
+    static let groupCategoryIdentifier = "CATEGORY_REMINDER"
     static let logActionIdentifier = "LOG_IT"
     static let checkIDKey = "checkID"
+    static let categoryIDKey = "categoryID"
 
     private let center: any NotificationScheduling
 
@@ -47,8 +51,9 @@ final class ReminderScheduler {
     /// The Log it action, registered once at launch.
     static func registerCategory() {
         let log = UNNotificationAction(identifier: logActionIdentifier, title: String(localized: "Log it"), options: [])
-        let category = UNNotificationCategory(identifier: categoryIdentifier, actions: [log], intentIdentifiers: [])
-        UNUserNotificationCenter.current().setNotificationCategories([category])
+        let single = UNNotificationCategory(identifier: categoryIdentifier, actions: [log], intentIdentifiers: [])
+        let group = UNNotificationCategory(identifier: groupCategoryIdentifier, actions: [], intentIdentifiers: [])
+        UNUserNotificationCenter.current().setNotificationCategories([single, group])
     }
 }
 
@@ -64,8 +69,13 @@ final class SystemNotificationCenter: NotificationScheduling {
         content.title = reminder.title
         content.body = reminder.body
         content.sound = .default
-        content.categoryIdentifier = ReminderScheduler.categoryIdentifier
-        content.userInfo = [ReminderScheduler.checkIDKey: reminder.checkID.uuidString]
+        content.categoryIdentifier = reminder.checkID == nil
+            ? ReminderScheduler.groupCategoryIdentifier
+            : ReminderScheduler.categoryIdentifier
+        var info: [String: String] = [:]
+        info[ReminderScheduler.checkIDKey] = reminder.checkID?.uuidString
+        info[ReminderScheduler.categoryIDKey] = reminder.categoryID?.uuidString
+        content.userInfo = info
         let trigger: UNNotificationTrigger? = immediately ? nil : UNCalendarNotificationTrigger(
             dateMatching: Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: reminder.fireDate),
             repeats: false

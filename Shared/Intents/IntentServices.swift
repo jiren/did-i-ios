@@ -15,6 +15,8 @@ final class IntentServices {
     var afterWrite: () -> Void
     /// Set by the app: open a check's page.
     var openCheck: ((UUID) -> Void)?
+    /// Set by the app: open Today on a category (a category reminder's tap).
+    var openCategory: ((UUID) -> Void)?
     /// Set by the app: show the Logged screen for a log, opening the camera if asked.
     var showLogged: ((LoggedRequest) -> Void)?
 
@@ -45,6 +47,16 @@ final class IntentServices {
 
     var relativeTime: RelativeTime {
         RelativeTime(boundary: settings.dayBoundary)
+    }
+
+    /// The tasks whose category is due on the day `date` is in.
+    func dueIDs(on date: Date) throws -> Set<UUID> {
+        let store = try requireStore()
+        let boundary = settings.dayBoundary
+        return DueTasks.ids(
+            on: boundary.calendarDay(containing: date), categories: try store.categories(), checks: try store.checks(),
+            calendar: boundary.calendar
+        )
     }
 }
 
