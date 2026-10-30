@@ -5,6 +5,7 @@ struct SettingsView: View {
     @Bindable var settings: AppSettings
     let onOpenActionButton: () -> Void
     let onOpenReminders: () -> Void
+    let onOpenCategories: () -> Void
 
     @State private var isConfirmingDelete = false
 
@@ -12,12 +13,14 @@ struct SettingsView: View {
         viewModel: @autoclosure () -> SettingsViewModel,
         settings: AppSettings,
         onOpenActionButton: @escaping () -> Void,
-        onOpenReminders: @escaping () -> Void
+        onOpenReminders: @escaping () -> Void,
+        onOpenCategories: @escaping () -> Void
     ) {
         _viewModel = State(initialValue: viewModel())
         self.settings = settings
         self.onOpenActionButton = onOpenActionButton
         self.onOpenReminders = onOpenReminders
+        self.onOpenCategories = onOpenCategories
     }
 
     var body: some View {
@@ -33,6 +36,9 @@ struct SettingsView: View {
                     .accessibilityIdentifier("settings.appearance")
                 }
                 group(String(localized: "Today"), footer: String(localized: "Logs before this count for the day before, so a door checked at 1 AM still counts for last night.")) {
+                    navigationRow(String(localized: "Categories"), subtitle: String(localized: "Schedules, reminders and order"), action: onOpenCategories)
+                        .accessibilityIdentifier("settings.categories")
+                    Divider().overlay(Color.line).padding(.leading, 16)
                     SettingsRow(title: String(localized: "Day starts at")) {
                         Picker(String(localized: "Day starts at"), selection: $settings.dayStartHour) {
                             ForEach(0...DayBoundary.latestStartHour, id: \.self) { Text(Self.hourTitle($0)).tag($0) }

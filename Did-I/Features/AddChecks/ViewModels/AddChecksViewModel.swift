@@ -1,39 +1,54 @@
 import Foundation
 import Observation
 
-/// The Add checks sheet (`Main.dc.html`): pick suggestions, add your own, then add them all at once.
+/// The Add sheet (`Main.dc.html`): pick a category, pick suggestions, add your own, then add them all at once.
 @Observable
 final class AddChecksViewModel {
     /// Suggestions not yet a check, then what the user typed this time.
     private(set) var chips: [String] = []
     private(set) var picked: Set<String> = []
+    private(set) var categories: [CategoryRecord] = []
+    /// Where the tasks go.
+    private(set) var categoryID: UUID
     var customText = ""
 
-    @ObservationIgnored private let store: any CheckStoring
+    @ObservationIgnored private let store: any CheckStoring & CategoryStoring
     @ObservationIgnored private let changes: any ChangeNotifying
-    /// Where the checks go; Daily when nil.
-    @ObservationIgnored private let categoryID: UUID?
     @ObservationIgnored private var customs: [String] = []
     @ObservationIgnored private var existingNames: [String] = []
 
-    init(store: any CheckStoring, changes: any ChangeNotifying, categoryID: UUID? = nil) {
+    /// Opens on `categoryID`, or Daily when nil.
+    init(store: any CheckStoring & CategoryStoring, changes: any ChangeNotifying, categoryID: UUID? = nil) {
         self.store = store
         self.changes = changes
-        self.categoryID = categoryID
+        self.categoryID = categoryID ?? CategoryDefaults.dailyID
     }
 
     func load() {
         existingNames = (try? store.checks().map(\.name)) ?? []
+        categories = (try? store.categories()) ?? []
+        if !categories.contains(where: { $0.id == categoryID }) { categoryID = CategoryDefaults.dailyID }
         rebuildChips()
     }
+
+    func selectCategory(_ id: UUID) {
+        categoryID = id
+    }
+
+    private var categoryName: String {
+        categories.first { $0.id == categoryID }?.name ?? CategoryDefaults.dailyName
+    }
+
+    /// "Add to Bin night".
+    var title: String { String(localized: "Add to \(categoryName)") }
 
     var pickedCount: Int { picked.count }
 
     var commitTitle: String {
         switch picked.count {
         case 0: String(localized: "Pick at least one")
-        case 1: String(localized: "Add 1 check")
-        default: String(localized: "Add \(picked.count) checks")
+        case 1: String(localized: "Add 1 task to \(categoryName)")
+        default: String(localized: "Add \(picked.count) tasks to \(categoryName)")
         }
     }
 

@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// "Add checks — Pick as many as you like." (`Main.dc.html`, `AddChecks.dc.html`)
+/// "Add to Daily — Pick as many as you like.", with the category to add to (`Main.dc.html`, `AddChecks.dc.html`).
 struct AddChecksSheet: View {
     @State private var viewModel: AddChecksViewModel
     @Environment(\.dismiss) private var dismiss
@@ -14,6 +14,7 @@ struct AddChecksSheet: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 header
+                categoryPicker
                 FlowLayout(spacing: 8) {
                     ForEach(viewModel.chips, id: \.self) { chip in
                         ChoiceChip(title: chip, isOn: viewModel.isPicked(chip)) { viewModel.toggle(chip) }
@@ -48,7 +49,7 @@ struct AddChecksSheet: View {
     private var header: some View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 2) {
-                Text("Add checks")
+                Text(viewModel.title)
                     .font(.didSheetTitle)
                     .foregroundStyle(Color.ink)
                     .accessibilityAddTraits(.isHeader)
@@ -60,6 +61,29 @@ struct AddChecksSheet: View {
             RoundIconButton(systemName: "xmark", label: String(localized: "Close"), style: .sand) { dismiss() }
                 .accessibilityIdentifier("addChecks.close")
         }
+    }
+
+    private var categoryPicker: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Add to")
+                .font(.didPill)
+                .foregroundStyle(Color.ink)
+            ScrollView(.horizontal) {
+                HStack(spacing: 8) {
+                    ForEach(viewModel.categories) { category in
+                        CategoryChip(
+                            title: category.name, icon: category.icon, colour: category.colour,
+                            isSelected: category.id == viewModel.categoryID, style: .addTo
+                        ) { viewModel.selectCategory(category.id) }
+                        .accessibilityIdentifier("addChecks.category.\(category.name)")
+                    }
+                }
+            }
+            .scrollIndicators(.hidden)
+            .scrollClipDisabled()
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(Text("Add to category"))
     }
 
     private var customField: some View {

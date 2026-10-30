@@ -1,4 +1,5 @@
 import SwiftUI
+import TipKit
 
 /// The seven days from today.
 struct DayStrip: View {
@@ -17,11 +18,14 @@ struct DayStrip: View {
     }
 }
 
-/// All, then a chip per category.
+/// All, then a chip per category (hold one to edit or delete it), then New category.
 struct CategoryFilter: View {
     let categories: [CategoryRecord]
     let selection: UUID?
     let onSelect: (UUID?) -> Void
+    let onNew: () -> Void
+    let onEdit: (UUID) -> Void
+    let onDelete: (UUID) -> Void
 
     var body: some View {
         ScrollView(.horizontal) {
@@ -33,14 +37,32 @@ struct CategoryFilter: View {
                         title: category.name, icon: category.icon, colour: category.colour,
                         isSelected: selection == category.id
                     ) { onSelect(category.id) }
+                    .contextMenu { CategoryMenu(category: category, onEdit: onEdit, onDelete: onDelete) }
                     .accessibilityIdentifier("filter.\(category.name)")
                 }
+                NewCategoryChip(action: onNew)
+                    .popoverTip(NewCategoryTip())
+                    .accessibilityIdentifier("filter.newCategory")
             }
             .padding(.horizontal, 20)
         }
         .scrollIndicators(.hidden)
         .accessibilityElement(children: .contain)
         .accessibilityLabel(Text("Filter by category"))
+    }
+}
+
+/// Edit and Delete for a category (Daily can't be deleted).
+struct CategoryMenu: View {
+    let category: CategoryRecord
+    let onEdit: (UUID) -> Void
+    let onDelete: (UUID) -> Void
+
+    var body: some View {
+        Button { onEdit(category.id) } label: { Label("Edit category", systemImage: "pencil") }
+        if !category.isDefault {
+            Button(role: .destructive) { onDelete(category.id) } label: { Label("Delete category", systemImage: "trash") }
+        }
     }
 }
 
@@ -52,6 +74,8 @@ struct TodaySectionView<Menu: View>: View {
     let onAdd: () -> Void
     @ViewBuilder let menu: (UUID) -> Menu
     let onDrop: (UUID, UUID) -> Void
+    let onEdit: (UUID) -> Void
+    let onDelete: (UUID) -> Void
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
@@ -68,6 +92,10 @@ struct TodaySectionView<Menu: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             CategorySectionHeader(category: section.category, repeatLabel: section.repeatLabel, progressText: section.progressText)
+                .contentShape(.rect)
+                .contextMenu { CategoryMenu(category: section.category, onEdit: onEdit, onDelete: onDelete) }
+                .accessibilityElement(children: .combine)
+                .accessibilityIdentifier("section.\(section.category.name)")
             LazyVGrid(columns: columns, spacing: 10) {
                 ForEach(section.tiles) { tile in
                     TaskTile(

@@ -15,7 +15,7 @@ final class ChecksUITests: XCTestCase {
         field.tap()
         field.typeText("Cat fed")
         app.buttons["addChecks.addCustom"].tap()
-        XCTAssertEqual(app.buttons["addChecks.commit"].label, "Add 3 checks")
+        XCTAssertEqual(app.buttons["addChecks.commit"].label, "Add 3 tasks to Daily")
         app.buttons["addChecks.commit"].tap()
 
         XCTAssertTrue(app.buttons["tile.Front door locked"].waitForExistence(timeout: 3))

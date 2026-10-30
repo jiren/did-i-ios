@@ -10,6 +10,7 @@ final class AppEnvironment {
     let changes: StoreChangeHub
     let timeSource: any TimeSource
     let checkEditor: CheckEditor
+    let categoryEditor: CategoryEditor
     let photos: PhotoStore
     let reminders: ReminderScheduler
     let leaveHome: LeaveHomeMonitor
@@ -25,6 +26,7 @@ final class AppEnvironment {
             ? PhotoStore(folder: URL.temporaryDirectory.appending(path: "DidI-Photos-\(UUID().uuidString)"))
             : PhotoStore()
         self.checkEditor = CheckEditor(store: store, changes: changes, photos: photos)
+        self.categoryEditor = CategoryEditor(store: store, changes: changes, photos: photos)
         IntentServices.shared = IntentServices(
             store: store, settings: settings, photos: photos, timeSource: timeSource
         ) { [changes] in changes.didChange() }

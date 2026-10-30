@@ -7,6 +7,7 @@ struct TodayView: View {
     @State private var viewModel: TodayViewModel
     @State private var management: CheckManagementRequest?
     @State private var photoCheck: PhotoRequest?
+    @State private var deletion: CategoryDeletionRequest?
     /// The scroll offset at which the progress bar pins, and whether it has.
     @State private var headerHeight: CGFloat = 300
     @State private var isBarStuck = false
@@ -53,6 +54,8 @@ struct TodayView: View {
             }
         }
         .onChange(of: changes.version) { viewModel.reload() }
+        .onChange(of: viewModel.taskCount, initial: true) { _, count in NewCategoryTip.taskCount = count }
+        .categoryDeletion($deletion, onDelete: viewModel.deleteCategory)
         .onChange(of: viewModel.toast) { _, toast in
             if let toast { AccessibilityNotification.Announcement(toast.message).post() }
         }
@@ -74,8 +77,15 @@ struct TodayView: View {
                 DayStrip(days: viewModel.strip, onSelect: viewModel.select)
                     .padding(.horizontal, 20)
                     .padding(.top, 18)
-                CategoryFilter(categories: viewModel.categories, selection: viewModel.filterID, onSelect: viewModel.selectFilter)
-                    .padding(.top, 14)
+                CategoryFilter(
+                    categories: viewModel.categories,
+                    selection: viewModel.filterID,
+                    onSelect: viewModel.selectFilter,
+                    onNew: actions.newCategory,
+                    onEdit: actions.editCategory,
+                    onDelete: { deletion = viewModel.deletionRequest(for: $0) }
+                )
+                .padding(.top, 14)
             }
             .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { headerHeight = $0 }
             Section {
@@ -101,7 +111,9 @@ struct TodayView: View {
                     onPhoto: { photoCheck = $0 },
                     onAdd: { actions.addChecks(section.category.id) },
                     menu: { menu(for: $0) },
-                    onDrop: { viewModel.move($0, to: $1) }
+                    onDrop: { viewModel.move($0, to: $1) },
+                    onEdit: actions.editCategory,
+                    onDelete: { deletion = viewModel.deletionRequest(for: $0) }
                 )
             }
             if let text = viewModel.nothingDueText {
@@ -147,6 +159,14 @@ struct TodayView: View {
         if viewModel.canMove(id, by: 1) {
             Button { viewModel.move(id, by: 1) } label: { Label("Move later", systemImage: "arrow.right") }
         }
+        let destinations = viewModel.destinations(for: id)
+        if !destinations.isEmpty {
+            Menu {
+                ForEach(destinations) { category in
+                    Button(category.name) { viewModel.moveCheck(id, to: category.id) }
+                }
+            } label: { Label("Move to", systemImage: "folder") }
+        }
         Divider()
         Button(role: .destructive) {
             management = viewModel.removeRequest(for: id)
@@ -179,6 +199,8 @@ struct TodayActions {
     var addChecks: (UUID?) -> Void = { _ in }
     var openSettings: () -> Void = {}
     var openCheck: (UUID) -> Void = { _ in }
+    var newCategory: () -> Void = {}
+    var editCategory: (UUID) -> Void = { _ in }
 }
 
 /// The check a proof photo is being taken for.

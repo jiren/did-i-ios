@@ -6,6 +6,20 @@ enum Route: Hashable {
     case settings
     case actionButton
     case reminders
+    case categories
+}
+
+/// The category page: a new category, or one being edited.
+enum CategoryEditorRequest: Identifiable, Hashable {
+    case new
+    case edit(UUID)
+
+    var id: String {
+        switch self {
+        case .new: "new"
+        case .edit(let id): id.uuidString
+        }
+    }
 }
 
 /// The app's shell. On compact width, Today or History under one navigation stack; on regular width (iPad),
@@ -18,6 +32,7 @@ struct RootView: View {
     @State private var isAddingChecks = false
     /// The category the Add sheet adds to; Daily when nil.
     @State private var addChecksCategory: UUID?
+    @State private var categoryEditor: CategoryEditorRequest?
     /// The check shown beside Today on regular width.
     @State private var selectedCheck: UUID?
     @State private var columns: NavigationSplitViewVisibility = .all
@@ -35,6 +50,17 @@ struct RootView: View {
             .sheet(isPresented: $isAddingChecks) {
                 AddChecksSheet(
                     viewModel: AddChecksViewModel(store: environment.store, changes: environment.changes, categoryID: addChecksCategory)
+                )
+            }
+            .fullScreenCover(item: $categoryEditor) { request in
+                CategoryEditorView(
+                    viewModel: CategoryEditorViewModel(
+                        editing: { if case .edit(let id) = request { id } else { nil } }(),
+                        store: environment.store,
+                        changes: environment.changes,
+                        days: environment.settings,
+                        timeSource: environment.timeSource
+                    )
                 )
             }
             .fullScreenCover(item: $logged) { request in
@@ -107,6 +133,7 @@ struct RootView: View {
                     timeSource: environment.timeSource,
                     changes: environment.changes,
                     editor: environment.checkEditor,
+                    categoryEditor: environment.categoryEditor,
                     photos: environment.photos
                 ),
                 tab: $tab,
@@ -116,7 +143,9 @@ struct RootView: View {
                         isAddingChecks = true
                     },
                     openSettings: { isSplit ? (path = [.settings]) : path.append(.settings) },
-                    openCheck: { open($0, replacing: false) }
+                    openCheck: { open($0, replacing: false) },
+                    newCategory: { categoryEditor = .new },
+                    editCategory: { categoryEditor = .edit($0) }
                 )
             )
         case .history:
@@ -151,10 +180,20 @@ struct RootView: View {
                 viewModel: SettingsViewModel(store: environment.store, changes: environment.changes, photos: environment.photos),
                 settings: environment.settings,
                 onOpenActionButton: { path.append(.actionButton) },
-                onOpenReminders: { path.append(.reminders) }
+                onOpenReminders: { path.append(.reminders) },
+                onOpenCategories: { path.append(.categories) }
             )
         case .actionButton:
             ActionButtonSettingsView(settings: environment.settings, checks: (try? environment.store.checks()) ?? [])
+        case .categories:
+            CategoriesSettingsView(
+                viewModel: CategoriesSettingsViewModel(
+                    store: environment.store, editor: environment.categoryEditor, days: environment.settings,
+                    timeSource: environment.timeSource
+                ),
+                onNew: { categoryEditor = .new },
+                onEdit: { categoryEditor = .edit($0) }
+            )
         case .reminders:
             RemindersSettingsView(
                 viewModel: RemindersSettingsViewModel(
@@ -206,6 +245,8 @@ struct RootView: View {
         case "settings": path = [.settings]
         case "actionButton": path = [.settings, .actionButton]
         case "reminders": path = [.settings, .reminders]
+        case "categories": path = [.settings, .categories]
+        case "newCategory": categoryEditor = .new
         case "detail":
             if let first = try? environment.store.checks().first { open(first.id, replacing: true) }
         case "logged":

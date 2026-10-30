@@ -70,7 +70,8 @@ struct TodayPhotoTests {
         let check = try store.addChecks([CheckDraft(name: "Front door locked")])[0]
         let viewModel = TodayViewModel(
             checkStore: store, logStore: store, days: FixedDays(), timeSource: clock, changes: changes,
-            editor: CheckEditor(store: store, changes: changes, photos: photos), photos: photos,
+            editor: CheckEditor(store: store, changes: changes, photos: photos),
+            categoryEditor: CategoryEditor(store: store, changes: changes, photos: photos), photos: photos,
             locale: Locale(identifier: "en_US"), toastDuration: .seconds(60)
         )
         viewModel.reload()

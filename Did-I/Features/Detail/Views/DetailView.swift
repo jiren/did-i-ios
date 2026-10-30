@@ -38,6 +38,9 @@ struct DetailView: View {
                     .padding(.horizontal, 20)
                     .padding(.top, 16)
                     .accessibilityIdentifier("detail.nudge")
+                    categoryRow
+                        .padding(.horizontal, 20)
+                        .padding(.top, 8)
                     reminderRow
                         .padding(.horizontal, 20)
                         .padding(.top, 8)
@@ -153,6 +156,30 @@ struct DetailView: View {
             viewModel.swatch.background,
             in: UnevenRoundedRectangle(bottomLeadingRadius: 36, bottomTrailingRadius: 36, style: .continuous)
         )
+    }
+
+    /// The check's category, with a menu to move it to another.
+    private var categoryRow: some View {
+        HStack(spacing: 12) {
+            if let category = viewModel.category {
+                CategoryBadge(icon: category.icon, colour: category.colour, size: 36, cornerRadius: 12)
+            }
+            Text("Category").font(.didRowTitle).foregroundStyle(Color.ink)
+            Spacer(minLength: 8)
+            Picker(
+                String(localized: "Category"),
+                selection: Binding(get: { viewModel.category?.id ?? CategoryDefaults.dailyID }, set: viewModel.moveToCategory)
+            ) {
+                ForEach(viewModel.categories) { Text($0.name).tag($0.id) }
+            }
+            .pickerStyle(.menu)
+            .labelsHidden()
+            .tint(Color.linkText)
+            .accessibilityIdentifier("detail.category")
+        }
+        .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
+        .frame(minHeight: 52)
+        .background(Color.surface, in: .rect(cornerRadius: 18, style: .continuous))
     }
 
     private var reminderRow: some View {

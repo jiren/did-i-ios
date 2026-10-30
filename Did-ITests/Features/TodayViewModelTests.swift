@@ -29,7 +29,8 @@ struct TodayViewModelTests {
     ) -> TodayViewModel {
         TodayViewModel(
             checkStore: store, logStore: store, days: FixedDays(), timeSource: clock, changes: changes,
-            editor: CheckEditor(store: store, changes: changes, photos: nil), locale: Locale(identifier: "en_US"),
+            editor: CheckEditor(store: store, changes: changes, photos: nil),
+            categoryEditor: CategoryEditor(store: store, changes: changes, photos: nil), locale: Locale(identifier: "en_US"),
             toastDuration: toastDuration
         )
     }
@@ -189,6 +190,31 @@ struct TodayViewModelTests {
         viewModel.remove(checks[2].id)
         #expect(viewModel.toast == nil)
         #expect(tiles.count == 3)
+    }
+
+    @Test func aTaskMovesToAnotherCategory() {
+        viewModel.reload()
+        #expect(viewModel.destinations(for: checks[0].id).map(\.name) == ["Bin night"])
+        viewModel.moveCheck(checks[0].id, to: bins.id)
+        #expect(viewModel.sections[0].tiles.map(\.content.name) == ["Pill taken", "Stove off", "Iron unplugged"])
+        viewModel.select(Self.friday)
+        #expect(viewModel.sections[1].tiles.map(\.content.name) == ["Bins out", "Recycling out", "Front door locked"])
+    }
+
+    @Test func deletingACategoryEitherWay() throws {
+        viewModel.reload()
+        #expect(viewModel.deletionRequest(for: CategoryDefaults.dailyID) == nil)
+        #expect(viewModel.deletionRequest(for: bins.id)?.taskCount == 2)
+        viewModel.selectFilter(bins.id)
+        viewModel.deleteCategory(bins.id, .moveTasksToDaily)
+        #expect(viewModel.filterID == nil)
+        #expect(viewModel.categories.map(\.name) == ["Daily"])
+        #expect(tiles.count == 6)
+
+        let trip = try store.addCategory(CategoryDraft(name: "Trip"), tasks: [CheckDraft(name: "Passport packed")])
+        viewModel.reload()
+        viewModel.deleteCategory(trip.id, .deleteTasks)
+        #expect(try store.checks().count == 6)
     }
 
     @Test func theToastGoesAwayOnItsOwn() async throws {

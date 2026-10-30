@@ -44,6 +44,7 @@ final class TodayViewModel {
     @ObservationIgnored private let timeSource: any TimeSource
     @ObservationIgnored private let changes: any ChangeNotifying
     @ObservationIgnored private let editor: CheckEditor
+    @ObservationIgnored private let categoryEditor: CategoryEditor
     @ObservationIgnored private let photos: PhotoStore?
     @ObservationIgnored private let locale: Locale
     @ObservationIgnored private let toastDuration: Duration
@@ -63,6 +64,7 @@ final class TodayViewModel {
         timeSource: any TimeSource,
         changes: any ChangeNotifying,
         editor: CheckEditor,
+        categoryEditor: CategoryEditor,
         photos: PhotoStore? = nil,
         locale: Locale = .autoupdatingCurrent,
         toastDuration: Duration = .seconds(5)
@@ -73,6 +75,7 @@ final class TodayViewModel {
         self.timeSource = timeSource
         self.changes = changes
         self.editor = editor
+        self.categoryEditor = categoryEditor
         self.photos = photos
         self.locale = locale
         self.toastDuration = toastDuration
@@ -259,6 +262,31 @@ final class TodayViewModel {
     func remove(_ id: UUID) {
         if toast?.outcome.record.checkID == id { toast = nil }
         edit { try editor.remove(id) }
+    }
+
+    /// Every task, for the New category tip.
+    var taskCount: Int { checks.count }
+
+    /// The categories a task can move to: all but its own.
+    func destinations(for id: UUID) -> [CategoryRecord] {
+        guard let categoryID = check(id)?.categoryID else { return [] }
+        return categories.filter { $0.id != categoryID }
+    }
+
+    func moveCheck(_ id: UUID, to categoryID: UUID) {
+        edit { try categoryEditor.moveCheck(id, to: categoryID) }
+    }
+
+    // MARK: - Managing categories
+
+    /// The confirmation for deleting a category; nil for Daily.
+    func deletionRequest(for categoryID: UUID) -> CategoryDeletionRequest? {
+        categoryEditor.deletionRequest(for: categoryID)
+    }
+
+    func deleteCategory(_ id: UUID, _ choice: CategoryDeletion) {
+        if let checkID = toast?.outcome.record.checkID, check(checkID)?.categoryID == id { toast = nil }
+        edit { try categoryEditor.delete(id, choice) }
     }
 
     /// The ids of the tasks in `id`'s category, in order.

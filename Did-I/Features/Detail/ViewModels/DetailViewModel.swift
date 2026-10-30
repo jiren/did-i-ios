@@ -18,6 +18,8 @@ final class DetailViewModel {
     private(set) var check: CheckRecord?
     /// The check's category, whose reminder the reminder row sets until phase 17 moves it to the category page.
     private(set) var category: CategoryRecord?
+    /// Every category, for moving the check to another.
+    private(set) var categories: [CategoryRecord] = []
     private(set) var swatch: TileSwatch = .violet
     /// "Locked at 8:42 AM", or "Not logged yet".
     private(set) var headline = ""
@@ -75,7 +77,8 @@ final class DetailViewModel {
                 return
             }
             self.check = check
-            category = try checkStore.category(id: check.categoryID)
+            categories = try checkStore.categories()
+            category = categories.first { $0.id == check.categoryID }
             let position = try checkStore.checks().firstIndex { $0.id == checkID } ?? 0
             swatch = TileSwatch.at(position: position)
             logs = try logStore.logs(for: checkID, limit: Self.timelineLimit)
@@ -126,6 +129,18 @@ final class DetailViewModel {
             changes.didChange()
         } catch {
             errorMessage = String(localized: "Couldn’t change that.")
+        }
+    }
+
+    /// Moves the check to the end of another category.
+    func moveToCategory(_ categoryID: UUID) {
+        guard categoryID != category?.id else { return }
+        do {
+            try checkStore.moveCheck(checkID, to: categoryID)
+            changes.didChange()
+            reload()
+        } catch {
+            errorMessage = String(localized: "Couldn’t move this check.")
         }
     }
 
