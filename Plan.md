@@ -340,7 +340,7 @@ Proposed, taken without asking: in dark, the selected day and Today's "{n} left"
 Left for Phase 18, as planned: at accessibility sizes the 3-column grid truncates names and the strip's weekdays
 shorten ("M…"). Like the design, a Mint task's segment doesn't show on the Mint "All clear" card.
 
-## Phase 15 — Today as a calendar
+## Phase 15 — Today as a calendar ✅ Done 2026-10-30, merged into main (checked on the simulator, today and a later day; tests not yet run)
 
 Branch `feature/phase-15-today-calendar`.
 
@@ -355,6 +355,12 @@ Branch `feature/phase-15-today-calendar`.
 **Done when** view-model tests cover the selected day, filters, done counts and logging only today (with stubs),
 and UI tests log and undo a task, switch to a later day (tiles read "Upcoming" and don't log) and filter by a
 category.
+
+Built as planned. Also: the grid's reflow (3 columns, 2 at the first two accessibility sizes, 1 beyond) came
+forward from Phase 18 so the accessibility layout test keeps passing; the Add task tile and the Add checks button
+open the sheet on that category (the sheet adds there; its "Add to" chips come in Phase 16); a tile can be
+dragged only within its category; `-SeedSample` seeds the design's four categories, with Bin night due today. The
+old 2-column `CheckTile`, `AddTile`, `ProgressPill` and the `TodaySummary` rule were removed.
 
 ## Phase 16 — Category management & the Add sheet
 

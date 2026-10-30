@@ -101,7 +101,8 @@ To look at one screen without tests, build for the simulator, install with `xcru
 `xcrun simctl io <UDID> screenshot`. The Debug-only launch arguments (`AppLaunchConfiguration`):
 
 - `-UITests`: an in-memory store, a fresh `UserDefaults` suite, TipKit tips hidden.
-- `-SeedSample`: the design's four checks, three logged this morning (only into an empty store).
+- `-SeedSample`: the design's four categories and twelve tasks, with Bin night due today and four tasks logged
+  this morning (only into an empty store).
 - `-Open <screen>`: `addChecks`, `history`, `settings`, `actionButton`, `reminders`, `detail` (the first check),
   `logged` (the newest log).
 - `-Gallery` / `-GalleryControls` / `-GalleryCalendar` / `-GalleryAgenda` / `-GalleryCategory`: the design-system
