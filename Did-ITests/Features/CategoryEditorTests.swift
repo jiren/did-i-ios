@@ -189,7 +189,7 @@ struct CategoryEditorViewModelTests {
         viewModel.removeTask(viewModel.tasks[1].id)
 
         #expect(!viewModel.save())
-        #expect(viewModel.removalQuestion == "Remove Recycling out and its 1 logs?")
+        #expect(viewModel.removalQuestion == "Remove Recycling out and its log?")
         viewModel.cancelRemoval()
         #expect(names(viewModel) == ["Bins out by 8", "Recycling out"])
 
