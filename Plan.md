@@ -409,7 +409,7 @@ which tasks are due. History shows category chips above the check chips once the
 category's reminder on asks for notification permission. Settings › Reminders lists category reminders and the
 nudged checks in two groups.
 
-## Phase 18 — Polish for the redesign
+## Phase 18 — Polish for the redesign ✅ Done 2026-10-30, merged into main (checked on the simulator: both themes, an accessibility size and the iPad split view; tests not yet run)
 
 Branch `feature/phase-18-calendar-polish`.
 
@@ -423,3 +423,10 @@ Branch `feature/phase-18-calendar-polish`.
   `design/review/`.
 
 **Done when** layout UI tests pass at an accessibility text size and on an iPad, and the full suite is green.
+
+Built: the strip scrolls sideways at accessibility sizes (104 pt days); the grid adds a column per ~130 pt on wide
+columns (landscape), keeping three on phones; the tab bar's labels stay on one line beside the ring. The string
+catalog was empty (Xcode fills it only when building in the IDE), so it was synced from a Release build's
+extracted strings with `xcstringstool sync` (338 strings, no DEBUG ones), with English plural variants for the
+task, check, log and "left" counts. Screenshots: `design/review/today-{light,dark,ax}.png`,
+`new-category-{light,dark}.png`, `ipad-split.png`.

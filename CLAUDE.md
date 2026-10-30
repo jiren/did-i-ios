@@ -9,8 +9,8 @@ door? Did I take my pill?"). A *check* is one recurring thing; *logging* it reco
 photo as proof), so the answer is one glance away: in the app, on a Lock Screen widget, or after one press of the
 Action Button. Tagline: "tap once, stop wondering".
 
-Phases 0–12 are built and merged; phases 13–18 (categories and the calendar, from the 2026-10-30 canvas update)
-are next. See `Plan.md` for which are done. `Plan.md` (written 2026-10-30) holds the resolved decisions, the open questions and the
+Phases 0–18 are built and merged; phases 13–18 added categories and the calendar from the 2026-10-30 canvas
+update. See `Plan.md` for which are done. `Plan.md` (written 2026-10-30) holds the resolved decisions, the open questions and the
 phases 0–12, built in order; update it as phases finish. Ask about scope beyond it and the design (see **Design**)
 rather than inventing it.
 
@@ -54,7 +54,10 @@ necessary, confirm with the user first.
 - Bundle ID `com.elo.Did-I` (team `J8MHDV8383`); deployment target **iOS 27.0**; iPhone and iPad
   (`TARGETED_DEVICE_FAMILY = 1,2`).
 - String catalogs are on (`LOCALIZATION_PREFERS_STRING_CATALOGS`, `STRING_CATALOG_GENERATE_SYMBOLS` on the app
-  target). Put user-facing strings in `Localizable.xcstrings` (not created yet).
+  target). User-facing strings live in `Shared/Resources/Localizable.xcstrings`. `xcodebuild` doesn't add new
+  strings to it (Xcode does when building in the IDE): build Release with a scratch `-derivedDataPath`, then run
+  `xcrun xcstringstool sync Shared/Resources/Localizable.xcstrings --stringsdata <each non-test arm64 .stringsdata>`,
+  so DEBUG-only strings stay out.
 - Build settings that change how code compiles: `SWIFT_VERSION = 5.0`, `SWIFT_APPROACHABLE_CONCURRENCY = YES`,
   `SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES` (each file must import every module it uses), and on the
   app target only, `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`.
