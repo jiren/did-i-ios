@@ -386,7 +386,7 @@ read "Every Friday · 2 tasks", reorder by holding and dragging and delete by sw
 **Move to** menu and Detail's **Category** row; the Add sheet keeps the design's four Daily checks ahead of its
 eight suggestions until each exists.
 
-## Phase 17 — Reminders, intents & widgets follow categories
+## Phase 17 — Reminders, intents & widgets follow categories ✅ Done 2026-10-30, merged into main (builds; tests not yet run; a category reminder firing still needs a device)
 
 Branch `feature/phase-17-category-reminders`.
 
@@ -400,6 +400,14 @@ Branch `feature/phase-17-category-reminders`.
 
 **Done when** scheduler tests cover category reminders (due days only, the budget, removal), intent tests cover
 the new answers, and a category reminder fires on a device.
+
+Built as planned: a reminder's title is the category and its body "2 left: Bins out, Recycling out"; with one
+task left it carries **Log it**, otherwise a tap opens Today on that category (a separate notification category
+without the action); a category with no tasks doesn't remind. Siri answers "Not due today. Last done …" or
+"{task} isn’t due today." (a log today still answers "Yes."). The overview widget's next-day entry recomputes
+which tasks are due. History shows category chips above the check chips once there's more than Daily. Turning a
+category's reminder on asks for notification permission. Settings › Reminders lists category reminders and the
+nudged checks in two groups.
 
 ## Phase 18 — Polish for the redesign
 
