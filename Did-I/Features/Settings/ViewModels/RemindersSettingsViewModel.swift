@@ -12,11 +12,11 @@ final class RemindersSettingsViewModel {
     private(set) var locationMessage: String?
 
     @ObservationIgnored let settings: AppSettings
-    @ObservationIgnored private let store: any CheckStoring
+    @ObservationIgnored private let store: any CheckStoring & CategoryStoring
     @ObservationIgnored private let monitor: LeaveHomeMonitor?
     @ObservationIgnored private let locale: Locale
 
-    init(settings: AppSettings, store: any CheckStoring, monitor: LeaveHomeMonitor?, locale: Locale = .autoupdatingCurrent) {
+    init(settings: AppSettings, store: any CheckStoring & CategoryStoring, monitor: LeaveHomeMonitor?, locale: Locale = .autoupdatingCurrent) {
         self.settings = settings
         self.store = store
         self.monitor = monitor
@@ -29,10 +29,11 @@ final class RemindersSettingsViewModel {
         notificationStatus = await NotificationPermission.status()
         let checks = (try? store.checks()) ?? []
         let time = RelativeTime(boundary: settings.dayBoundary, locale: locale)
-        reminderLines = checks.compactMap { check in
-            guard let minutes = check.reminderMinutes else { return nil }
+        let categories = (try? store.categories()) ?? []
+        reminderLines = categories.compactMap { category in
+            guard let minutes = category.reminderMinutes else { return nil }
             let date = settings.dayBoundary.calendar.date(bySettingHour: minutes / 60, minute: minutes % 60, second: 0, of: Date()) ?? Date()
-            return String(localized: "\(check.name) · \(time.clockTime(date))")
+            return String(localized: "\(category.name) · \(time.clockTime(date))")
         }
         nudgeNames = checks.filter(\.nudgesOnLeavingHome).map(\.name)
     }

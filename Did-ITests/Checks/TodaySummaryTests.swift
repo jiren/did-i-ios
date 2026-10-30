@@ -4,7 +4,7 @@ import Testing
 
 struct TodaySummaryTests {
     private let checks = ["Front door locked", "Pill taken", "Stove off", "Iron unplugged"].enumerated().map {
-        CheckRecord(id: UUID(), name: $1, kind: .other, order: $0, reminderMinutes: nil, nudgesOnLeavingHome: false)
+        CheckRecord(id: UUID(), name: $1, kind: .other, order: $0, categoryID: CategoryDefaults.dailyID, nudgesOnLeavingHome: false)
     }
 
     @Test(arguments: [

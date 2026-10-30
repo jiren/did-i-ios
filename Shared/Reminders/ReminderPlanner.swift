@@ -10,19 +10,24 @@ nonisolated struct PlannedReminder: Hashable, Sendable {
 }
 
 /// Which "if not logged" reminders to schedule: today's (when still ahead and not logged) and tomorrow's,
-/// nearest first, within iOS's limit on pending notifications.
+/// nearest first, within iOS's limit on pending notifications. Each check reminds at its category's time on the
+/// days its category is due (phase 17 turns these into one reminder per category).
 nonisolated enum ReminderPlanner {
     static let identifierPrefix = "reminder-"
     /// iOS keeps at most 64 pending requests; leave room for nudges.
     static let budget = 60
 
-    static func plan(checks: [CheckRecord], latestLogs: [UUID: LogRecord], now: Date, boundary: DayBoundary) -> [PlannedReminder] {
+    static func plan(
+        checks: [CheckRecord], categories: [CategoryRecord], latestLogs: [UUID: LogRecord], now: Date, boundary: DayBoundary
+    ) -> [PlannedReminder] {
         let calendar = boundary.calendar
+        let categories = Dictionary(categories.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         var planned: [PlannedReminder] = []
         for check in checks {
-            guard let minutes = check.reminderMinutes else { continue }
+            guard let category = categories[check.categoryID], let minutes = category.reminderMinutes else { continue }
             for dayOffset in 0...1 {
                 guard let day = calendar.date(byAdding: .day, value: dayOffset, to: calendar.startOfDay(for: now)),
+                      category.rule.isDue(on: CalendarDay(day, calendar: calendar), calendar: calendar),
                       let fire = calendar.date(bySettingHour: minutes / 60, minute: minutes % 60, second: 0, of: day),
                       fire > now else { continue }
                 if let latest = latestLogs[check.id]?.date, boundary.isInSameDay(latest, as: fire) { continue }

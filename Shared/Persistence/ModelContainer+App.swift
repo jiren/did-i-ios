@@ -7,9 +7,9 @@ extension ModelContainer {
         AppGroup.containerURL.appending(path: "DidI.store")
     }
 
-    /// The one container for every model in `SchemaV1`, on disk at `url` or in memory.
+    /// The one container for every model in `SchemaV2`, on disk at `url` or in memory.
     static func app(inMemory: Bool = false, url: URL = ModelContainer.appStoreURL) throws -> ModelContainer {
-        let schema = Schema(versionedSchema: SchemaV1.self)
+        let schema = Schema(versionedSchema: SchemaV2.self)
         let configuration = inMemory
             ? ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
             : ModelConfiguration(schema: schema, url: url)

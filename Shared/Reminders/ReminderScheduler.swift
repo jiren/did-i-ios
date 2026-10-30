@@ -20,8 +20,10 @@ final class ReminderScheduler {
         self.center = center
     }
 
-    func reschedule(checks: [CheckRecord], latestLogs: [UUID: LogRecord], now: Date, boundary: DayBoundary) async {
-        let planned = ReminderPlanner.plan(checks: checks, latestLogs: latestLogs, now: now, boundary: boundary)
+    func reschedule(
+        checks: [CheckRecord], categories: [CategoryRecord], latestLogs: [UUID: LogRecord], now: Date, boundary: DayBoundary
+    ) async {
+        let planned = ReminderPlanner.plan(checks: checks, categories: categories, latestLogs: latestLogs, now: now, boundary: boundary)
         let stale = await center.pendingIdentifiers().filter { $0.hasPrefix(ReminderPlanner.identifierPrefix) }
         center.removePending(stale)
         for reminder in planned {
@@ -31,8 +33,9 @@ final class ReminderScheduler {
 
     /// Reads the store and reschedules; used after any write in either process.
     func reschedule(store: SwiftDataStore, settings: AppSettings, now: Date) async {
-        guard let checks = try? store.checks(), let latest = try? store.latestLogs() else { return }
-        await reschedule(checks: checks, latestLogs: latest, now: now, boundary: settings.dayBoundary)
+        guard let checks = try? store.checks(), let categories = try? store.categories(),
+              let latest = try? store.latestLogs() else { return }
+        await reschedule(checks: checks, categories: categories, latestLogs: latest, now: now, boundary: settings.dayBoundary)
     }
 
     func post(_ reminders: [PlannedReminder]) async {

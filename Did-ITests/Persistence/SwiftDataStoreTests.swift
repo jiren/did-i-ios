@@ -112,13 +112,10 @@ struct SwiftDataStoreTests {
         #expect(try store.checks().isEmpty)
     }
 
-    @Test func remindersAreClamped() throws {
+    @Test func setsTheNudge() throws {
         let (door, _) = try addDoorAndPill()
-        try store.setReminder(minutes: 21 * 60, for: door.id)
         try store.setNudgesOnLeavingHome(true, for: door.id)
-        let check = try #require(try store.check(id: door.id))
-        #expect(check.reminderMinutes == 21 * 60)
-        #expect(check.nudgesOnLeavingHome)
+        #expect(try #require(try store.check(id: door.id)).nudgesOnLeavingHome)
     }
 }
 

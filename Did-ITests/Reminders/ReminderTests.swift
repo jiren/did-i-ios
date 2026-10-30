@@ -2,8 +2,12 @@ import Foundation
 import Testing
 @testable import Did_I
 
-private func check(_ name: String, reminder: Int? = nil, nudge: Bool = false) -> CheckRecord {
-    CheckRecord(id: UUID(), name: name, kind: .other, order: 0, reminderMinutes: reminder, nudgesOnLeavingHome: nudge)
+private func category(reminder: Int?, rule: RepeatRule = .daily) -> CategoryRecord {
+    CategoryRecord(id: UUID(), name: "Daily", icon: .sun, colour: .violet, rule: rule, reminderMinutes: reminder, order: 0, isDefault: false)
+}
+
+private func check(_ name: String, in category: CategoryRecord? = nil, nudge: Bool = false) -> CheckRecord {
+    CheckRecord(id: UUID(), name: name, kind: .other, order: 0, categoryID: category?.id ?? CategoryDefaults.dailyID, nudgesOnLeavingHome: nudge)
 }
 
 private func log(_ check: CheckRecord, at date: Date) -> LogRecord {
@@ -14,37 +18,61 @@ struct ReminderPlannerTests {
     private let boundary = DayBoundary(calendar: TestTime.calendar())
 
     @Test func plansTodayAndTomorrowWhenNotLogged() {
-        let pill = check("Pill taken", reminder: 21 * 60)
-        let planned = ReminderPlanner.plan(checks: [pill], latestLogs: [:], now: TestTime.date(2026, 10, 29, 10), boundary: boundary)
+        let daily = category(reminder: 21 * 60)
+        let pill = check("Pill taken", in: daily)
+        let planned = ReminderPlanner.plan(
+            checks: [pill], categories: [daily], latestLogs: [:], now: TestTime.date(2026, 10, 29, 10), boundary: boundary
+        )
         #expect(planned.map(\.fireDate) == [TestTime.date(2026, 10, 29, 21), TestTime.date(2026, 10, 30, 21)])
         #expect(planned.first?.title == "Pill taken")
     }
 
     @Test func skipsTodayOnceLogged() {
-        let pill = check("Pill taken", reminder: 21 * 60)
+        let daily = category(reminder: 21 * 60)
+        let pill = check("Pill taken", in: daily)
         let planned = ReminderPlanner.plan(
-            checks: [pill], latestLogs: [pill.id: log(pill, at: TestTime.date(2026, 10, 29, 8))],
+            checks: [pill], categories: [daily], latestLogs: [pill.id: log(pill, at: TestTime.date(2026, 10, 29, 8))],
             now: TestTime.date(2026, 10, 29, 10), boundary: boundary
         )
         #expect(planned.map(\.fireDate) == [TestTime.date(2026, 10, 30, 21)])
     }
 
     @Test func skipsATimeAlreadyPast() {
-        let pill = check("Pill taken", reminder: 9 * 60)
-        let planned = ReminderPlanner.plan(checks: [pill], latestLogs: [:], now: TestTime.date(2026, 10, 29, 10), boundary: boundary)
+        let daily = category(reminder: 9 * 60)
+        let pill = check("Pill taken", in: daily)
+        let planned = ReminderPlanner.plan(
+            checks: [pill], categories: [daily], latestLogs: [:], now: TestTime.date(2026, 10, 29, 10), boundary: boundary
+        )
         #expect(planned.map(\.fireDate) == [TestTime.date(2026, 10, 30, 9)])
     }
 
+    @Test func remindsOnlyOnDaysTheCategoryIsDue() {
+        // Thursday, Oct 29; the bins go out on Fridays.
+        let bins = category(reminder: 20 * 60, rule: .weekly(weekday: 6))
+        let task = check("Bins out", in: bins)
+        let planned = ReminderPlanner.plan(
+            checks: [task], categories: [bins], latestLogs: [:], now: TestTime.date(2026, 10, 29, 10), boundary: boundary
+        )
+        #expect(planned.map(\.fireDate) == [TestTime.date(2026, 10, 30, 20)])
+    }
+
     @Test func staysWithinTheBudgetNearestFirst() {
-        let checks = (0..<40).map { check("Check \($0)", reminder: 12 * 60 + $0) }
-        let planned = ReminderPlanner.plan(checks: checks, latestLogs: [:], now: TestTime.date(2026, 10, 29, 10), boundary: boundary)
+        let categories = (0..<40).map { category(reminder: 12 * 60 + $0) }
+        let checks = categories.enumerated().map { check("Check \($0.offset)", in: $0.element) }
+        let planned = ReminderPlanner.plan(
+            checks: checks, categories: categories, latestLogs: [:], now: TestTime.date(2026, 10, 29, 10), boundary: boundary
+        )
         #expect(planned.count == ReminderPlanner.budget)
         #expect(planned.map(\.fireDate) == planned.map(\.fireDate).sorted())
         #expect(Set(planned.map(\.identifier)).count == planned.count)
     }
 
     @Test func checksWithoutARemindersAreLeftOut() {
-        #expect(ReminderPlanner.plan(checks: [check("Stove off")], latestLogs: [:], now: Date(), boundary: boundary).isEmpty)
+        let daily = category(reminder: nil)
+        let planned = ReminderPlanner.plan(
+            checks: [check("Stove off", in: daily)], categories: [daily], latestLogs: [:], now: Date(), boundary: boundary
+        )
+        #expect(planned.isEmpty)
     }
 }
 
@@ -105,13 +133,16 @@ struct ReminderSchedulerTests {
         let center = FakeNotificationCenter()
         let scheduler = ReminderScheduler(center: center)
         let boundary = DayBoundary(calendar: TestTime.calendar())
-        let pill = check("Pill taken", reminder: 21 * 60)
+        let daily = category(reminder: 21 * 60)
+        let pill = check("Pill taken", in: daily)
         let now = TestTime.date(2026, 10, 29, 10)
 
-        await scheduler.reschedule(checks: [pill], latestLogs: [:], now: now, boundary: boundary)
+        await scheduler.reschedule(checks: [pill], categories: [daily], latestLogs: [:], now: now, boundary: boundary)
         #expect(center.pending.count == 2)
 
-        await scheduler.reschedule(checks: [pill], latestLogs: [pill.id: log(pill, at: now)], now: now, boundary: boundary)
+        await scheduler.reschedule(
+            checks: [pill], categories: [daily], latestLogs: [pill.id: log(pill, at: now)], now: now, boundary: boundary
+        )
         #expect(center.pending.values.map(\.fireDate) == [TestTime.date(2026, 10, 30, 21)])
     }
 
@@ -119,16 +150,19 @@ struct ReminderSchedulerTests {
         let center = FakeNotificationCenter()
         let scheduler = ReminderScheduler(center: center)
         let boundary = DayBoundary(calendar: TestTime.calendar())
-        let pill = check("Pill taken", reminder: 21 * 60)
-        await scheduler.reschedule(checks: [pill], latestLogs: [:], now: TestTime.date(2026, 10, 29, 10), boundary: boundary)
-        await scheduler.reschedule(checks: [check("Pill taken")], latestLogs: [:], now: TestTime.date(2026, 10, 29, 10), boundary: boundary)
+        var daily = category(reminder: 21 * 60)
+        let pill = check("Pill taken", in: daily)
+        let now = TestTime.date(2026, 10, 29, 10)
+        await scheduler.reschedule(checks: [pill], categories: [daily], latestLogs: [:], now: now, boundary: boundary)
+        daily.reminderMinutes = nil
+        await scheduler.reschedule(checks: [pill], categories: [daily], latestLogs: [:], now: now, boundary: boundary)
         #expect(center.pending.isEmpty)
     }
 }
 
 @MainActor
 struct DetailReminderTests {
-    @Test func enablingDefaultsToNinePM() throws {
+    @Test func enablingSetsTheCategorysReminderAtNinePM() throws {
         let clock = FixedTimeSource(TestTime.date(2026, 10, 29, 10))
         let store = SwiftDataStore(container: try .app(inMemory: true), timeSource: clock)
         let changes = ChangeSpy()
@@ -140,9 +174,9 @@ struct DetailReminderTests {
         viewModel.reload()
         #expect(viewModel.reminderDate == nil)
         viewModel.enableReminder()
-        #expect(try store.check(id: pill.id)?.reminderMinutes == 21 * 60)
+        #expect(try store.category(id: pill.categoryID)?.reminderMinutes == 21 * 60)
         #expect(viewModel.reminderDate == TestTime.date(2026, 10, 29, 21))
         viewModel.setReminder(nil)
-        #expect(try store.check(id: pill.id)?.reminderMinutes == nil)
+        #expect(try store.category(id: pill.categoryID)?.reminderMinutes == nil)
     }
 }

@@ -16,6 +16,8 @@ final class DetailViewModel {
     static let timelineLimit = 50
 
     private(set) var check: CheckRecord?
+    /// The check's category, whose reminder the reminder row sets until phase 17 moves it to the category page.
+    private(set) var category: CategoryRecord?
     private(set) var swatch: TileSwatch = .violet
     /// "Locked at 8:42 AM", or "Not logged yet".
     private(set) var headline = ""
@@ -33,7 +35,7 @@ final class DetailViewModel {
     private(set) var errorMessage: String?
 
     @ObservationIgnored let checkID: UUID
-    @ObservationIgnored private let checkStore: any CheckStoring
+    @ObservationIgnored private let checkStore: any CheckStoring & CategoryStoring
     @ObservationIgnored private let logStore: any LogStoring
     @ObservationIgnored private let days: any DayBoundaryProviding
     @ObservationIgnored private let timeSource: any TimeSource
@@ -46,7 +48,7 @@ final class DetailViewModel {
 
     init(
         checkID: UUID,
-        checkStore: any CheckStoring,
+        checkStore: any CheckStoring & CategoryStoring,
         logStore: any LogStoring,
         days: any DayBoundaryProviding,
         timeSource: any TimeSource,
@@ -73,6 +75,7 @@ final class DetailViewModel {
                 return
             }
             self.check = check
+            category = try checkStore.category(id: check.categoryID)
             let position = try checkStore.checks().firstIndex { $0.id == checkID } ?? 0
             swatch = TileSwatch.at(position: position)
             logs = try logStore.logs(for: checkID, limit: Self.timelineLimit)
@@ -130,17 +133,18 @@ final class DetailViewModel {
 
     /// The reminder time as today's date, for the time picker.
     var reminderDate: Date? {
-        guard let minutes = check?.reminderMinutes else { return nil }
+        guard let minutes = category?.reminderMinutes else { return nil }
         return days.dayBoundary.calendar.date(bySettingHour: minutes / 60, minute: minutes % 60, second: 0, of: timeSource.now)
     }
 
-    /// Turns the "if not logged" reminder on (at 9 PM, or `date`) or off.
+    /// Turns the category's "if not logged" reminder on (at 9 PM, or `date`) or off.
     func setReminder(_ date: Date?) {
+        guard let categoryID = category?.id else { return }
         let calendar = days.dayBoundary.calendar
         let minutes = date.map { calendar.component(.hour, from: $0) * 60 + calendar.component(.minute, from: $0) }
         do {
-            try checkStore.setReminder(minutes: minutes, for: checkID)
-            check?.reminderMinutes = minutes
+            try checkStore.setReminder(minutes: minutes, forCategory: categoryID)
+            category?.reminderMinutes = minutes
             changes.didChange()
         } catch {
             errorMessage = String(localized: "Couldn’t change the reminder.")
