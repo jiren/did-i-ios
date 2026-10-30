@@ -305,7 +305,10 @@ isn't in the export, so read them as source. If the canvas changes, re-copy them
   categories. Its script holds the sample categories and tasks, the repeat rules, the tile palette, the suggestions
   and the copy. Port behaviour and copy from it as written. `AddChecks.dc.html` is `Main` with the sheet open.
 - **`NewCategory.dc.html`**: the New category page: a preview card, name, icon grid, colour swatches, repeat
-  (with weekday, day-of-month or date), the tasks list, "Remind me at", and "Create category".
+  (with weekday, day-of-month or date), the tasks list, "Remind me at", and "Create category". The app adds what the
+  canvas doesn't show (Phase 20, the user's request): a template gallery first, editable task rows, a custom colour
+  after the swatches and **More icons** after the icons; a category's colour and icon are open-ended
+  (`CategoryColour`, `CategoryIcon`).
 - **`Detail.dc.html` (Check detail)**: violet header with back and Remove, "Locked at {time}" and "{day} · {ago}",
   the latest photo; a "Nudge me when I leave home — Only if it isn't logged yet" switch; the History timeline
   (time and source) with the log count; a "Log it again" button.

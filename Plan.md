@@ -469,3 +469,19 @@ above (the Today rows), this wins.
 | **Sections** | From the design: the header opens or closes the section (meta line "Every Friday" or "All done · last 8:42 AM", a mint "✓ 2/2" once all done, a chevron), and a + adds tasks (the Add task tile goes). A section starts closed once all its tasks are done today. Tasks not done come first. Proposed: a section opened or closed by hand stays so until the day changes; adding from its + opens it. |
 | **Grid or list** | From the design: a toggle between 3-column tiles (tighter: radius 20, 30 pt icons, 28 pt camera) and 52 pt rows. Proposed: the choice is kept in settings (`AppSettings.todayLayout`); at accessibility sizes Today always uses rows (square tiles in one column would be huge), and a row puts its status under the name. |
 | **Removed** | From the design: the dashed "Add checks" button (the tab bar's + stays, now "Add tasks") and **Coming up** (the strip's dots show what's due). "Nothing due" reads "{Category} isn’t due on {date}. The dots on the days above show when it is." or "No tasks scheduled for {date}." |
+
+## Phase 20 — New category from templates ✅ Done 2026-10-30, merged into main (walked through on the simulator, both themes and an accessibility size; tests not yet run)
+
+Branch `feature/phase-20-category-templates`. The user, 2026-10-30: New category starts from **templates** of common
+categories and tasks; once one is chosen its tasks can be added, deleted and renamed; the colours end with a
+**custom colour picker**; the icons end with **More icons**, a much larger choice. Their answers: a **template
+gallery first** (then the form, filled in); custom colours and icons apply to **the category only** (task tiles keep
+the palette by position); **app only** (the canvas doesn't show this).
+
+| Topic | Decision |
+|---|---|
+| **Gallery** | "New category · Start from a template": 12 templates (Leaving home, Bedtime, Morning, Medication, Bin night, Trip, Gym, Pets, Plants, Car, Home safety, Bills) as cards with their icon, colour, repeat and task count, then **Start from scratch**. Picking one pushes the form, filled in (`CategoryTemplates`). Weekly and monthly templates start on today's weekday or date, Trip tomorrow. |
+| **Tasks** | Each task is an editable field: rename in place, × to remove, the field and + to add, drag to reorder. Editing a category does the same to its saved tasks: renames on Save, and removing saved tasks asks first ("Remove Recycling out and its 1 logs?"), then deletes their logs and photos. |
+| **Colour** | The six swatches, then a custom swatch (a rainbow ring) that opens the system colour picker (no opacity). Stored as "#RRGGBB" in the same field (`CategoryColour`); text on it is white or ink, whichever has the better contrast. |
+| **Icons** | The 12 drawn icons, then the chosen library icon, then **More icons**: a sheet of about 160 SF Symbols in 12 groups with search (`IconLibrary`). Stored as "sf:<symbol>" in the same field (`CategoryIcon` is now a struct; old values still read). No migration. |
+| **Proposed** | A template whose name a category already has shows **Added** and opens as "Bin night 2". A template task that already exists in another category reads "In Daily · moves here" and moves on Create rather than being skipped silently. The pushed form has a back button to the templates; Create closes the whole flow. |
