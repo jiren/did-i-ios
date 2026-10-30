@@ -510,3 +510,18 @@ Branch `feature/phase-22-weekly-days`.
   `SchemaV2` became frozen copies, and the V1 → V2 stage now uses V2's own models. A weekly category saved before
   keeps its one day (`repeatWeekday`).
 
+## Phase 23 — More templates, grouped ✅ Done 2026-10-30, merged into main (gallery checked on the simulator; tests not yet run)
+
+Branch `feature/phase-23-more-templates`. From the template research (2026-10-30).
+
+- The gallery groups 26 templates: **Home & safety** (Leaving home, Bedtime, Kitchen, Water, Laundry, Bin night,
+  Recycling every 2 weeks, Home safety, Yearly home), **Out & about** (Out the door, Leaving work on weekdays, Car,
+  Trip, Gym on Mon/Wed/Fri, Hair & beauty), **Health** (Morning meds, Evening meds, Diabetes, Contact lenses,
+  Pharmacy), **Family & pets** (School run on weekdays, Pets, Plants, Caring for someone), **Money & admin** (Bills,
+  Car admin).
+- The first 12 improved: Leaving home and Bedtime have both doors, Car has "Back seat checked", Trip the full
+  pre-holiday list, Pets is for any pet, Medication split into Morning meds and Evening meds (a category has one
+  reminder time), Bills and Home safety extended, Morning folded into Morning meds and Hair & beauty.
+- New category gets **Nudge me when I leave home** (for its tasks, if not logged yet); Leaving home and Out the door
+  turn it on. Saving an edited category without touching it leaves each task's own setting alone.
+

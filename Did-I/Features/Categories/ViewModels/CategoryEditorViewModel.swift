@@ -36,6 +36,8 @@ final class CategoryEditorViewModel {
     var date = Date()
     var remindsMe = false
     var reminderTime = Date()
+    /// Its tasks nudge when leaving home (once a home is set).
+    var nudgesOnLeavingHome = false
     var taskText = ""
     /// In order; names are edited in place.
     var tasks: [TaskDraft] = []
@@ -60,6 +62,8 @@ final class CategoryEditorViewModel {
     @ObservationIgnored private var removedTasks: [TaskDraft] = []
     @ObservationIgnored private var categories: [CategoryRecord] = []
     @ObservationIgnored private var isLoaded = false
+    /// The nudge setting as loaded, so saving an untouched one leaves each task's own setting alone.
+    @ObservationIgnored private var loadedNudges = false
 
     init(
         editing id: UUID? = nil,
@@ -121,9 +125,10 @@ final class CategoryEditorViewModel {
             remindsMe = true
             reminderTime = time(minutes: minutes)
         }
-        tasks = checks.filter { $0.categoryID == editedID }.map {
-            TaskDraft(name: $0.name, checkID: $0.id, savedName: $0.name)
-        }
+        let own = checks.filter { $0.categoryID == editedID }
+        tasks = own.map { TaskDraft(name: $0.name, checkID: $0.id, savedName: $0.name) }
+        nudgesOnLeavingHome = !own.isEmpty && own.allSatisfy(\.nudgesOnLeavingHome)
+        loadedNudges = nudgesOnLeavingHome
     }
 
     /// Fills the form from a template; everything stays editable.
@@ -141,6 +146,7 @@ final class CategoryEditorViewModel {
         default: break
         }
         remindsMe = template.reminderMinutes != nil
+        nudgesOnLeavingHome = template.nudgesOnLeavingHome
         reminderTime = time(minutes: template.reminderMinutes ?? Self.defaultReminderMinutes)
         tasks = []
         template.tasks.forEach(append)
@@ -311,6 +317,9 @@ final class CategoryEditorViewModel {
             task.checkID ?? saved.first { CheckName.key($0.name) == CheckName.key(task.name) }?.id
         }
         try store.reorder(order)
+        if nudgesOnLeavingHome != loadedNudges || (isNew && nudgesOnLeavingHome) {
+            for id in order { try store.setNudgesOnLeavingHome(nudgesOnLeavingHome, for: id) }
+        }
     }
 
     /// "Remove Towel packed and its 3 logs?", or nil when no saved task is being removed.

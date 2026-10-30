@@ -87,6 +87,18 @@ struct CategoryTemplateTests {
         #expect(rule("binNight") == .weekly(weekday: 5))
         #expect(rule("homeSafety") == .monthly(day: 29))
         #expect(rule("trip") == .once(CalendarDay(year: 2026, month: 10, day: 30)))
+        #expect(rule("leavingWork") == .weekly(weekdays: RepeatRule.workingDays))
+        #expect(rule("gym") == .weekly(weekdays: [2, 4, 6]))
+        #expect(rule("yearlyHome") == .yearly(month: 10, day: 29))
+        // Every other Thursday, from today.
+        #expect(rule("recycling") == .everyTwoWeeks(weekday: 5, anchor: today))
+    }
+
+    @Test func templatesAreGroupedAndTheLeavingOnesNudge() {
+        #expect(CategoryTemplates.groups.map(\.title) == ["Home & safety", "Out & about", "Health", "Family & pets", "Money & admin"])
+        #expect(CategoryTemplates.all.count >= 25)
+        let nudging = CategoryTemplates.all.filter(\.nudgesOnLeavingHome).map(\.id)
+        #expect(nudging == ["leavingHome", "outTheDoor"])
     }
 }
 

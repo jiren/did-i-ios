@@ -43,33 +43,38 @@ final class CategoriesUITests: XCTestCase {
         XCTAssertTrue(app.buttons["tile.Keys packed"].waitForExistence(timeout: 3))
     }
 
-    /// New category starts from the templates; Gym's tasks are renamed and removed before it's created.
+    /// New category starts from the templates; Hair & beauty (daily, so it's on Today whatever the date) has a task
+    /// renamed and one removed before it's created.
     @MainActor
     func testCreatingFromATemplate() throws {
         let app = XCUIApplication.launched(arguments: ["-SeedSample", "-Open", "newCategory"])
-        let gym = app.buttons["templates.gym"]
-        XCTAssertTrue(gym.waitForExistence(timeout: 5))
-        gym.tap()
-        XCTAssertEqual(app.textFields["category.name"].value as? String, "Gym")
-
-        let towel = app.textFields["category.taskName.Towel packed"]
-        XCTAssertTrue(towel.waitForExistence(timeout: 3))
-        towel.tap()
-        // The cursor lands at the end: delete " packed".
-        towel.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 7))
-        app.buttons["category.keyboardDone"].tap()
-        app.buttons["category.removeTask.Headphones charged"].tap()
-        app.buttons["category.save"].tap()
-
-        // Gym is the last section, and Today's stacks are lazy: scroll until it's built.
-        XCTAssertTrue(app.buttons["tabbar.add"].waitForExistence(timeout: 3))
-        let water = app.buttons["tile.Water bottle"]
-        for _ in 0..<6 where !water.exists {
+        let template = app.buttons["templates.hairBeauty"]
+        for _ in 0..<6 where !template.isHittable {
             app.swipeUp()
         }
-        XCTAssertTrue(water.exists)
-        XCTAssertTrue(app.buttons["tile.Towel"].exists)
-        XCTAssertFalse(app.buttons["tile.Headphones charged"].exists)
+        template.tap()
+        XCTAssertEqual(app.textFields["category.name"].value as? String, "Hair & beauty")
+
+        let dryer = app.textFields["category.taskName.Hairdryer unplugged"]
+        for _ in 0..<4 where !dryer.isHittable {
+            app.swipeUp()
+        }
+        dryer.tap()
+        // The cursor lands at the end: delete " unplugged".
+        dryer.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 10))
+        app.buttons["category.keyboardDone"].tap()
+        app.buttons["category.removeTask.Curling iron off"].tap()
+        app.buttons["category.save"].tap()
+
+        // It's the last section, and Today's stacks are lazy: scroll until it's built.
+        XCTAssertTrue(app.buttons["tabbar.add"].waitForExistence(timeout: 3))
+        let straighteners = app.buttons["tile.Straighteners off"]
+        for _ in 0..<6 where !straighteners.exists {
+            app.swipeUp()
+        }
+        XCTAssertTrue(straighteners.exists)
+        XCTAssertTrue(app.buttons["tile.Hairdryer"].exists)
+        XCTAssertFalse(app.buttons["tile.Curling iron off"].exists)
     }
 
     @MainActor

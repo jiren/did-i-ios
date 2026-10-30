@@ -15,7 +15,15 @@ final class CategoryTemplatesViewModel {
         var id: String { template.id }
     }
 
-    private(set) var items: [Item] = []
+    struct Section: Identifiable, Equatable {
+        let id: String
+        let title: String
+        var items: [Item]
+    }
+
+    private(set) var sections: [Section] = []
+
+    var items: [Item] { sections.flatMap(\.items) }
 
     @ObservationIgnored private let store: any CategoryStoring
     @ObservationIgnored private let days: any DayBoundaryProviding
@@ -33,15 +41,17 @@ final class CategoryTemplatesViewModel {
         let names = Set(((try? store.categories()) ?? []).map { CheckName.key($0.name) })
         let boundary = days.dayBoundary
         let today = boundary.calendarDay(containing: timeSource.now)
-        items = CategoryTemplates.all.map { template in
-            let rule = template.rule(today: today, calendar: boundary.calendar).label(calendar: boundary.calendar, locale: locale)
-            let count = template.tasks.count
-            let tasks = count == 1 ? String(localized: "1 task") : String(localized: "\(count) tasks")
-            return Item(
-                template: template,
-                detail: String(localized: "\(rule) · \(tasks)"),
-                isAdded: names.contains(CheckName.key(template.name))
-            )
+        sections = CategoryTemplates.groups.map { group in
+            Section(id: group.id, title: group.title, items: group.templates.map { template in
+                let rule = template.rule(today: today, calendar: boundary.calendar).label(calendar: boundary.calendar, locale: locale)
+                let count = template.tasks.count
+                let tasks = count == 1 ? String(localized: "1 task") : String(localized: "\(count) tasks")
+                return Item(
+                    template: template,
+                    detail: String(localized: "\(rule) · \(tasks)"),
+                    isAdded: names.contains(CheckName.key(template.name))
+                )
+            })
         }
     }
 }

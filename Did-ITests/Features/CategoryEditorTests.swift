@@ -149,8 +149,9 @@ struct CategoryEditorViewModelTests {
         #expect(viewModel.colour == .mint)
         #expect(viewModel.rule == .weekly(weekday: 5))
         #expect(viewModel.remindsMe)
-        #expect(viewModel.previewDetail.plainSpaces == "2 tasks · Reminder at 8:00 PM")
-        #expect(names(viewModel) == ["Bins out", "Recycling out"])
+        #expect(viewModel.previewDetail.plainSpaces == "4 tasks · Reminder at 8:00 PM")
+        #expect(names(viewModel) == ["Bins out", "Recycling out", "Food caddy out", "Garden waste out"])
+        #expect(!viewModel.nudgesOnLeavingHome)
     }
 
     @Test func aUsedTemplateNameGetsANumber() throws {
@@ -165,14 +166,16 @@ struct CategoryEditorViewModelTests {
     @Test func tasksAreRenamedReorderedAndRemovedBeforeSaving() throws {
         let viewModel = editor()
         viewModel.apply(CategoryTemplates.all.first { $0.id == "gym" }!)
-        viewModel.tasks[1].name = "Towel"
+        #expect(names(viewModel) == ["Gym bag packed", "Shoes packed", "Water bottle", "Locker locked"])
+        viewModel.tasks[1].name = "Trainers"
         viewModel.removeTask(viewModel.tasks[2].id)
         viewModel.moveTask(viewModel.tasks[1].id, to: viewModel.tasks[0].id)
         viewModel.tasks.append(.new("   "))
-        #expect(viewModel.taskCountText == "2 tasks")
+        #expect(viewModel.taskCountText == "3 tasks")
         #expect(viewModel.save())
         let gym = try #require(try store.categories().first { $0.name == "Gym" })
-        #expect(try store.checks().filter { $0.categoryID == gym.id }.map(\.name) == ["Towel", "Water bottle"])
+        #expect(try store.checks().filter { $0.categoryID == gym.id }.map(\.name) == ["Trainers", "Gym bag packed", "Locker locked"])
+        #expect(gym.rule == .weekly(weekdays: [2, 4, 6]))
         #expect(gym.icon == CategoryIcon(symbol: "figure.run"))
     }
 
@@ -224,6 +227,32 @@ struct CategoryEditorViewModelTests {
         #expect(fish.colour == .custom(hex: "#1A33CC"))
         #expect(fish.icon.symbolName == "fish.fill")
         #expect(!fish.icon.isFeatured)
+    }
+
+    @Test func aLeavingTemplateNudgesAndTheSwitchChangesEveryTask() throws {
+        let viewModel = editor()
+        viewModel.apply(CategoryTemplates.all.first { $0.id == "outTheDoor" }!)
+        #expect(viewModel.nudgesOnLeavingHome)
+        #expect(viewModel.save())
+        let category = try #require(try store.categories().first { $0.name == "Out the door" })
+        #expect(try store.checks().filter { $0.categoryID == category.id }.allSatisfy(\.nudgesOnLeavingHome))
+
+        let edit = editor(category.id)
+        #expect(edit.nudgesOnLeavingHome)
+        edit.nudgesOnLeavingHome = false
+        #expect(edit.save())
+        #expect(try store.checks().filter { $0.categoryID == category.id }.allSatisfy { !$0.nudgesOnLeavingHome })
+    }
+
+    @Test func savingWithoutTouchingTheSwitchKeepsEachTasksNudge() throws {
+        let bins = try store.addCategory(CategoryDraft(name: "Bin night"), tasks: [CheckDraft(name: "Bins out"), CheckDraft(name: "Recycling out")])
+        let binsOut = try #require(try store.checks().first { $0.name == "Bins out" })
+        try store.setNudgesOnLeavingHome(true, for: binsOut.id)
+        let viewModel = editor(bins.id)
+        #expect(!viewModel.nudgesOnLeavingHome)
+        viewModel.name = "Bins"
+        #expect(viewModel.save())
+        #expect(try store.check(id: binsOut.id)?.nudgesOnLeavingHome == true)
     }
 
     @Test func dailyKeepsItsSchedule() throws {

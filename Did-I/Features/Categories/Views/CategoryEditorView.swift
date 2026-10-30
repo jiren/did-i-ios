@@ -205,6 +205,15 @@ struct CategoryEditorView: View {
                     .foregroundStyle(Color.ink)
                     .padding(.top, 10)
             }
+            Divider().overlay(Color.line).padding(.vertical, 10)
+            Toggle(isOn: $viewModel.nudgesOnLeavingHome) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Nudge me when I leave home").font(.didRowTitle).foregroundStyle(Color.ink)
+                    Text("For these tasks, if they aren’t logged yet").font(.didFootnoteRegular).foregroundStyle(Color.muted)
+                }
+            }
+            .tint(Color.tileViolet)
+            .accessibilityIdentifier("category.nudge")
         }
         .padding(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 12))
         .background(Color.surface, in: .rect(cornerRadius: 18, style: .continuous))

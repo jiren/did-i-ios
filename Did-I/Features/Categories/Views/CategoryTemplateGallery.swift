@@ -6,8 +6,9 @@ enum NewCategoryStart: Hashable {
     case scratch
 }
 
-/// The start of New category (Phase 20): "Start from a template", a 2-column grid of templates, then Start from
-/// scratch. Picking one opens the form, filled in.
+/// The start of New category (phases 20 and 23): "Start from a template", the templates in sections (Home & safety,
+/// Out & about, Health, Family & pets, Money & admin, Habits), then Start from scratch. Picking one opens the form,
+/// filled in.
 struct CategoryTemplateGallery: View {
     @State private var viewModel: CategoryTemplatesViewModel
     let onPick: (NewCategoryStart) -> Void
@@ -38,11 +39,20 @@ struct CategoryTemplateGallery: View {
                         Spacer()
                     }
                 }
-                SectionLabel(title: String(localized: "Start from a template"))
-                LazyVGrid(columns: columns, spacing: 10) {
-                    ForEach(viewModel.items) { item in
-                        TemplateCard(item: item) { onPick(.template(item.template)) }
+                Text("Start from a template")
+                    .font(.didBody)
+                    .foregroundStyle(Color.muted)
+                ForEach(viewModel.sections) { section in
+                    VStack(alignment: .leading, spacing: 8) {
+                        SectionLabel(title: section.title)
+                        LazyVGrid(columns: columns, spacing: 10) {
+                            ForEach(section.items) { item in
+                                TemplateCard(item: item) { onPick(.template(item.template)) }
+                            }
+                        }
                     }
+                    .accessibilityElement(children: .contain)
+                    .accessibilityLabel(section.title)
                 }
                 Button { onPick(.scratch) } label: {
                     Label("Start from scratch", systemImage: "plus")
