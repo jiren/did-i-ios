@@ -1,18 +1,20 @@
 import Foundation
 
-/// A tile on Today.
-struct TodayTile: Identifiable, Equatable {
-    let id: UUID
-    var content: CheckTileContent
+/// A category's section on Today: its heading and its tiles.
+struct TodaySection: Identifiable, Equatable {
+    var category: CategoryRecord
+    var repeatLabel: String
+    /// "2/4".
+    var progressText: String
+    var tiles: [TodayTile]
+
+    var id: UUID { category.id }
 }
 
-/// A row in Today's Recent list.
-struct RecentRow: Identifiable, Equatable {
+/// A task's tile on Today.
+struct TodayTile: Identifiable, Equatable {
     let id: UUID
-    let checkID: UUID
-    var title: String
-    var meta: String
-    var swatch: TileSwatch
+    var content: TaskTileContent
 }
 
 /// The toast after a log, with what Undo reverses.

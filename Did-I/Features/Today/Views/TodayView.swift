@@ -1,16 +1,19 @@
 import SwiftUI
 import TipKit
 
-/// Today (`Main.dc.html`): the header, the grid of checks, Recent, and the floating bar.
+/// Today (`Main.dc.html`): the date and title, the 7-day strip, the category filter, the pinned progress bar, one
+/// section per due category, Coming up, and the floating bar.
 struct TodayView: View {
     @State private var viewModel: TodayViewModel
     @State private var management: CheckManagementRequest?
     @State private var photoCheck: PhotoRequest?
+    /// The scroll offset at which the progress bar pins, and whether it has.
+    @State private var headerHeight: CGFloat = 300
+    @State private var isBarStuck = false
     @Binding var tab: MainTab
     let actions: TodayActions
 
     @Environment(StoreChangeHub.self) private var changes
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(viewModel: @autoclosure () -> TodayViewModel, tab: Binding<MainTab>, actions: TodayActions) {
@@ -21,39 +24,23 @@ struct TodayView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                TodayHeader(
-                    dateText: viewModel.dateText,
-                    summary: viewModel.summary,
-                    showsSummary: !viewModel.isEmpty,
-                    onSettings: actions.openSettings
-                )
-                if viewModel.isEmpty {
-                    TodayEmptyState(onAdd: actions.addChecks)
+            if viewModel.isEmpty {
+                VStack(alignment: .leading, spacing: 0) {
+                    TodayHeader(dateText: viewModel.dateText, onSettings: actions.openSettings)
+                    TodayEmptyState(onAdd: { actions.addChecks(nil) })
                         .padding(.horizontal, 20)
                         .padding(.top, 22)
-                } else {
-                    TipView(EditTileTip())
-                        .tipBackground(Color.surface)
-                        .padding(.horizontal, 20)
-                        .padding(.top, 18)
-                    grid
                 }
-                if !viewModel.recent.isEmpty {
-                    RecentList(rows: viewModel.recent, onOpen: actions.openCheck, onSeeAll: actions.seeAll)
-                        .padding(.horizontal, 24)
-                        .padding(.top, 22)
-                }
-                if let message = viewModel.errorMessage {
-                    Text(message)
-                        .font(.didFootnote)
-                        .foregroundStyle(Color.muted)
-                        .padding(24)
-                }
+            } else {
+                calendar
             }
-            .padding(.bottom, 24)
         }
         .scrollIndicators(.hidden)
+        .onScrollGeometryChange(for: Bool.self) { geometry in
+            geometry.contentOffset.y + geometry.contentInsets.top > headerHeight
+        } action: { _, isStuck in
+            isBarStuck = isStuck
+        }
         .safeAreaInset(edge: .bottom) { bottomBar }
         .background(Color.ground)
         .toolbarVisibility(.hidden, for: .navigationBar)
@@ -80,34 +67,67 @@ struct TodayView: View {
         )
     }
 
-    private var columns: [GridItem] {
-        let count = dynamicTypeSize.isAccessibilitySize ? 1 : 2
-        return Array(repeating: GridItem(.flexible(), spacing: 12, alignment: .top), count: count)
+    private var calendar: some View {
+        LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
+            VStack(alignment: .leading, spacing: 0) {
+                TodayHeader(dateText: viewModel.dateText, onSettings: actions.openSettings)
+                DayStrip(days: viewModel.strip, onSelect: viewModel.select)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 18)
+                CategoryFilter(categories: viewModel.categories, selection: viewModel.filterID, onSelect: viewModel.selectFilter)
+                    .padding(.top, 14)
+            }
+            .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { headerHeight = $0 }
+            Section {
+                content
+            } header: {
+                ProgressBarCard(progress: viewModel.progress, isToday: viewModel.isToday, isStuck: isBarStuck)
+                    .padding(EdgeInsets(top: 14, leading: 20, bottom: 10, trailing: 20))
+                    .background(Color.ground)
+                    .accessibilityIdentifier("today.progress")
+            }
+        }
+        .padding(.bottom, 24)
     }
 
-    private var grid: some View {
-        LazyVGrid(columns: columns, spacing: 12) {
-            ForEach(viewModel.tiles) { tile in
-                CheckTile(
-                    content: tile.content,
-                    onLog: { viewModel.log(tile.id) },
-                    onPhoto: { photoCheck = PhotoRequest(checkID: tile.id, checkName: tile.content.name) }
+    private var content: some View {
+        VStack(alignment: .leading, spacing: 26) {
+            TipView(EditTileTip())
+                .tipBackground(Color.surface)
+            ForEach(viewModel.sections) { section in
+                TodaySectionView(
+                    section: section,
+                    onLog: { viewModel.log($0) },
+                    onPhoto: { photoCheck = $0 },
+                    onAdd: { actions.addChecks(section.category.id) },
+                    menu: { menu(for: $0) },
+                    onDrop: { viewModel.move($0, to: $1) }
                 )
-                .contextMenu { menu(for: tile.id) }
-                .draggable(tile.id.uuidString) {
-                    TileIcon(kind: tile.content.kind, swatch: tile.content.swatch, isDone: false)
-                }
-                .dropDestination(for: String.self) { items, _ in
-                    guard let dragged = items.first.flatMap(UUID.init(uuidString:)) else { return false }
-                    viewModel.move(dragged, to: tile.id)
-                    return true
+            }
+            if let text = viewModel.nothingDueText {
+                NothingDueCard(text: text)
+            }
+            AddChecksButton { actions.addChecks(viewModel.addTarget) }
+                .accessibilityIdentifier("today.addChecks")
+            if !viewModel.comingUp.isEmpty {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Coming up")
+                        .font(.didBarTitle)
+                        .foregroundStyle(Color.ink)
+                        .accessibilityAddTraits(.isHeader)
+                    ForEach(viewModel.comingUp) { upcoming in
+                        ComingUpRow(upcoming: upcoming) { viewModel.open(upcoming) }
+                    }
                 }
             }
-            AddTile(action: actions.addChecks)
-                .accessibilityIdentifier("today.addTile")
+            if let message = viewModel.errorMessage {
+                Text(message)
+                    .font(.didFootnote)
+                    .foregroundStyle(Color.muted)
+            }
         }
         .padding(.horizontal, 20)
-        .padding(.top, 22)
+        .padding(.top, 10)
     }
 
     @ViewBuilder
@@ -140,7 +160,12 @@ struct TodayView: View {
                     .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
                     .accessibilityIdentifier("today.toast")
             }
-            FloatingTabBar(selection: $tab, onAdd: actions.addChecks)
+            FloatingTabBar(
+                selection: $tab,
+                todayProgress: viewModel.isEmpty ? nil : viewModel.todayProgress,
+                todayAccessibilityLabel: viewModel.isEmpty ? nil : viewModel.ringAccessibilityLabel,
+                onAdd: { actions.addChecks(viewModel.addTarget) }
+            )
         }
         .padding(.horizontal, 20)
         .padding(.bottom, 8)
@@ -150,10 +175,10 @@ struct TodayView: View {
 
 /// What Today hands back to the root: navigation and sheets it doesn't own.
 struct TodayActions {
-    var addChecks: () -> Void = {}
+    /// Opens the Add sheet on a category (Daily when nil).
+    var addChecks: (UUID?) -> Void = { _ in }
     var openSettings: () -> Void = {}
     var openCheck: (UUID) -> Void = { _ in }
-    var seeAll: () -> Void = {}
 }
 
 /// The check a proof photo is being taken for.

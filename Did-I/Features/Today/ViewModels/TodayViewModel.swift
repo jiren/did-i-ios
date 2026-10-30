@@ -9,20 +9,36 @@ protocol DayBoundaryProviding: AnyObject {
 
 extension AppSettings: DayBoundaryProviding {}
 
+/// Today as a calendar (`Main.dc.html`): a day from the 7-day strip, a category filter, the due categories with
+/// their tasks, the progress bar and Coming up. Only today's tasks can be logged.
 @Observable
 final class TodayViewModel {
+    /// "Today · Fri, Oct 30" or "Sat, Oct 31".
     private(set) var dateText = ""
-    private(set) var tiles: [TodayTile] = []
-    private(set) var summary = TodaySummary(checks: [], doneIDs: [])
-    private(set) var recent: [RecentRow] = []
+    private(set) var strip: [DayAgenda.StripDay] = []
+    /// Every category, for the filter chips.
+    private(set) var categories: [CategoryRecord] = []
+    /// The category shown alone, or nil for All.
+    private(set) var filterID: UUID?
+    private(set) var progress = DayAgenda.Progress(scope: "", main: "", pill: .freeDay, segments: [])
+    private(set) var sections: [TodaySection] = []
+    /// "No checks scheduled for Sat, Oct 31." when nothing is due.
+    private(set) var nothingDueText: String?
+    private(set) var comingUp: [DayAgenda.Upcoming] = []
+    private(set) var isToday = true
+    /// Today's due tasks done, 0 to 1, for the tab bar's ring.
+    private(set) var todayProgress = 0.0
+    /// "Today: 4 of 8 checked".
+    private(set) var ringAccessibilityLabel = ""
     private(set) var toast: LogToast?
     private(set) var errorMessage: String?
     /// Bumped on each log, to play the success haptic.
     private(set) var logCount = 0
 
-    var isEmpty: Bool { tiles.isEmpty }
+    /// No checks at all: the empty state instead of the calendar.
+    private(set) var isEmpty = false
 
-    @ObservationIgnored private let checkStore: any CheckStoring
+    @ObservationIgnored private let checkStore: any CheckStoring & CategoryStoring
     @ObservationIgnored private let logStore: any LogStoring
     @ObservationIgnored private let days: any DayBoundaryProviding
     @ObservationIgnored private let timeSource: any TimeSource
@@ -33,11 +49,15 @@ final class TodayViewModel {
     @ObservationIgnored private let toastDuration: Duration
 
     @ObservationIgnored private var checks: [CheckRecord] = []
-    @ObservationIgnored private var latest: [UUID: LogRecord] = [:]
-    @ObservationIgnored private var recentLogs: [LogRecord] = []
+    /// Logs from the day they were read for (`logsDay`).
+    @ObservationIgnored private var todaysLogs: [LogRecord] = []
+    @ObservationIgnored private var logsDay: CalendarDay?
+    /// The day picked in the strip; nil means today, and it goes back to nil when the day changes.
+    @ObservationIgnored private var selectedDay: CalendarDay?
+    @ObservationIgnored private var agendaToday: CalendarDay?
 
     init(
-        checkStore: any CheckStoring,
+        checkStore: any CheckStoring & CategoryStoring,
         logStore: any LogStoring,
         days: any DayBoundaryProviding,
         timeSource: any TimeSource,
@@ -58,55 +78,91 @@ final class TodayViewModel {
         self.toastDuration = toastDuration
     }
 
-    /// Reads the checks and logs again, then rebuilds everything shown.
+    /// Reads the categories, checks and today's logs again, then rebuilds everything shown.
     func reload() {
+        let boundary = days.dayBoundary
+        let today = boundary.calendarDay(containing: timeSource.now)
+        // Set first, so a failed read can't send `rebuild` back here.
+        logsDay = today
         do {
+            categories = try checkStore.categories()
             checks = try checkStore.checks()
-            latest = try logStore.latestLogs()
-            recentLogs = try logStore.logs(for: nil, limit: 3)
+            let interval = boundary.interval(of: today)
+            todaysLogs = try logStore.logs(from: interval.start, to: interval.end)
             errorMessage = nil
         } catch {
             errorMessage = String(localized: "Couldn’t read your checks.")
         }
+        if let filterID, !categories.contains(where: { $0.id == filterID }) { self.filterID = nil }
         rebuild()
     }
 
-    /// Recomputes times ("2h ago") without reading the store.
+    /// Recomputes the day without reading the store, unless the day has changed.
     func rebuild() {
         let now = timeSource.now
         let boundary = days.dayBoundary
-        let time = RelativeTime(boundary: boundary, locale: locale)
-        let doneToday = Set(latest.values.filter { boundary.isInSameDay($0.date, as: now) }.map(\.checkID))
-
-        dateText = now.formatted(
-            Date.FormatStyle(locale: locale, calendar: boundary.calendar, timeZone: boundary.calendar.timeZone)
-                .weekday(.wide).month(.abbreviated).day()
-        )
-        summary = TodaySummary(checks: checks, doneIDs: doneToday)
-
-        var swatches: [UUID: TileSwatch] = [:]
-        tiles = checks.enumerated().map { position, check in
-            let swatch = TileSwatch.at(position: position)
-            swatches[check.id] = swatch
-            let log = latest[check.id].flatMap { doneToday.contains(check.id) ? $0 : nil }
-            return TodayTile(id: check.id, content: Self.content(for: check, log: log, swatch: swatch, time: time, now: now))
+        let today = boundary.calendarDay(containing: now)
+        if let agendaToday, agendaToday != today { selectedDay = nil }
+        if logsDay != nil, logsDay != today {
+            reload()
+            return
         }
+        agendaToday = today
+        let agenda = DayAgenda(
+            day: selectedDay, filter: filterID, categories: categories, checks: checks, logs: todaysLogs,
+            now: now, boundary: boundary, locale: locale
+        )
+        let time = RelativeTime(boundary: boundary, locale: locale)
+        let dayName = RepeatRule.shortDate(agenda.selectedDay, calendar: boundary.calendar, locale: locale)
 
-        recent = recentLogs.compactMap { log in
-            guard let check = checks.first(where: { $0.id == log.checkID }) else { return nil }
-            let when = boundary.isInSameDay(log.date, as: now) ? time.clockTime(log.date) : time.dayAndTime(log.date, now: now)
-            return RecentRow(
-                id: log.id,
-                checkID: check.id,
-                title: check.name,
-                meta: log.hasPhoto ? String(localized: "\(when) · photo") : when,
-                swatch: swatches[check.id] ?? .violet
+        isEmpty = checks.isEmpty
+        isToday = agenda.isToday
+        dateText = agenda.dateLine
+        strip = agenda.strip
+        progress = agenda.progress
+        nothingDueText = agenda.nothingDueText
+        comingUp = agenda.comingUp
+        todayProgress = agenda.todayTotal == 0 ? 0 : Double(agenda.todayDoneCount) / Double(agenda.todayTotal)
+        ringAccessibilityLabel = agenda.ringAccessibilityLabel
+        sections = agenda.sections.map { section in
+            TodaySection(
+                category: section.category,
+                repeatLabel: section.repeatLabel,
+                progressText: section.progressText,
+                tiles: section.tasks.map { tile in
+                    TodayTile(id: tile.id, content: Self.content(for: tile, isToday: agenda.isToday, dayName: dayName, time: time))
+                }
             )
         }
     }
 
+    // MARK: - Day and filter
+
+    func select(_ day: CalendarDay) {
+        selectedDay = day
+        rebuild()
+    }
+
+    /// Nil shows every category.
+    func selectFilter(_ categoryID: UUID?) {
+        filterID = categoryID
+        rebuild()
+    }
+
+    /// A Coming up row: within the strip, it shows that day for every category.
+    func open(_ upcoming: DayAgenda.Upcoming) {
+        guard upcoming.isInStrip else { return }
+        filterID = nil
+        select(upcoming.day)
+    }
+
+    /// The category the Add sheet opens on: the filtered one, else Daily.
+    var addTarget: UUID? { filterID }
+
+    // MARK: - Logging
+
     func log(_ checkID: UUID, photoFileName: String? = nil) {
-        guard let check = checks.first(where: { $0.id == checkID }) else { return }
+        guard isToday, let check = checks.first(where: { $0.id == checkID }) else { return }
         do {
             let outcome = try logStore.log(checkID, source: .app, at: timeSource.now, photoFileName: photoFileName)
             logCount += 1
@@ -125,7 +181,7 @@ final class TodayViewModel {
 
     /// Saves a proof photo: it replaces today's photo on a retake, else it's a new log.
     func attachPhoto(_ image: UIImage, to checkID: UUID) {
-        guard let photos, let check = checks.first(where: { $0.id == checkID }) else { return }
+        guard isToday, let photos, let check = checks.first(where: { $0.id == checkID }) else { return }
         do {
             let fileName = try photos.save(image)
             if let log = todaysLog(for: checkID), log.hasPhoto {
@@ -145,8 +201,7 @@ final class TodayViewModel {
     }
 
     private func todaysLog(for checkID: UUID) -> LogRecord? {
-        guard let log = latest[checkID], days.dayBoundary.isInSameDay(log.date, as: timeSource.now) else { return nil }
-        return log
+        todaysLogs.filter { $0.checkID == checkID }.max { $0.date < $1.date }
     }
 
     func undo() {
@@ -177,8 +232,9 @@ final class TodayViewModel {
     }
 
     func canMove(_ id: UUID, by offset: Int) -> Bool {
-        guard let index = checks.firstIndex(where: { $0.id == id }) else { return false }
-        return checks.indices.contains(index + offset)
+        let order = siblings(of: id)
+        guard let index = order.firstIndex(of: id) else { return false }
+        return order.indices.contains(index + offset)
     }
 
     func rename(_ id: UUID, to name: String) {
@@ -189,18 +245,26 @@ final class TodayViewModel {
         edit { try editor.setKind(kind, for: id) }
     }
 
+    /// Moves a task within its category.
     func move(_ id: UUID, by offset: Int) {
-        edit { try editor.move(id, by: offset, in: checks.map(\.id)) }
+        edit { try editor.move(id, by: offset, in: siblings(of: id)) }
     }
 
-    /// A tile dropped on another takes its place.
+    /// A tile dropped on another in the same category takes its place.
     func move(_ id: UUID, to target: UUID) {
-        edit { try editor.move(id, to: target, in: checks.map(\.id)) }
+        guard check(id)?.categoryID == check(target)?.categoryID else { return }
+        edit { try editor.move(id, to: target, in: siblings(of: id)) }
     }
 
     func remove(_ id: UUID) {
         if toast?.outcome.record.checkID == id { toast = nil }
         edit { try editor.remove(id) }
+    }
+
+    /// The ids of the tasks in `id`'s category, in order.
+    private func siblings(of id: UUID) -> [UUID] {
+        guard let categoryID = check(id)?.categoryID else { return [] }
+        return checks.filter { $0.categoryID == categoryID }.map(\.id)
     }
 
     private func edit(_ change: () throws -> Void) {
@@ -222,28 +286,26 @@ final class TodayViewModel {
         }
     }
 
-    private static func content(
-        for check: CheckRecord, log: LogRecord?, swatch: TileSwatch, time: RelativeTime, now: Date
-    ) -> CheckTileContent {
-        guard let log else {
-            return CheckTileContent(
-                name: check.name, kind: check.kind, swatch: swatch, isDone: false, hasPhoto: false,
-                timeText: String(localized: "Tap to log"),
-                detailText: String(localized: "Not yet today"),
-                accessibilityLabel: String(localized: "\(check.name), not logged today. Tap to log."),
-                photoButtonLabel: String(localized: "Log \(check.name) with a photo")
-            )
+    private static func content(for tile: DayAgenda.Tile, isToday: Bool, dayName: String, time: RelativeTime) -> TaskTileContent {
+        let name = tile.check.name
+        let state: TaskTileContent.State
+        let label: String
+        if let log = tile.log {
+            let clock = time.clockTime(log.date)
+            state = .done(time: clock)
+            label = String(localized: "\(name), logged \(clock) — tap to log again")
+        } else if isToday {
+            state = .toLog
+            label = String(localized: "\(name), not logged — tap to log")
+        } else {
+            state = .upcoming
+            label = String(localized: "\(name), upcoming on \(dayName)")
         }
-        let clock = time.clockTime(log.date)
-        let ago = time.ago(log.date, now: now)
-        return CheckTileContent(
-            name: check.name, kind: check.kind, swatch: swatch, isDone: true, hasPhoto: log.hasPhoto,
-            timeText: clock,
-            detailText: log.hasPhoto ? String(localized: "\(ago) · photo") : ago,
-            accessibilityLabel: String(localized: "\(check.name), logged \(clock). Tap to log again."),
-            photoButtonLabel: log.hasPhoto
-                ? String(localized: "Retake photo for \(check.name)")
-                : String(localized: "Log \(check.name) with a photo")
+        let hasPhoto = tile.log?.hasPhoto == true
+        return TaskTileContent(
+            name: name, kind: tile.check.kind, swatch: tile.swatch, state: state, hasPhoto: hasPhoto,
+            accessibilityLabel: label,
+            photoButtonLabel: hasPhoto ? String(localized: "Retake photo for \(name)") : String(localized: "Log \(name) with a photo")
         )
     }
 }

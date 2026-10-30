@@ -26,6 +26,32 @@ final class TodayUITests: XCTestCase {
         app.buttons["toast.undo"].tap()
         XCTAssertTrue(app.buttons["tile.Iron unplugged"].label.contains("not logged"))
     }
+
+    @MainActor
+    func testALaterDayIsUpcoming() throws {
+        let app = XCUIApplication.launched(arguments: ["-SeedSample"])
+        let tile = app.buttons["tile.Iron unplugged"]
+        XCTAssertTrue(tile.waitForExistence(timeout: 5))
+        // Tomorrow: the sample's Bin night is due today, so only Daily is.
+        app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'strip.' AND identifier != 'strip.today'"))
+            .element(boundBy: 0).tap()
+        XCTAssertTrue(tile.label.contains("upcoming"))
+        XCTAssertFalse(app.buttons["tile.Iron unplugged.photo"].exists)
+        tile.tap()
+        XCTAssertFalse(app.descendants(matching: .any)["today.toast"].waitForExistence(timeout: 1))
+        XCTAssertFalse(app.buttons["tile.Bins out"].exists)
+    }
+
+    @MainActor
+    func testFilteringByACategory() throws {
+        let app = XCUIApplication.launched(arguments: ["-SeedSample"])
+        XCTAssertTrue(app.buttons["tile.Bins out"].waitForExistence(timeout: 5))
+        app.buttons["filter.Bin night"].tap()
+        XCTAssertTrue(app.buttons["tile.Bins out"].waitForExistence(timeout: 2))
+        XCTAssertFalse(app.buttons["tile.Front door locked"].exists)
+        app.buttons["filter.all"].tap()
+        XCTAssertTrue(app.buttons["tile.Front door locked"].waitForExistence(timeout: 2))
+    }
 }
 
 final class PhotoUITests: XCTestCase {

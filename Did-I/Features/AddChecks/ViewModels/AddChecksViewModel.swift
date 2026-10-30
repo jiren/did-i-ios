@@ -11,12 +11,15 @@ final class AddChecksViewModel {
 
     @ObservationIgnored private let store: any CheckStoring
     @ObservationIgnored private let changes: any ChangeNotifying
+    /// Where the checks go; Daily when nil.
+    @ObservationIgnored private let categoryID: UUID?
     @ObservationIgnored private var customs: [String] = []
     @ObservationIgnored private var existingNames: [String] = []
 
-    init(store: any CheckStoring, changes: any ChangeNotifying) {
+    init(store: any CheckStoring, changes: any ChangeNotifying, categoryID: UUID? = nil) {
         self.store = store
         self.changes = changes
+        self.categoryID = categoryID
     }
 
     func load() {
@@ -62,7 +65,7 @@ final class AddChecksViewModel {
         let names = chips.filter { picked.contains($0) }
         guard !names.isEmpty else { return false }
         do {
-            try store.addChecks(names.map { CheckDraft(name: $0) })
+            try store.addChecks(names.map { CheckDraft(name: $0) }, to: categoryID)
             changes.didChange()
             return true
         } catch {

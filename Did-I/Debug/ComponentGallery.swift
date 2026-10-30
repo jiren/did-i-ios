@@ -12,13 +12,11 @@ struct ComponentGallery: View {
     @State private var colour: TileSwatch = .sky
     @State private var weekday = 6
 
-    private let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
-
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 switch page {
-                case .tiles: tilesSection; controlsSection
+                case .tiles: calendarSection; controlsSection
                 case .controls: controlsSection
                 case .calendar: calendarSection
                 case .agenda: agendaSection
@@ -28,21 +26,6 @@ struct ComponentGallery: View {
             .padding(20)
         }
         .background(Color.ground)
-    }
-
-    @ViewBuilder
-    private var tilesSection: some View {
-                Text("Did I?").font(.didHero).foregroundStyle(Color.ink)
-                HStack {
-                    ProgressPill(text: "3 of 4 today")
-                    Text("1 left: Iron unplugged").font(.didEmphasis).foregroundStyle(Color.ink)
-                }
-                LazyVGrid(columns: columns, spacing: 12) {
-                    ForEach(Array(sampleTiles.enumerated()), id: \.offset) { _, content in
-                        CheckTile(content: content, onLog: {}, onPhoto: {})
-                    }
-                    AddTile {}
-                }
     }
 
     @ViewBuilder
@@ -159,23 +142,6 @@ struct ComponentGallery: View {
             }
         }
         .scrollIndicators(.hidden)
-    }
-
-    private var sampleTiles: [CheckTileContent] {
-        [
-            CheckTileContent(name: "Front door locked", kind: .door, swatch: .violet, isDone: true, hasPhoto: true,
-                             timeText: "8:42 AM", detailText: "2h 9m ago · photo", accessibilityLabel: "", photoButtonLabel: ""),
-            CheckTileContent(name: "Pill taken", kind: .pill, swatch: .sun, isDone: true, hasPhoto: false,
-                             timeText: "8:15 AM", detailText: "2h 27m ago", accessibilityLabel: "", photoButtonLabel: ""),
-            CheckTileContent(name: "Stove off", kind: .stove, swatch: .coral, isDone: true, hasPhoto: false,
-                             timeText: "8:30 AM", detailText: "2h 12m ago", accessibilityLabel: "", photoButtonLabel: ""),
-            CheckTileContent(name: "Iron unplugged", kind: .plug, swatch: .mint, isDone: false, hasPhoto: false,
-                             timeText: "Tap to log", detailText: "Not yet today", accessibilityLabel: "", photoButtonLabel: ""),
-            CheckTileContent(name: "Lights off", kind: .light, swatch: .sky, isDone: true, hasPhoto: false,
-                             timeText: "9:02 AM", detailText: "1h 40m ago", accessibilityLabel: "", photoButtonLabel: ""),
-            CheckTileContent(name: "Cat fed", kind: .other, swatch: .pink, isDone: true, hasPhoto: false,
-                             timeText: "7:50 AM", detailText: "2h 52m ago", accessibilityLabel: "", photoButtonLabel: ""),
-        ]
     }
 }
 

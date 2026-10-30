@@ -16,6 +16,8 @@ struct RootView: View {
     @State private var tab: MainTab = .today
     @State private var path: [Route] = []
     @State private var isAddingChecks = false
+    /// The category the Add sheet adds to; Daily when nil.
+    @State private var addChecksCategory: UUID?
     /// The check shown beside Today on regular width.
     @State private var selectedCheck: UUID?
     @State private var columns: NavigationSplitViewVisibility = .all
@@ -31,7 +33,9 @@ struct RootView: View {
     var body: some View {
         shell
             .sheet(isPresented: $isAddingChecks) {
-                AddChecksSheet(viewModel: AddChecksViewModel(store: environment.store, changes: environment.changes))
+                AddChecksSheet(
+                    viewModel: AddChecksViewModel(store: environment.store, changes: environment.changes, categoryID: addChecksCategory)
+                )
             }
             .fullScreenCover(item: $logged) { request in
                 LoggedView(
@@ -107,13 +111,12 @@ struct RootView: View {
                 ),
                 tab: $tab,
                 actions: TodayActions(
-                    addChecks: { isAddingChecks = true },
+                    addChecks: { category in
+                        addChecksCategory = category
+                        isAddingChecks = true
+                    },
                     openSettings: { isSplit ? (path = [.settings]) : path.append(.settings) },
-                    openCheck: { open($0, replacing: false) },
-                    seeAll: {
-                        historyFilter = nil
-                        tab = .history
-                    }
+                    openCheck: { open($0, replacing: false) }
                 )
             )
         case .history:
@@ -129,7 +132,10 @@ struct RootView: View {
                 ),
                 tab: $tab,
                 onOpenCheck: { open($0, replacing: false) },
-                onAddChecks: { isAddingChecks = true }
+                onAddChecks: {
+                    addChecksCategory = nil
+                    isAddingChecks = true
+                }
             )
             .id(historyFilter)
         }

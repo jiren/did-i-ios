@@ -1,9 +1,8 @@
 import SwiftUI
 
+/// The date line, Settings and the "Did I?" title.
 struct TodayHeader: View {
     let dateText: String
-    let summary: TodaySummary
-    let showsSummary: Bool
     let onSettings: () -> Void
 
     var body: some View {
@@ -12,6 +11,7 @@ struct TodayHeader: View {
                 Text(dateText)
                     .font(.didSubheadline)
                     .foregroundStyle(Color.muted)
+                    .accessibilityIdentifier("today.date")
                 Spacer()
                 RoundIconButton(systemName: "gearshape.fill", label: String(localized: "Settings"), action: onSettings)
                     .accessibilityIdentifier("today.settings")
@@ -20,18 +20,6 @@ struct TodayHeader: View {
                 .font(.didHero)
                 .foregroundStyle(Color.ink)
                 .accessibilityAddTraits(.isHeader)
-            if showsSummary {
-                FlowLayout(spacing: 10) {
-                    ProgressPill(text: summary.progressText)
-                    Text(summary.summaryText)
-                        .font(.didEmphasis)
-                        .foregroundStyle(Color.ink)
-                        .padding(.vertical, 7)
-                }
-                .padding(.top, 10)
-                .accessibilityElement(children: .combine)
-                .accessibilityIdentifier("today.summary")
-            }
         }
         .padding(.horizontal, 24)
         .padding(.top, 8)
