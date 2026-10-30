@@ -4,42 +4,6 @@
     "%@" : {
 
     },
-    "%@ — %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ — %2$@"
-          }
-        }
-      }
-    },
-    "%@ · %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ · %2$@"
-          }
-        }
-      }
-    },
-    "%@ · No reminder" : {
-
-    },
-    "%@ · photo" : {
-
-    },
-    "%@ · Reminder at %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ · Reminder at %2$@"
-          }
-        }
-      }
-    },
     "%@ at %@" : {
       "localizations" : {
         "en" : {
@@ -65,6 +29,42 @@
     },
     "%@ isn’t due today." : {
 
+    },
+    "%@ · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "%@ · No reminder" : {
+
+    },
+    "%@ · Reminder at %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · Reminder at %2$@"
+          }
+        }
+      }
+    },
+    "%@ · photo" : {
+
+    },
+    "%@ — %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ — %2$@"
+          }
+        }
+      }
     },
     "%@, %@" : {
       "localizations" : {
@@ -119,6 +119,9 @@
         }
       }
     },
+    "%@." : {
+
+    },
     "%@: logged at %@. Tap to log again." : {
       "localizations" : {
         "en" : {
@@ -132,34 +135,8 @@
     "%@: not logged today. Tap to log." : {
 
     },
-    "%@." : {
-
-    },
     "%lld AM" : {
 
-    },
-    "%lld checks · %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld check · %@"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld checks · %@"
-                }
-              }
-            }
-          }
-        }
-      }
     },
     "%lld checks planned" : {
       "extractionState" : "stale",
@@ -177,6 +154,29 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld checks planned"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld checks · %@" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld check · %@"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld checks · %@"
                 }
               }
             }
@@ -342,10 +342,10 @@
     "1 task planned" : {
 
     },
-    "7 days" : {
+    "30 days" : {
 
     },
-    "30 days" : {
+    "7 days" : {
 
     },
     "A category can repeat weekly, monthly or once — like bin night or a trip." : {
@@ -363,10 +363,10 @@
     "Action Button" : {
 
     },
-    "Action Button or Control Center" : {
+    "Action Button Press" : {
 
     },
-    "Action Button Press" : {
+    "Action Button or Control Center" : {
 
     },
     "Add" : {
@@ -397,6 +397,9 @@
     "Add 1 task to %@" : {
 
     },
+    "Add a Photo to a Log" : {
+
+    },
     "Add a check in Did I?" : {
 
     },
@@ -407,9 +410,6 @@
 
     },
     "Add a photo as proof" : {
-
-    },
-    "Add a Photo to a Log" : {
 
     },
     "Add a task to %@" : {
@@ -478,16 +478,22 @@
     "Ask me which" : {
 
     },
+    "Ate fruit and veg" : {
+
+    },
     "Back door locked" : {
+
+    },
+    "Back seat checked" : {
 
     },
     "Back to %@" : {
 
     },
-    "Back to templates" : {
+    "Back to Today" : {
 
     },
-    "Back to Today" : {
+    "Back to templates" : {
 
     },
     "Backpack" : {
@@ -506,6 +512,9 @@
 
     },
     "Bath" : {
+
+    },
+    "Bath tap off" : {
 
     },
     "Battery" : {
@@ -544,10 +553,16 @@
     "Bird" : {
 
     },
+    "Boiler serviced" : {
+
+    },
     "Book" : {
 
     },
     "Bus" : {
+
+    },
+    "CO alarm tested" : {
 
     },
     "Cake" : {
@@ -568,22 +583,40 @@
     "Cancel and go back" : {
 
     },
+    "Candles out" : {
+
+    },
     "Car" : {
 
     },
     "Car & getting around" : {
 
     },
+    "Car admin" : {
+
+    },
     "Car locked" : {
 
     },
+    "Car serviced" : {
+
+    },
     "Car side" : {
+
+    },
+    "Car tax paid" : {
 
     },
     "Card" : {
 
     },
     "Card bill paid" : {
+
+    },
+    "Caring for someone" : {
+
+    },
+    "Case closed" : {
 
     },
     "Cash" : {
@@ -619,7 +652,13 @@
     "Checked" : {
 
     },
+    "Checked in" : {
+
+    },
     "Checks with “Nudge me when I leave home” on remind you as you leave, if they aren’t logged yet. This needs location access set to Always; your location stays on this device." : {
+
+    },
+    "Chimney swept" : {
 
     },
     "Choose a Check" : {
@@ -637,13 +676,7 @@
     "Clothes" : {
 
     },
-    "CO alarm tested" : {
-
-    },
     "Coffee" : {
-
-    },
-    "Coffee machine off" : {
 
     },
     "Collapsed" : {
@@ -652,7 +685,13 @@
     "Colour" : {
 
     },
+    "Comb" : {
+
+    },
     "Computer" : {
+
+    },
+    "Contact lenses" : {
 
     },
     "Coral" : {
@@ -709,7 +748,13 @@
     "Create category" : {
 
     },
+    "Curling iron off" : {
+
+    },
     "Custom colour" : {
+
+    },
+    "DID I?" : {
 
     },
     "Daily" : {
@@ -734,9 +779,6 @@
 
     },
     "Delete" : {
-
-    },
-    "Delete “%@”?" : {
 
     },
     "Delete category" : {
@@ -779,10 +821,19 @@
     "Delete your data?" : {
 
     },
+    "Delete “%@”?" : {
+
+    },
     "Deleted tasks take their logs and photos with them." : {
 
     },
+    "Desk lamp off" : {
+
+    },
     "Details" : {
+
+    },
+    "Diabetes" : {
 
     },
     "Did I Do It?" : {
@@ -791,16 +842,13 @@
     "Did I?" : {
 
     },
-    "DID I?" : {
-
-    },
-    "Did I? · Log a check" : {
-
-    },
     "Did I? couldn’t open your checks" : {
 
     },
     "Did I? couldn’t open your checks." : {
+
+    },
+    "Did I? · Log a check" : {
 
     },
     "Dishwasher" : {
@@ -815,28 +863,31 @@
     "Dog" : {
 
     },
-    "Dog fed" : {
-
-    },
-    "Dog walked" : {
-
-    },
     "Done" : {
 
     },
     "Door" : {
 
     },
+    "Door locked behind me" : {
+
+    },
+    "Doors locked" : {
+
+    },
+    "Drank enough water" : {
+
+    },
     "Dryer" : {
+
+    },
+    "Dryer filter cleared" : {
 
     },
     "Dumbbell" : {
 
     },
-    "e.g. Cat fed" : {
-
-    },
-    "e.g. Travel, Gym, Leaving work" : {
+    "EV charger" : {
 
     },
     "Each category reminds you on the days it’s due, only if something in it isn’t logged. Set its time on the category’s page (the Categories button on Today)." : {
@@ -848,10 +899,10 @@
     "Edit check" : {
 
     },
-    "EV charger" : {
+    "Evening meds" : {
 
     },
-    "Evening pill" : {
+    "Evening meds taken" : {
 
     },
     "Every %@" : {
@@ -867,6 +918,12 @@
 
     },
     "Every other %@" : {
+
+    },
+    "Every weekday" : {
+
+    },
+    "Every weekend" : {
 
     },
     "Every year, %@" : {
@@ -887,7 +944,16 @@
     "Family" : {
 
     },
+    "Family & pets" : {
+
+    },
     "Fan" : {
+
+    },
+    "Fed in the evening" : {
+
+    },
+    "Fed in the morning" : {
 
     },
     "Feel it, so you don’t doubt it" : {
@@ -911,6 +977,9 @@
     "Flame" : {
 
     },
+    "Flossed" : {
+
+    },
     "Flower" : {
 
     },
@@ -920,7 +989,13 @@
     "Food & shopping" : {
 
     },
+    "Food caddy out" : {
+
+    },
     "Football" : {
+
+    },
+    "For these tasks, if they aren’t logged yet" : {
 
     },
     "Forever" : {
@@ -932,7 +1007,16 @@
     "Free" : {
 
     },
+    "Fresh water" : {
+
+    },
     "Fridge" : {
+
+    },
+    "Fridge emptied" : {
+
+    },
+    "Fridge shut" : {
 
     },
     "Front door locked" : {
@@ -956,6 +1040,12 @@
     "Garage shut" : {
 
     },
+    "Garden waste out" : {
+
+    },
+    "Garden watered" : {
+
+    },
     "Gift" : {
 
     },
@@ -965,10 +1055,16 @@
     "Give it a name." : {
 
     },
+    "Glass out" : {
+
+    },
     "Glasses" : {
 
     },
     "Globe" : {
+
+    },
+    "Glucose checked" : {
 
     },
     "Group your checks" : {
@@ -977,25 +1073,37 @@
     "Gym" : {
 
     },
+    "Gym bag packed" : {
+
+    },
+    "Habits" : {
+
+    },
+    "Hair & beauty" : {
+
+    },
     "Hair tool off" : {
+
+    },
+    "Hairdryer unplugged" : {
 
     },
     "Hammer" : {
 
     },
-    "Hanger" : {
+    "Handbrake on" : {
 
     },
-    "Headlights off" : {
+    "Hanger" : {
 
     },
     "Headphones" : {
 
     },
-    "Headphones charged" : {
+    "Health" : {
 
     },
-    "Health" : {
+    "Healthy day" : {
 
     },
     "Heart" : {
@@ -1022,6 +1130,9 @@
     "History" : {
 
     },
+    "Hob off" : {
+
+    },
     "Hold a tile to change it" : {
 
     },
@@ -1029,6 +1140,12 @@
 
     },
     "Home" : {
+
+    },
+    "Home & safety" : {
+
+    },
+    "Home Screen widget" : {
 
     },
     "Home is set to where you are now." : {
@@ -1040,7 +1157,10 @@
     "Home safety" : {
 
     },
-    "Home Screen widget" : {
+    "Hose off" : {
+
+    },
+    "ID" : {
 
     },
     "Icon" : {
@@ -1049,19 +1169,22 @@
     "Icon for “%@”" : {
 
     },
-    "ID" : {
-
-    },
-    "In %@ · moves here" : {
+    "In the Settings app, open Action Button, swipe to Controls, and choose Did I? › Log a check." : {
 
     },
     "In the app" : {
 
     },
-    "In the Settings app, open Action Button, swipe to Controls, and choose Did I? › Log a check." : {
+    "Indoor plants watered" : {
 
     },
     "Injection" : {
+
+    },
+    "Insulin taken" : {
+
+    },
+    "Insurance renewed" : {
 
     },
     "Iron unplugged" : {
@@ -1095,6 +1218,9 @@
         }
       }
     },
+    "Journaled" : {
+
+    },
     "Just now" : {
 
     },
@@ -1104,10 +1230,19 @@
     "Keep them" : {
 
     },
+    "Kettle off" : {
+
+    },
     "Key" : {
 
     },
     "Keys packed" : {
+
+    },
+    "Keys with me" : {
+
+    },
+    "Kitchen" : {
 
     },
     "Lamp" : {
@@ -1116,7 +1251,16 @@
     "Laptop" : {
 
     },
+    "Laptop locked" : {
+
+    },
+    "Laundry" : {
+
+    },
     "Leaf" : {
+
+    },
+    "Learning" : {
 
     },
     "Leaving home" : {
@@ -1125,7 +1269,16 @@
     "Leaving home? %@" : {
 
     },
+    "Leaving work" : {
+
+    },
+    "Lenses out" : {
+
+    },
     "Light" : {
+
+    },
+    "Lights dimmed" : {
 
     },
     "Lights off" : {
@@ -1140,19 +1293,22 @@
     "Lock Screen widget" : {
 
     },
+    "Locker locked" : {
+
+    },
     "Log %@ with a photo" : {
 
     },
-    "Log a check" : {
+    "Log ID" : {
 
     },
     "Log a Check" : {
 
     },
-    "Log from a Widget" : {
+    "Log a check" : {
 
     },
-    "Log ID" : {
+    "Log from a Widget" : {
 
     },
     "Log it" : {
@@ -1173,9 +1329,6 @@
     "Logged" : {
 
     },
-    "Logged · %@" : {
-
-    },
     "Logged %@ at %@." : {
       "localizations" : {
         "en" : {
@@ -1187,6 +1340,9 @@
       }
     },
     "Logged with Action Button" : {
+
+    },
+    "Logged · %@" : {
 
     },
     "Logging" : {
@@ -1207,6 +1363,9 @@
     "Luggage" : {
 
     },
+    "Lunch packed" : {
+
+    },
     "Lungs" : {
 
     },
@@ -1222,10 +1381,13 @@
     "Meals" : {
 
     },
-    "Medication" : {
+    "Meditated" : {
 
     },
     "Meditation" : {
+
+    },
+    "Meds given" : {
 
     },
     "Microwave" : {
@@ -1237,10 +1399,16 @@
     "Mind" : {
 
     },
+    "Mindful" : {
+
+    },
     "Mint" : {
 
     },
     "Money" : {
+
+    },
+    "Money & admin" : {
 
     },
     "Monthly" : {
@@ -1255,13 +1423,13 @@
     "More icons" : {
 
     },
-    "Morning" : {
-
-    },
     "Morning & night" : {
 
     },
-    "Morning pill" : {
+    "Morning meds" : {
+
+    },
+    "Morning meds taken" : {
 
     },
     "Motorbike" : {
@@ -1328,6 +1496,9 @@
     "Night" : {
 
     },
+    "No camera here" : {
+
+    },
     "No icons match “%@”." : {
 
     },
@@ -1391,6 +1562,9 @@
     "On" : {
 
     },
+    "On (pick one or more)" : {
+
+    },
     "On a date" : {
 
     },
@@ -1406,16 +1580,25 @@
     "Only if something’s not logged" : {
 
     },
+    "Open Settings" : {
+
+    },
     "Open a Check" : {
 
     },
     "Open camera" : {
 
     },
-    "Open Settings" : {
+    "Out & about" : {
+
+    },
+    "Out the door" : {
 
     },
     "Oven" : {
+
+    },
+    "Oven off" : {
 
     },
     "Paint" : {
@@ -1451,10 +1634,19 @@
     "Pets & plants" : {
 
     },
+    "Pharmacy" : {
+
+    },
     "Phone" : {
 
     },
+    "Phone bill paid" : {
+
+    },
     "Phone charging" : {
+
+    },
+    "Phone with me" : {
 
     },
     "Photo saved · %@" : {
@@ -1502,7 +1694,16 @@
     "Plug" : {
 
     },
+    "Practised a language" : {
+
+    },
+    "Practised an instrument" : {
+
+    },
     "Pram" : {
+
+    },
+    "Prescription refilled" : {
 
     },
     "Printer" : {
@@ -1523,7 +1724,13 @@
     "Rabbit" : {
 
     },
+    "Read 10 pages" : {
+
+    },
     "Records that you just did it, with the time." : {
+
+    },
+    "Recycling" : {
 
     },
     "Recycling out" : {
@@ -1539,9 +1746,6 @@
 
     },
     "Remove" : {
-
-    },
-    "Remove “%@”?" : {
 
     },
     "Remove %@" : {
@@ -1594,6 +1798,9 @@
     "Remove this check" : {
 
     },
+    "Remove “%@”?" : {
+
+    },
     "Rename" : {
 
     },
@@ -1627,10 +1834,19 @@
     "School" : {
 
     },
+    "School bag packed" : {
+
+    },
+    "School run" : {
+
+    },
     "Scissors" : {
 
     },
     "Scooter" : {
+
+    },
+    "Screens off by 10" : {
 
     },
     "Search icons" : {
@@ -1642,7 +1858,7 @@
     "See when you last did it, and log it with a tap." : {
 
     },
-    "Set · within 150 m" : {
+    "Self-care" : {
 
     },
     "Set to here" : {
@@ -1651,7 +1867,13 @@
     "Set up the button" : {
 
     },
+    "Set · within 150 m" : {
+
+    },
     "Settings" : {
+
+    },
+    "Shoes packed" : {
 
     },
     "Shopping" : {
@@ -1672,10 +1894,19 @@
     "Siri or Shortcuts" : {
 
     },
+    "Skincare done" : {
+
+    },
     "Sky" : {
 
     },
     "Sleep" : {
+
+    },
+    "Smoke alarm" : {
+
+    },
+    "Smoke alarm batteries changed" : {
 
     },
     "Smoke alarm tested" : {
@@ -1729,6 +1960,12 @@
     "Stove off" : {
 
     },
+    "Straighteners off" : {
+
+    },
+    "Stretched" : {
+
+    },
     "Strong haptic" : {
 
     },
@@ -1750,6 +1987,9 @@
     "System" : {
 
     },
+    "TV" : {
+
+    },
     "Tablet" : {
 
     },
@@ -1766,6 +2006,9 @@
 
     },
     "Tap to log" : {
+
+    },
+    "Taps off" : {
 
     },
     "Task" : {
@@ -1807,6 +2050,9 @@
     "This can’t be undone." : {
 
     },
+    "This device has no camera, so proof photos aren’t available. Logging still works." : {
+
+    },
     "This iPhone has no Action Button. The same choice applies to the Did I? control in Control Center." : {
 
     },
@@ -1835,13 +2081,16 @@
     "Toilet" : {
 
     },
+    "Tomorrow planned" : {
+
+    },
+    "Took a screen break" : {
+
+    },
     "Tools" : {
 
     },
     "Tortoise" : {
-
-    },
-    "Towel packed" : {
 
     },
     "Train" : {
@@ -1865,9 +2114,6 @@
     "Turn the nudge on from a check’s page." : {
 
     },
-    "TV" : {
-
-    },
     "Umbrella" : {
 
     },
@@ -1886,6 +2132,9 @@
     "Upcoming" : {
 
     },
+    "Utilities paid" : {
+
+    },
     "Vegetables" : {
 
     },
@@ -1902,7 +2151,19 @@
     "Violet" : {
 
     },
+    "Vitamins taken" : {
+
+    },
     "Walk" : {
+
+    },
+    "Walked 30 minutes" : {
+
+    },
+    "Wallet with me" : {
+
+    },
+    "Washer emptied" : {
 
     },
     "Washing machine" : {
@@ -1915,9 +2176,6 @@
 
     },
     "Water bottle" : {
-
-    },
-    "Water bowl filled" : {
 
     },
     "Water main off" : {
@@ -1936,6 +2194,9 @@
 
     },
     "Widgets show only the icon and time" : {
+
+    },
+    "Wind-down" : {
 
     },
     "Window" : {
@@ -1957,6 +2218,9 @@
 
     },
     "Yearly" : {
+
+    },
+    "Yearly home" : {
 
     },
     "Yes. %@ at %@, %@." : {
@@ -1982,6 +2246,12 @@
 
     },
     "Your checks, logs and photos stay on this device. Bricolage Grotesque and DM Sans are used under the SIL Open Font License." : {
+
+    },
+    "e.g. Cat fed" : {
+
+    },
+    "e.g. Travel, Gym, Leaving work" : {
 
     }
   },

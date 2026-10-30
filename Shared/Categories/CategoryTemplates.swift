@@ -226,6 +226,34 @@ nonisolated enum CategoryTemplates {
                 reminderMinutes: nil
             ),
         ]),
+        // Yes/no daily habits: done when logged that day, like any task (no counts, targets or streaks).
+        CategoryTemplateGroup(id: "habits", title: String(localized: "Habits"), templates: [
+            CategoryTemplate(
+                id: "healthyDay", name: String(localized: "Healthy day"), icon: symbol("figure.walk"), colour: .mint, repeats: .daily,
+                tasks: [String(localized: "Walked 30 minutes"), String(localized: "Ate fruit and veg"), String(localized: "Drank enough water")],
+                reminderMinutes: 19 * 60
+            ),
+            CategoryTemplate(
+                id: "mindful", name: String(localized: "Mindful"), icon: symbol("figure.mind.and.body"), colour: .violet, repeats: .daily,
+                tasks: [String(localized: "Meditated"), String(localized: "Journaled"), String(localized: "Took a screen break")],
+                reminderMinutes: 21 * 60
+            ),
+            CategoryTemplate(
+                id: "selfCare", name: String(localized: "Self-care"), icon: symbol("sparkles"), colour: .pink, repeats: .daily,
+                tasks: [String(localized: "Skincare done"), String(localized: "Flossed"), String(localized: "Stretched")],
+                reminderMinutes: 21 * 60 + 30
+            ),
+            CategoryTemplate(
+                id: "learning", name: String(localized: "Learning"), icon: symbol("book.fill"), colour: .sun, repeats: .daily,
+                tasks: [String(localized: "Read 10 pages"), String(localized: "Practised a language"), String(localized: "Practised an instrument")],
+                reminderMinutes: 20 * 60
+            ),
+            CategoryTemplate(
+                id: "windDown", name: String(localized: "Wind-down"), icon: symbol("moon.stars.fill"), colour: .sky, repeats: .daily,
+                tasks: [String(localized: "Screens off by 10"), String(localized: "Tomorrow planned"), String(localized: "Lights dimmed")],
+                reminderMinutes: 22 * 60
+            ),
+        ]),
     ]
 
     /// Every template, in the gallery's order.

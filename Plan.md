@@ -525,3 +525,12 @@ Branch `feature/phase-23-more-templates`. From the template research (2026-10-30
 - New category gets **Nudge me when I leave home** (for its tasks, if not logged yet); Leaving home and Out the door
   turn it on. Saving an edited category without touching it leaves each task's own setting alone.
 
+## Phase 24 — Habits ✅ Done 2026-10-30, merged into main (builds; tests not yet run)
+
+Branch `feature/phase-24-habits`. From the template research (2026-10-30): yes/no habits fit the app as it is (done
+when logged that day, the ring, "All clear", a reminder if not done). Counts ("8 glasses"), weekly targets and
+streaks would need new data and screens and move Did I? toward a habit tracker; they're left for a separate decision.
+
+- A **Habits** section ends the gallery: Healthy day (7 PM), Mindful (9 PM), Self-care (9:30 PM), Learning (8 PM)
+  and Wind-down (10 PM), each daily with three yes/no tasks and an evening reminder.
+

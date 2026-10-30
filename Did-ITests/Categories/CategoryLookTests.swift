@@ -94,9 +94,18 @@ struct CategoryTemplateTests {
         #expect(rule("recycling") == .everyTwoWeeks(weekday: 5, anchor: today))
     }
 
+    @Test func habitsAreDailyWithAnEveningReminder() throws {
+        let habits = try #require(CategoryTemplates.groups.first { $0.id == "habits" }).templates
+        #expect(habits.map(\.name) == ["Healthy day", "Mindful", "Self-care", "Learning", "Wind-down"])
+        for habit in habits {
+            #expect(habit.repeats == .daily, "\(habit.id)")
+            #expect((habit.reminderMinutes ?? 0) >= 19 * 60, "\(habit.id)")
+        }
+    }
+
     @Test func templatesAreGroupedAndTheLeavingOnesNudge() {
-        #expect(CategoryTemplates.groups.map(\.title) == ["Home & safety", "Out & about", "Health", "Family & pets", "Money & admin"])
-        #expect(CategoryTemplates.all.count >= 25)
+        #expect(CategoryTemplates.groups.map(\.title) == ["Home & safety", "Out & about", "Health", "Family & pets", "Money & admin", "Habits"])
+        #expect(CategoryTemplates.all.count >= 30)
         let nudging = CategoryTemplates.all.filter(\.nudgesOnLeavingHome).map(\.id)
         #expect(nudging == ["leavingHome", "outTheDoor"])
     }
