@@ -4,7 +4,8 @@ import Foundation
 /// Watches for leaving home and nudges about checks with "Nudge me when I leave home" on.
 /// The monitor is recreated under the same name at every launch, since iOS relaunches the app to deliver exits.
 final class LeaveHomeMonitor {
-    private static let monitorName = "com.elo.Did-I.home"
+    /// Letters and digits only: CLMonitor rejects names with dots or hyphens.
+    private static let monitorName = "DidIHome"
     private static let homeIdentifier = "home"
 
     private let store: SwiftDataStore
@@ -13,6 +14,8 @@ final class LeaveHomeMonitor {
     private let timeSource: any TimeSource
     private var task: Task<Void, Never>?
     private var session: CLServiceSession?
+    /// Only one `CLMonitor` may exist per name, so every caller shares this one.
+    private lazy var monitor = Task { await CLMonitor(Self.monitorName) }
 
     init(store: SwiftDataStore, settings: AppSettings, scheduler: ReminderScheduler, timeSource: any TimeSource) {
         self.store = store
@@ -40,8 +43,7 @@ final class LeaveHomeMonitor {
         task = nil
         session = nil
         Task {
-            let monitor = await CLMonitor(Self.monitorName)
-            await monitor.remove(Self.homeIdentifier)
+            await monitor.value.remove(Self.homeIdentifier)
         }
     }
 
@@ -52,7 +54,7 @@ final class LeaveHomeMonitor {
     }
 
     private func watch(_ home: HomeLocation) async {
-        let monitor = await CLMonitor(Self.monitorName)
+        let monitor = await monitor.value
         let condition = CLMonitor.CircularGeographicCondition(
             center: CLLocationCoordinate2D(latitude: home.latitude, longitude: home.longitude),
             radius: HomeLocation.radius
