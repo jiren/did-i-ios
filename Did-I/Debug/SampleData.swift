@@ -44,5 +44,52 @@ enum SampleData {
             _ = try? store.log(door.id, source: .lockScreenWidget, at: lastNight, photoFileName: nil)
         }
     }
+
+    /// The sample, plus about two years of logs for Stats, the same on every run: fewer missed tasks and re-logs as
+    /// time goes on, and nothing missed in the last 12 days, as the design's streak. Launch with `-SeedStats`.
+    static func seedStats(into store: SwiftDataStore, now: Date) {
+        seed(into: store, now: now)
+        let calendar = Calendar.current
+        guard let categories = try? store.categories(), let checks = try? store.checks() else { return }
+        let rules = Dictionary(categories.map { ($0.id, $0.rule) }, uniquingKeysWith: { first, _ in first })
+        let today = CalendarDay(now, calendar: calendar)
+        let days = 730
+        var logs: [LogRecord] = []
+        for offset in 1...days {
+            let day = today.adding(days: -offset, calendar: calendar)
+            let age = Double(offset) / Double(days)
+            for (index, check) in checks.enumerated() where (rules[check.categoryID] ?? .daily).isDue(on: day, calendar: calendar) {
+                if offset > 12, roll(offset, index, 1) < 0.04 + age * 0.3 { continue }
+                let hour = roll(offset, index, 2) < 0.2 ? 22 : 8
+                let minute = Int(roll(offset, index, 3) * 59)
+                guard let date = calendar.date(bySettingHour: hour, minute: minute, second: 0, of: day.noon(in: calendar)) else { continue }
+                let photo = roll(offset, index, 4) < 0.1 ? "seed-\(offset)-\(index).heic" : nil
+                logs.append(LogRecord(id: UUID(), checkID: check.id, date: date, source: source(roll(offset, index, 5)), photoFileName: photo))
+                if roll(offset, index, 6) < (index == 2 ? 0.25 : 0.05) + age * 0.1 {
+                    let again = date.addingTimeInterval(12 * 60)
+                    logs.append(LogRecord(id: UUID(), checkID: check.id, date: again, source: source(roll(offset, index, 7)), photoFileName: nil))
+                }
+            }
+        }
+        try? store.insertLogsForDebugging(logs)
+    }
+
+    private static func source(_ roll: Double) -> LogSource {
+        switch roll {
+        case ..<0.50: .actionButton
+        case ..<0.80: .lockScreenWidget
+        case ..<0.95: .app
+        case ..<0.98: .homeScreenWidget
+        default: .siri
+        }
+    }
+
+    /// 0 to 1, fixed for its inputs.
+    private static func roll(_ day: Int, _ check: Int, _ salt: Int) -> Double {
+        var value = UInt64(day &* 73_856_093) ^ UInt64(check &* 19_349_663) ^ UInt64(salt &* 83_492_791)
+        value = (value ^ (value >> 13)) &* 0x5BD1_E995
+        value ^= value >> 15
+        return Double(value % 10_000) / 10_000
+    }
 }
 #endif

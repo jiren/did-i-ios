@@ -15,7 +15,9 @@ struct AppLaunchConfiguration {
     var showsGallery: Bool { galleryPage != nil }
     /// Launched with `-SeedSample` to add the design's sample checks to an empty store (Debug builds only).
     let seedsSampleData: Bool
-    /// `-Open <screen>` opens a screen at launch, for screenshots (Debug builds only): addChecks, history,
+    /// Launched with `-SeedStats` to add the sample checks and about two years of logs (Debug builds only).
+    let seedsStatsData: Bool
+    /// `-Open <screen>` opens a screen at launch, for screenshots (Debug builds only): addChecks, history, stats,
     /// settings, actionButton, detail (the first check), logged.
     let debugOpen: String?
     /// `-Gallery` starts at the tiles; `-GalleryControls`, `-GalleryCalendar`, `-GalleryAgenda` and
@@ -36,6 +38,7 @@ struct AppLaunchConfiguration {
             .first { arguments.contains("-Gallery" + $0.rawValue.capitalized) }
             ?? (arguments.contains("-Gallery") ? .tiles : nil)
         seedsSampleData = arguments.contains("-SeedSample")
+        seedsStatsData = arguments.contains("-SeedStats")
         debugOpen = arguments.firstIndex(of: "-Open").flatMap { arguments.indices.contains($0 + 1) ? arguments[$0 + 1] : nil }
         forcedAppearance = arguments.firstIndex(of: "-Appearance")
             .flatMap { arguments.indices.contains($0 + 1) ? Appearance(rawValue: arguments[$0 + 1]) : nil }
@@ -43,6 +46,7 @@ struct AppLaunchConfiguration {
         isUITesting = false
         galleryPage = nil
         seedsSampleData = false
+        seedsStatsData = false
         debugOpen = nil
         forcedAppearance = nil
         #endif

@@ -219,6 +219,18 @@ final class SwiftDataStore: CheckStoring, CategoryStoring, LogStoring {
         return .added(Self.record(entry))
     }
 
+    #if DEBUG
+    /// Adds many past logs in one save, for `-SeedStats`; going through `log` would save once per log.
+    func insertLogsForDebugging(_ logs: [LogRecord]) throws {
+        let checks = Dictionary(uniqueKeysWithValues: try allCheckModels().map { ($0.id, $0) })
+        for log in logs {
+            guard let check = checks[log.checkID] else { continue }
+            context.insert(LogEntry(date: log.date, source: log.source, photoFileName: log.photoFileName, check: check))
+        }
+        try context.save()
+    }
+    #endif
+
     func undo(_ outcome: LogOutcome) throws {
         switch outcome {
         case .added(let record):
@@ -438,7 +450,8 @@ final class SwiftDataStore: CheckStoring, CategoryStoring, LogStoring {
             kind: CheckKind(rawValue: model.kindRaw) ?? .other,
             order: model.order,
             categoryID: model.category?.id ?? CategoryDefaults.dailyID,
-            nudgesOnLeavingHome: model.nudgesOnLeavingHome
+            nudgesOnLeavingHome: model.nudgesOnLeavingHome,
+            createdAt: model.createdAt
         )
     }
 

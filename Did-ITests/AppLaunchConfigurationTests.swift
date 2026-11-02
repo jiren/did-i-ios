@@ -23,6 +23,12 @@ struct AppLaunchConfigurationTests {
         #expect(configuration.usesInMemoryStore)
     }
 
+    @Test func seedStatsIsItsOwnArgument() {
+        let configuration = AppLaunchConfiguration(arguments: ["Did-I", "-SeedStats"], environment: [:])
+        #expect(configuration.seedsStatsData)
+        #expect(!configuration.seedsSampleData)
+    }
+
     @Test func testDefaultsStartEmpty() {
         let configuration = AppLaunchConfiguration(arguments: ["-UITests"], environment: [:])
         configuration.makeDefaults().set(true, forKey: "probe")

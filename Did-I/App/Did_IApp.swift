@@ -64,6 +64,9 @@ struct Did_IApp: App {
             if configuration.seedsSampleData {
                 SampleData.seed(into: environment.store, now: environment.timeSource.now)
             }
+            if configuration.seedsStatsData {
+                SampleData.seedStats(into: environment.store, now: environment.timeSource.now)
+            }
             #endif
             return .success(environment)
         case .failure(let error):
