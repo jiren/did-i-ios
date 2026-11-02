@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Did I? — Stats</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=DM+Sans:opsz,wght@9..40,400..700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#4B22E0}a:hover{color:#2E0FA8}
+button{font:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFF6EA; color: #17142A; font-family: 'DM Sans', system-ui, sans-serif; position: relative; overflow: hidden">
+
+<div style="position: absolute; inset: 0; overflow-y: auto; padding: 54px 20px 116px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px">
+
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; font-weight: 800; letter-spacing: -0.5px">Stats</h1>
+<div role="group" aria-label="Time range" style="display: flex; background: rgba(23,20,42,0.06); border-radius: 22px">
+<sc-for list="{{ranges}}" as="r" hint-placeholder-count="3">
+<button onClick="{{r.pick}}" aria-pressed="{{r.pressed}}" style="{{r.style}}">{{r.label}}</button>
+</sc-for>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<div style="background: #6B3BFF; color: #FFFFFF; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 2px; min-height: 124px; box-sizing: border-box">
+<span style="font-size: 12px; font-weight: 700; letter-spacing: 0.5px; color: #E3DAFF">STREAK</span>
+<span style="margin-top: auto; font-family: 'Bricolage Grotesque', sans-serif; font-size: 40px; font-weight: 800; line-height: 1; letter-spacing: -1px">{{d.streak}}</span>
+<span style="font-size: 13px; font-weight: 600; color: #E3DAFF">days with every task logged</span>
+</div>
+<div style="background: #FFFFFF; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 2px; min-height: 124px; box-sizing: border-box">
+<span style="font-size: 12px; font-weight: 700; letter-spacing: 0.5px; color: #5C5670">SECOND-GUESSES</span>
+<span style="margin-top: auto; display: flex; align-items: center; gap: 4px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 40px; font-weight: 800; line-height: 1; letter-spacing: -1px">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0F9C78" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"></path></svg>
+{{d.recheckDelta}}
+</span>
+<span style="font-size: 13px; font-weight: 600; color: #5C5670">re-logs within 30 min, vs {{d.prevLabel}}</span>
+</div>
+</div>
+
+<section aria-label="Tasks logged" style="background: #FFFFFF; border-radius: 22px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px">
+<div style="display: flex; flex-direction: column">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; font-weight: 750">Tasks logged</h2>
+<span style="font-size: 13px; color: #5C5670">Share of due tasks you logged</span>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-end">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 26px; font-weight: 800; line-height: 1">{{d.avg}}%</span>
+<span style="font-size: 12px; font-weight: 600; color: #5C5670">average</span>
+</div>
+</div>
+<div style="height: 18px; font-size: 13px; font-weight: 700; color: #17142A">{{tip}}</div>
+<div role="img" aria-label="{{chartAria}}" style="position: relative; height: 120px; display: flex; align-items: flex-end; gap: 2px; border-bottom: 1px solid #D9D4EA">
+<div aria-hidden="true" style="position: absolute; left: 0; right: 0; top: 0; border-top: 1px dashed #E6E1EF"></div>
+<div aria-hidden="true" style="position: absolute; left: 0; right: 0; top: 60px; border-top: 1px dashed #E6E1EF"></div>
+<sc-for list="{{bars}}" as="b" hint-placeholder-count="7">
+<div onMouseEnter="{{b.hover}}" onClick="{{b.hover}}" style="flex: 1 1 0; height: 100%; display: flex; align-items: flex-end; justify-content: center; position: relative">
+<div style="{{b.style}}"></div>
+</div>
+</sc-for>
+</div>
+<div aria-hidden="true" style="display: flex; gap: 2px; margin-top: -4px">
+<sc-for list="{{bars}}" as="b" hint-placeholder-count="7">
+<span style="{{b.labelStyle}}">{{b.label}}</span>
+</sc-for>
+</div>
+</section>
+
+<section aria-label="By category" style="background: #FFFFFF; border-radius: 22px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; font-weight: 750">By category</h2>
+<sc-for list="{{cats}}" as="c" hint-placeholder-count="4">
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="{{c.iconStyle}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.icon}}"></path></svg></span>
+<span style="width: 96px; flex-shrink: 0; font-size: 14px; font-weight: 700">{{c.name}}</span>
+<span aria-hidden="true" style="flex-grow: 1; height: 8px; border-radius: 4px; background: #EDE6D8; display: flex; overflow: hidden"><span style="{{c.barStyle}}"></span></span>
+<span style="width: 40px; text-align: right; font-size: 14px; font-weight: 700">{{c.pct}}%</span>
+</div>
+</sc-for>
+</section>
+
+<section aria-label="How you log" style="background: #FFFFFF; border-radius: 22px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; font-weight: 750">How you log</h2>
+<div aria-hidden="true" style="display: flex; gap: 2px; height: 14px">
+<sc-for list="{{methods}}" as="m" hint-placeholder-count="3"><span style="{{m.segStyle}}"></span></sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{methods}}" as="m" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 8px; font-size: 14px">
+<span style="{{m.keyStyle}}"></span>
+<span style="flex-grow: 1; font-weight: 600">{{m.label}}</span>
+<span style="font-weight: 700">{{m.pct}}%</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<div style="background: #FFFFFF; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 4px">
+<span style="width: 32px; height: 32px; border-radius: 11px; background: #FF7A59; color: #17142A; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 .3 2 1.2 3 2.5 3.5C11.5 9 11 6 12 3z"></path></svg></span>
+<span style="font-size: 12px; font-weight: 700; letter-spacing: 0.5px; color: #5C5670; margin-top: 6px">MOST RE-CHECKED</span>
+<span style="font-size: 16px; font-weight: 750">Stove off</span>
+<span style="font-size: 13px; color: #5C5670">{{d.stove}} re-logs · a photo can settle it</span>
+</div>
+<div style="background: #FFFFFF; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 4px">
+<span style="width: 32px; height: 32px; border-radius: 11px; background: #FFD23F; color: #17142A; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></span>
+<span style="font-size: 12px; font-weight: 700; letter-spacing: 0.5px; color: #5C5670; margin-top: 6px">PHOTO PROOF</span>
+<span style="font-size: 16px; font-weight: 750">{{d.photos}} photos</span>
+<span style="font-size: 13px; color: #5C5670">Busiest hour: {{d.peak}}</span>
+</div>
+</div>
+</div>
+
+<nav aria-label="Main" style="position: absolute; left: 20px; right: 20px; bottom: 28px; height: 68px; background: #17142A; border-radius: 34px; display: flex; align-items: center; justify-content: space-around; padding: 0 10px">
+<a href="Main.dc.html" style="color: #D9D4EA; height: 48px; padding: 0 14px; font-size: 15px; font-weight: 600; display: flex; align-items: center; text-decoration: none">Today</a>
+<a href="Stats.dc.html" aria-current="page" style="background: #FFD23F; color: #17142A; height: 48px; padding: 0 18px; border-radius: 24px; font-size: 15px; font-weight: 700; display: flex; align-items: center; text-decoration: none">Stats</a>
+<a href="Detail.dc.html" style="color: #D9D4EA; height: 48px; padding: 0 14px; font-size: 15px; font-weight: 600; display: flex; align-items: center; text-decoration: none">History</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+var DATA = {
+  week: {
+    streak: 12, recheckDelta: '38%', prevLabel: 'last week', avg: 91, stove: 4, photos: 6, peak: '8–9 AM',
+    bars: [['Tue', 'Tue, Oct 27', 100], ['Wed', 'Wed, Oct 28', 86], ['Thu', 'Thu, Oct 29', 100], ['Fri', 'Fri, Oct 30', 75], ['Sat', 'Sat, Oct 31', 100], ['Sun', 'Sun, Nov 1', 83], ['Mon', 'Today', 92]],
+    cats: [96, 100, 83, 100], methods: [54, 31, 15]
+  },
+  month: {
+    streak: 12, recheckDelta: '24%', prevLabel: 'last month', avg: 88, stove: 9, photos: 18, peak: '8–9 AM',
+    bars: [['W1', 'Oct 5–11', 81], ['W2', 'Oct 12–18', 86], ['W3', 'Oct 19–25', 90], ['W4', 'Oct 26–Nov 1', 93], ['Now', 'This week', 92]],
+    cats: [92, 100, 88, 75], methods: [49, 34, 17]
+  },
+  year: {
+    streak: 21, recheckDelta: '52%', prevLabel: 'last year', avg: 84, stove: 61, photos: 142, peak: '10–11 PM',
+    bars: [['D', 'Dec 2025', 70], ['J', 'Jan', 72], ['F', 'Feb', 76], ['M', 'Mar', 78], ['A', 'Apr', 81], ['M', 'May', 80], ['J', 'Jun', 83], ['J', 'Jul', 85], ['A', 'Aug', 86], ['S', 'Sep', 89], ['O', 'Oct', 90], ['N', 'Nov so far', 92]],
+    cats: [90, 97, 86, 80], methods: [44, 36, 20]
+  }
+};
+var CATS = [
+  ['Daily', '#6B3BFF', '#FFFFFF', 'M12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8zM12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4'],
+  ['Bin night', '#2FD4A7', '#17142A', 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3'],
+  ['Home safety', '#FF7A59', '#17142A', 'M3 11l9-7 9 7M5 10v10h14V10M10 20v-6h4v6'],
+  ['Travel', '#5BC0FF', '#17142A', 'M4 8h16v11H4zM9 8V5h6v3M4 13h16']
+];
+var METHODS = [['Action Button', '#6B3BFF'], ['Lock Screen widget', '#E0583A'], ['In the app', '#0F9C78']];
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { range: 'week', active: -1 };
+  }
+  renderVals() {
+    var self = this, st = this.state;
+    var d = DATA[st.range];
+    var n = d.bars.length;
+    var active = st.active >= 0 && st.active < n ? st.active : n - 1;
+    var bars = d.bars.map(function (b, i) {
+      var on = i === active;
+      return {
+        label: b[0],
+        style: 'width: 100%; max-width: 28px; height: ' + b[2] + '%; border-radius: 4px 4px 0 0; background: ' + (on ? '#17142A' : '#6B3BFF') + ';',
+        labelStyle: 'flex: 1 1 0; text-align: center; font-size: 11px; font-weight: 700; color: ' + (on ? '#17142A' : '#5C5670') + ';',
+        hover: function () { if (self.state.active !== i) self.setState({ active: i }); }
+      };
+    });
+    var a = d.bars[active];
+    return {
+      d: d,
+      tip: a[1] + ' · ' + a[2] + '% logged',
+      chartAria: 'Tasks logged: ' + d.bars.map(function (b) { return b[1] + ' ' + b[2] + '%'; }).join(', '),
+      bars: bars,
+      ranges: [['week', 'Week'], ['month', 'Month'], ['year', 'Year']].map(function (r) {
+        var on = r[0] === st.range;
+        return {
+          label: r[1], pressed: on ? 'true' : 'false',
+          style: 'height: 44px; padding: 0 12px; border-radius: 22px; border: none; font-size: 14px; font-weight: 700; ' + (on ? 'background: #17142A; color: #FFFFFF;' : 'background: transparent; color: #17142A;'),
+          pick: function () { self.setState({ range: r[0], active: -1 }); }
+        };
+      }),
+      cats: CATS.map(function (c, i) {
+        return {
+          name: c[0], icon: c[3], pct: d.cats[i],
+          iconStyle: 'width: 28px; height: 28px; border-radius: 9px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: ' + c[1] + '; color: ' + c[2] + ';',
+          barStyle: 'display: block; height: 100%; border-radius: 4px; width: ' + d.cats[i] + '%; background: ' + c[1] + ';'
+        };
+      }),
+      methods: METHODS.map(function (m, i) {
+        return {
+          label: m[0], pct: d.methods[i],
+          segStyle: 'height: 100%; flex: ' + d.methods[i] + ' 1 0; background: ' + m[1] + '; border-radius: ' + (i === 0 ? '4px 0 0 4px' : (i === METHODS.length - 1 ? '0 4px 4px 0' : '0')) + ';',
+          keyStyle: 'width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; background: ' + m[1] + ';'
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>
