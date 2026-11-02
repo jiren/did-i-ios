@@ -8,6 +8,8 @@ nonisolated struct CheckRecord: Identifiable, Hashable, Sendable {
     var order: Int
     var categoryID: UUID
     var nudgesOnLeavingHome: Bool
+    /// When it was added, so Stats doesn't count it as due on earlier days.
+    var createdAt: Date = .distantPast
 }
 
 /// A category as the rest of the app sees it.
