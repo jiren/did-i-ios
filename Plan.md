@@ -548,7 +548,7 @@ The user, 2026-10-30: a done task should be easy to un-complete.
 - `-SeedSample`'s second front-door log is last night at 10:58 PM, as in `Detail.dc.html`, rather than 12 hours
   ago (which was still today in the evening).
 
-## Phase 25 — Stats
+## Phase 25 — Stats ✅ Done 2026-11-02, merged into main (checked on the simulator: all ranges, both themes, an accessibility size, the iPad split; unit and UI tests pass; dark colours await the user's sign-off)
 
 Branch `feature/phase-25-stats`. 2026-11-02, the user: build the task stats screen from the canvas, which gained
 `Stats.dc.html` and a Stats tab in `Main.dc.html` (both copied into `design/`). The artboard is mock data, so these

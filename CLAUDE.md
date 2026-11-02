@@ -9,8 +9,8 @@ door? Did I take my pill?"). A *check* is one recurring thing; *logging* it reco
 photo as proof), so the answer is one glance away: in the app, on a Lock Screen widget, or after one press of the
 Action Button. Tagline: "tap once, stop wondering".
 
-Phases 0–24 are built and merged; phases 13–18 added categories and the calendar from the 2026-10-30 canvas
-update, and phase 25 adds Stats from the canvas's newer artboard. See `Plan.md` for which are done. `Plan.md` (written 2026-10-30) holds the resolved decisions, the open questions and the
+Phases 0–25 are built and merged; phases 13–18 added categories and the calendar from the 2026-10-30 canvas
+update, and phase 25 added Stats from the canvas's newer artboard. See `Plan.md` for which are done. `Plan.md` (written 2026-10-30) holds the resolved decisions, the open questions and the
 phases 0–12, built in order; update it as phases finish. Ask about scope beyond it and the design (see **Design**)
 rather than inventing it.
 
