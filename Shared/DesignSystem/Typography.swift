@@ -63,6 +63,13 @@ extension Font {
     /// Uppercase section labels, 13.
     static let didLabel = Typography.text(13, .bold, relativeTo: .caption)
 
+    /// A big number on a Stats card, 40.
+    static let didStatValue = Typography.display(40, relativeTo: .largeTitle)
+    /// A tab's title ("Stats"), 30.
+    static let didTabTitle = Typography.display(30, relativeTo: .largeTitle)
+    /// A Stats card's title ("By category"), 18.
+    static let didCardTitle = Typography.display(18, .bold, relativeTo: .headline)
+
     /// The New category preview's name, 26.
     static let didPreviewTitle = Typography.display(26, relativeTo: .title)
     /// Today's title ("Today", "Sat"), 26.

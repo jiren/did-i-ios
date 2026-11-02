@@ -1,10 +1,10 @@
 import SwiftUI
 
 enum MainTab: Hashable {
-    case today, history
+    case today, stats, history
 }
 
-/// Today's floating bar: Today, History and the round Add button, on Liquid Glass tinted ink.
+/// The floating bar: Today, Stats, History and the round Add button, on Liquid Glass tinted ink.
 struct FloatingTabBar: View {
     @Binding var selection: MainTab
     /// Today's due tasks done, 0 to 1, for the ring on the Today tab; nil hides the ring.
@@ -18,6 +18,7 @@ struct FloatingTabBar: View {
     var body: some View {
         HStack(spacing: 4) {
             item(.today, title: String(localized: "Today"))
+            item(.stats, title: String(localized: "Stats"))
             item(.history, title: String(localized: "History"))
             Spacer(minLength: 0)
             Button(action: onAdd) {
@@ -52,8 +53,8 @@ struct FloatingTabBar: View {
                     .minimumScaleFactor(0.6)
             }
             .foregroundStyle(isSelected ? Color.onTile : Color.onChromeMuted)
-            .padding(.leading, tab == .today && todayProgress != nil ? 12 : 18)
-            .padding(.trailing, 18)
+            .padding(.leading, isSelected && !(tab == .today && todayProgress != nil) ? 18 : 12)
+            .padding(.trailing, isSelected ? 18 : 12)
             .frame(minHeight: 48)
             .background(isSelected ? Color.tileSun : Color.clear, in: .capsule)
             .contentShape(.capsule)
@@ -61,6 +62,14 @@ struct FloatingTabBar: View {
         .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
         .accessibilityLabel(tab == .today ? todayAccessibilityLabel ?? title : title)
-        .accessibilityIdentifier(tab == .today ? "tabbar.today" : "tabbar.history")
+        .accessibilityIdentifier(identifier(for: tab))
+    }
+
+    private func identifier(for tab: MainTab) -> String {
+        switch tab {
+        case .today: "tabbar.today"
+        case .stats: "tabbar.stats"
+        case .history: "tabbar.history"
+        }
     }
 }

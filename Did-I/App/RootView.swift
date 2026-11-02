@@ -28,8 +28,8 @@ enum CategoryEditorRequest: Identifiable, Hashable {
     }
 }
 
-/// The app's shell. On compact width, Today or History under one navigation stack; on regular width (iPad),
-/// Today or History beside the chosen check's page.
+/// The app's shell. On compact width, Today, Stats or History under one navigation stack; on regular width (iPad),
+/// the same tabs beside the chosen check's page.
 struct RootView: View {
     let environment: AppEnvironment
 
@@ -168,6 +168,17 @@ struct RootView: View {
                     editCategory: { categoryEditor = .edit($0) }
                 )
             )
+        case .stats:
+            StatsView(
+                viewModel: StatsViewModel(
+                    checkStore: environment.store,
+                    logStore: environment.store,
+                    days: environment.settings,
+                    timeSource: environment.timeSource
+                ),
+                tab: $tab,
+                onAddChecks: { addChecks = AddChecksRequest(categoryID: nil) }
+            )
         case .history:
             HistoryView(
                 viewModel: HistoryViewModel(
@@ -276,6 +287,7 @@ struct RootView: View {
         switch environment.configuration.debugOpen {
         case "addChecks": addChecks = AddChecksRequest(categoryID: nil)
         case "history": tab = .history
+        case "stats": tab = .stats
         case "settings": path = [.settings]
         case "actionButton": path = [.settings, .actionButton]
         case "reminders": path = [.settings, .reminders]

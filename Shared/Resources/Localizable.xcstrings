@@ -4,42 +4,6 @@
     "%@" : {
 
     },
-    "%@ — %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ — %2$@"
-          }
-        }
-      }
-    },
-    "%@ · %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ · %2$@"
-          }
-        }
-      }
-    },
-    "%@ · No reminder" : {
-
-    },
-    "%@ · photo" : {
-
-    },
-    "%@ · Reminder at %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ · Reminder at %2$@"
-          }
-        }
-      }
-    },
     "%@ at %@" : {
       "localizations" : {
         "en" : {
@@ -65,6 +29,45 @@
     },
     "%@ isn’t due today." : {
 
+    },
+    "%@ so far" : {
+
+    },
+    "%@ · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "%@ · No reminder" : {
+
+    },
+    "%@ · Reminder at %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · Reminder at %2$@"
+          }
+        }
+      }
+    },
+    "%@ · photo" : {
+
+    },
+    "%@ — %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ — %2$@"
+          }
+        }
+      }
     },
     "%@, %@" : {
       "localizations" : {
@@ -119,6 +122,9 @@
         }
       }
     },
+    "%@." : {
+
+    },
     "%@: logged at %@. Tap to log again." : {
       "localizations" : {
         "en" : {
@@ -132,34 +138,18 @@
     "%@: not logged today. Tap to log." : {
 
     },
-    "%@." : {
-
-    },
-    "%lld AM" : {
-
-    },
-    "%lld checks · %@" : {
-      "extractionState" : "stale",
+    "%lld %@" : {
       "localizations" : {
         "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld check · %@"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld checks · %@"
-                }
-              }
-            }
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld %2$@"
           }
         }
       }
+    },
+    "%lld AM" : {
+
     },
     "%lld checks planned" : {
       "extractionState" : "stale",
@@ -177,6 +167,29 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld checks planned"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld checks · %@" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld check · %@"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld checks · %@"
                 }
               }
             }
@@ -270,6 +283,12 @@
         }
       }
     },
+    "%lld photos kept" : {
+
+    },
+    "%lld re-logs · a photo can settle it" : {
+
+    },
     "%lld tasks" : {
       "localizations" : {
         "en" : {
@@ -314,6 +333,12 @@
         }
       }
     },
+    "%lld%%" : {
+
+    },
+    "%lld%% logged" : {
+
+    },
     "%lldd ago" : {
 
     },
@@ -336,16 +361,22 @@
     "1 log" : {
 
     },
+    "1 photo kept" : {
+
+    },
+    "1 re-log · a photo can settle it" : {
+
+    },
     "1 task" : {
 
     },
     "1 task planned" : {
 
     },
-    "7 days" : {
+    "30 days" : {
 
     },
-    "30 days" : {
+    "7 days" : {
 
     },
     "A category can repeat weekly, monthly or once — like bin night or a trip." : {
@@ -363,10 +394,10 @@
     "Action Button" : {
 
     },
-    "Action Button or Control Center" : {
+    "Action Button Press" : {
 
     },
-    "Action Button Press" : {
+    "Action Button or Control Center" : {
 
     },
     "Add" : {
@@ -397,6 +428,9 @@
     "Add 1 task to %@" : {
 
     },
+    "Add a Photo to a Log" : {
+
+    },
     "Add a check in Did I?" : {
 
     },
@@ -407,9 +441,6 @@
 
     },
     "Add a photo as proof" : {
-
-    },
-    "Add a Photo to a Log" : {
 
     },
     "Add a task to %@" : {
@@ -481,6 +512,9 @@
     "Ate fruit and veg" : {
 
     },
+    "Average" : {
+
+    },
     "Back door locked" : {
 
     },
@@ -490,10 +524,10 @@
     "Back to %@" : {
 
     },
-    "Back to templates" : {
+    "Back to Today" : {
 
     },
-    "Back to Today" : {
+    "Back to templates" : {
 
     },
     "Backpack" : {
@@ -503,6 +537,9 @@
 
     },
     "Bank" : {
+
+    },
+    "Baseline" : {
 
     },
     "Basket" : {
@@ -560,6 +597,15 @@
 
     },
     "Bus" : {
+
+    },
+    "Busiest hour: %@" : {
+
+    },
+    "By category" : {
+
+    },
+    "CO alarm tested" : {
 
     },
     "Cake" : {
@@ -673,9 +719,6 @@
     "Clothes" : {
 
     },
-    "CO alarm tested" : {
-
-    },
     "Coffee" : {
 
     },
@@ -733,6 +776,9 @@
     "Couldn’t read your history." : {
 
     },
+    "Couldn’t read your stats." : {
+
+    },
     "Couldn’t remove this check." : {
 
     },
@@ -757,6 +803,9 @@
     "Custom colour" : {
 
     },
+    "DID I?" : {
+
+    },
     "Daily" : {
 
     },
@@ -779,9 +828,6 @@
 
     },
     "Delete" : {
-
-    },
-    "Delete “%@”?" : {
 
     },
     "Delete category" : {
@@ -824,6 +870,9 @@
     "Delete your data?" : {
 
     },
+    "Delete “%@”?" : {
+
+    },
     "Deleted tasks take their logs and photos with them." : {
 
     },
@@ -842,16 +891,13 @@
     "Did I?" : {
 
     },
-    "DID I?" : {
-
-    },
-    "Did I? · Log a check" : {
-
-    },
     "Did I? couldn’t open your checks" : {
 
     },
     "Did I? couldn’t open your checks." : {
+
+    },
+    "Did I? · Log a check" : {
 
     },
     "Dishwasher" : {
@@ -890,10 +936,7 @@
     "Dumbbell" : {
 
     },
-    "e.g. Cat fed" : {
-
-    },
-    "e.g. Travel, Gym, Leaving work" : {
+    "EV charger" : {
 
     },
     "Each category reminds you on the days it’s due, only if something in it isn’t logged. Set its time on the category’s page (the Categories button on Today)." : {
@@ -903,9 +946,6 @@
 
     },
     "Edit check" : {
-
-    },
-    "EV charger" : {
 
     },
     "Evening meds" : {
@@ -1079,6 +1119,9 @@
     "Group your checks" : {
 
     },
+    "Guide" : {
+
+    },
     "Gym" : {
 
     },
@@ -1154,6 +1197,9 @@
     "Home & safety" : {
 
     },
+    "Home Screen widget" : {
+
+    },
     "Home is set to where you are now." : {
 
     },
@@ -1163,10 +1209,13 @@
     "Home safety" : {
 
     },
-    "Home Screen widget" : {
+    "Hose off" : {
 
     },
-    "Hose off" : {
+    "How you log" : {
+
+    },
+    "ID" : {
 
     },
     "Icon" : {
@@ -1175,13 +1224,10 @@
     "Icon for “%@”" : {
 
     },
-    "ID" : {
+    "In the Settings app, open Action Button, swipe to Controls, and choose Did I? › Log a check." : {
 
     },
     "In the app" : {
-
-    },
-    "In the Settings app, open Action Button, swipe to Controls, and choose Did I? › Log a check." : {
 
     },
     "Indoor plants watered" : {
@@ -1308,16 +1354,19 @@
     "Log %@ with a photo" : {
 
     },
-    "Log a check" : {
+    "Log ID" : {
 
     },
     "Log a Check" : {
 
     },
-    "Log from a Widget" : {
+    "Log a check" : {
 
     },
-    "Log ID" : {
+    "Log a few tasks and your numbers show up here." : {
+
+    },
+    "Log from a Widget" : {
 
     },
     "Log it" : {
@@ -1338,9 +1387,6 @@
     "Logged" : {
 
     },
-    "Logged · %@" : {
-
-    },
     "Logged %@ at %@." : {
       "localizations" : {
         "en" : {
@@ -1352,6 +1398,9 @@
       }
     },
     "Logged with Action Button" : {
+
+    },
+    "Logged · %@" : {
 
     },
     "Logging" : {
@@ -1376,6 +1425,9 @@
 
     },
     "Lungs" : {
+
+    },
+    "MOST RE-CHECKED" : {
 
     },
     "Mail" : {
@@ -1421,6 +1473,9 @@
 
     },
     "Money & admin" : {
+
+    },
+    "Month" : {
 
     },
     "Monthly" : {
@@ -1508,13 +1563,25 @@
     "Night" : {
 
     },
+    "No camera here" : {
+
+    },
     "No icons match “%@”." : {
+
+    },
+    "No logs in this range" : {
 
     },
     "No logs yet. Tap a check on Today to log it." : {
 
     },
+    "No re-logs in this range" : {
+
+    },
     "No tasks scheduled for %@." : {
+
+    },
+    "None" : {
 
     },
     "None yet" : {
@@ -1553,6 +1620,9 @@
     "Nothing to check yet" : {
 
     },
+    "Nothing to show yet" : {
+
+    },
     "Nothing to undo." : {
 
     },
@@ -1560,6 +1630,9 @@
 
     },
     "Notifications" : {
+
+    },
+    "Now" : {
 
     },
     "Nudge me when I leave home" : {
@@ -1592,13 +1665,13 @@
     "Only if something’s not logged" : {
 
     },
+    "Open Settings" : {
+
+    },
     "Open a Check" : {
 
     },
     "Open camera" : {
-
-    },
-    "Open Settings" : {
 
     },
     "Out & about" : {
@@ -1611,6 +1684,9 @@
 
     },
     "Oven off" : {
+
+    },
+    "PHOTO PROOF" : {
 
     },
     "Paint" : {
@@ -1635,6 +1711,9 @@
 
     },
     "People & things" : {
+
+    },
+    "Period" : {
 
     },
     "Person" : {
@@ -1760,9 +1839,6 @@
     "Remove" : {
 
     },
-    "Remove “%@”?" : {
-
-    },
     "Remove %@" : {
 
     },
@@ -1813,6 +1889,9 @@
     "Remove this check" : {
 
     },
+    "Remove “%@”?" : {
+
+    },
     "Rename" : {
 
     },
@@ -1835,6 +1914,12 @@
 
     },
     "Run" : {
+
+    },
+    "SECOND-GUESSES" : {
+
+    },
+    "STREAK" : {
 
     },
     "Save" : {
@@ -1864,6 +1949,9 @@
     "Search icons" : {
 
     },
+    "Second-guesses" : {
+
+    },
     "See all in History" : {
 
     },
@@ -1873,16 +1961,19 @@
     "Self-care" : {
 
     },
-    "Set · within 150 m" : {
-
-    },
     "Set to here" : {
 
     },
     "Set up the button" : {
 
     },
+    "Set · within 150 m" : {
+
+    },
     "Settings" : {
+
+    },
+    "Share of due tasks you logged" : {
 
     },
     "Shoes packed" : {
@@ -1901,6 +1992,9 @@
 
     },
     "Siri" : {
+
+    },
+    "Siri & Shortcuts" : {
 
     },
     "Siri or Shortcuts" : {
@@ -1960,6 +2054,9 @@
     "Start from scratch" : {
 
     },
+    "Stats" : {
+
+    },
     "Steering wheel" : {
 
     },
@@ -1973,6 +2070,9 @@
 
     },
     "Straighteners off" : {
+
+    },
+    "Streak" : {
 
     },
     "Stretched" : {
@@ -1997,6 +2097,9 @@
 
     },
     "System" : {
+
+    },
+    "TV" : {
 
     },
     "Tablet" : {
@@ -2024,6 +2127,9 @@
 
     },
     "Tasks" : {
+
+    },
+    "Tasks logged" : {
 
     },
     "Teddy" : {
@@ -2059,13 +2165,22 @@
     "This can’t be undone." : {
 
     },
+    "This device has no camera, so proof photos aren’t available. Logging still works." : {
+
+    },
     "This iPhone has no Action Button. The same choice applies to the Did I? control in Control Center." : {
 
     },
     "This photo is no longer kept." : {
 
     },
+    "This week" : {
+
+    },
     "Ticket" : {
+
+    },
+    "Time range" : {
 
     },
     "Today" : {
@@ -2120,9 +2235,6 @@
     "Turn the nudge on from a check’s page." : {
 
     },
-    "TV" : {
-
-    },
     "Umbrella" : {
 
     },
@@ -2163,6 +2275,9 @@
     "Vitamins taken" : {
 
     },
+    "W%lld" : {
+
+    },
     "Walk" : {
 
     },
@@ -2188,6 +2303,9 @@
 
     },
     "Water main off" : {
+
+    },
+    "Week" : {
 
     },
     "Weekly" : {
@@ -2226,6 +2344,9 @@
     "Work & school" : {
 
     },
+    "Year" : {
+
+    },
     "Yearly" : {
 
     },
@@ -2255,6 +2376,59 @@
 
     },
     "Your checks, logs and photos stay on this device. Bricolage Grotesque and DM Sans are used under the SIL Open Font License." : {
+
+    },
+    "average" : {
+
+    },
+    "day with every task logged" : {
+
+    },
+    "days with every task logged" : {
+
+    },
+    "down %lld%%, %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "down %1$lld%%, %2$@"
+          }
+        }
+      }
+    },
+    "e.g. Cat fed" : {
+
+    },
+    "e.g. Travel, Gym, Leaving work" : {
+
+    },
+    "last month" : {
+
+    },
+    "last week" : {
+
+    },
+    "last year" : {
+
+    },
+    "re-logs within 30 min" : {
+
+    },
+    "re-logs within 30 min, vs %@" : {
+
+    },
+    "up %lld%%, %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "up %1$lld%%, %2$@"
+          }
+        }
+      }
+    },
+    "–" : {
 
     }
   },
