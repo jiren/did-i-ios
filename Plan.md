@@ -123,6 +123,7 @@ Ask each before the phase that needs it, then move the answer into Resolved deci
 | Lock Screen widgets | `LockScreen.dc.html` | 9 |
 | Reassurance notification, leave-home nudge | `LockScreen.dc.html`, `Detail.dc.html` | 10 |
 | Logo and app icon | `Logo.dc.html` | 11 |
+| Stats tab | `Stats.dc.html`, `Main.dc.html` (tab bar) | 25 |
 | Today redesign: day strip, filter chips, sticky progress bar, category sections, 3-column tiles, Coming up, ring tab | `Main.dc.html` (2026-10-30 update) | 14–15 |
 | Add sheet with "Add to" categories | `Main.dc.html`, `AddChecks.dc.html` (2026-10-30 update) | 16 |
 | New category and its schedule | `NewCategory.dc.html` | 16 |
@@ -530,6 +531,8 @@ Branch `feature/phase-23-more-templates`. From the template research (2026-10-30
 Branch `feature/phase-24-habits`. From the template research (2026-10-30): yes/no habits fit the app as it is (done
 when logged that day, the ring, "All clear", a reminder if not done). Counts ("8 glasses"), weekly targets and
 streaks would need new data and screens and move Did I? toward a habit tracker; they're left for a separate decision.
+(Decided 2026-11-02: the canvas's Stats artboard has a streak, and it needs no new data; see Phase 25. Counts and
+weekly targets are still open.)
 
 - A **Habits** section ends the gallery: Healthy day (7 PM), Mindful (9 PM), Self-care (9:30 PM), Learning (8 PM)
   and Wind-down (10 PM), each daily with three yes/no tasks and an evening reminder.
@@ -544,4 +547,34 @@ The user, 2026-10-30: a done task should be easy to un-complete.
   removes any no log points at.
 - `-SeedSample`'s second front-door log is last night at 10:58 PM, as in `Detail.dc.html`, rather than 12 hours
   ago (which was still today in the evening).
+
+## Phase 25 — Stats
+
+Branch `feature/phase-25-stats`. 2026-11-02, the user: build the task stats screen from the canvas, which gained
+`Stats.dc.html` and a Stats tab in `Main.dc.html` (both copied into `design/`). The artboard is mock data, so these
+rules say what each number means. `NewCategory.dc.html` also changed on the canvas (an inline template row); the app
+has its own gallery (Phase 20), so it wasn't re-copied here.
+
+From the design: the order, the copy, Week / Month / Year, tap a bar to read it, the last bar chosen in ink.
+
+| Topic | Decision |
+|---|---|
+| **Periods** | Week: seven daily bars ending today. Month: W1–W4 (whole calendar weeks, the calendar's first weekday) and "Now". Year: twelve monthly bars ending with "{month} so far". All use **Day starts at**. |
+| **Share logged** | A task is due on the days its category's rule says, from the earlier of the day it was created and its first log; it's done if it has a log that day. A bar is done ÷ due for its period, with no bar and "Nothing due" when nothing was. Only an all-done period reads 100%. Past shares use each category's **current** schedule, because no history of schedule changes is kept: changing one, or moving a task, changes them. |
+| **Average** | The mean of the bars with something due, which is how the design's Week and Month figures add up. |
+| **Streak** | The current run of days with every due task logged, the same on all three ranges (the design's 12 / 12 / 21 is mock data). A day with nothing due is skipped; today counts once complete, and an unfinished today doesn't break the run. |
+| **Second-guesses** | A re-log is a log within 30 minutes of that task's previous log, against the previous period of the same length. Proposed: ↓ in `statMint` as drawn, ↑ in `statCoral` for a rise, "0%" with no arrow for no change, and the plain count with no comparison when last period had none. |
+| **Most re-checked** | Proposed: the task with the most re-logs in the range (a tie goes to the earlier task), with its own icon rather than the drawn flame; "None" / "No re-logs in this range" otherwise. |
+| **Photo proof** | 2026-11-02, the user: "{n} photos kept" counts logs in the range that still have a photo. Keep photos clears the file name from older logs, so with the 30-day default Year reads about like Month; remembering every photo would have needed a `SchemaV4`. Busiest hour is the hour with the most logs of any kind. |
+| **By category** | Done ÷ due per category, in category order, leaving out categories with nothing due in the range. |
+| **How you log** | Proposed: the log has 8 sources and the design 3 rows, so: Action Button (with `.control`, which can't be told apart), Lock Screen widget, In the app, Home Screen widget, Siri & Shortcuts, Notification. Share of all logs in the range; rows with none are hidden; each keeps its colour. |
+| **Colours** | The design's `#E0583A` and `#0F9C78` are `statCoral` and `statMint`. Proposed: `statSky` `#2E93D9`, `statPink` `#D14FA8` and `statSun` `#B8860B` for the extra rows, darker than the tile colours so the six pass the chart palette checks (violet on the dark surface is 2.84:1, which the rows' labels cover). `gridLine` `#E6E1EF`, dark `#3A3452`. Dark values await the user's sign-off, as the dark palette does. |
+| **Empty** | Proposed: with no logs at all, "Nothing to show yet" / "Log a few tasks and your numbers show up here." |
+| **Tab bar** | Proposed: the **+** stays on Stats, although the artboard omits it, so the bar keeps its shape across tabs as it does on History. |
+| **Accessibility** | Each bar reads "Tue, Oct 27, 100% logged"; the arrow reads "down 38%". At accessibility sizes the pairs of cards stack; the chart's axis labels stop growing at xxLarge, where they would collide, and the tip above says the same at full size. |
+
+- Rules in `Did-I/Features/Stats/Models/StatsReport.swift` (`StatsHistory`, `StatsReport`, `StatsPeriods`); bars with
+  Swift Charts. `CheckRecord` gains `createdAt`, which the model already stored, so no schema change.
+- `-SeedStats` and `-Open stats` for screenshots. 2,943 seeded logs: a reload takes about 60 ms on the simulator and a
+  range change 5–13 ms, so it stays on the main actor.
 

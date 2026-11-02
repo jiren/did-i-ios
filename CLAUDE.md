@@ -9,8 +9,8 @@ door? Did I take my pill?"). A *check* is one recurring thing; *logging* it reco
 photo as proof), so the answer is one glance away: in the app, on a Lock Screen widget, or after one press of the
 Action Button. Tagline: "tap once, stop wondering".
 
-Phases 0–18 are built and merged; phases 13–18 added categories and the calendar from the 2026-10-30 canvas
-update. See `Plan.md` for which are done. `Plan.md` (written 2026-10-30) holds the resolved decisions, the open questions and the
+Phases 0–24 are built and merged; phases 13–18 added categories and the calendar from the 2026-10-30 canvas
+update, and phase 25 adds Stats from the canvas's newer artboard. See `Plan.md` for which are done. `Plan.md` (written 2026-10-30) holds the resolved decisions, the open questions and the
 phases 0–12, built in order; update it as phases finish. Ask about scope beyond it and the design (see **Design**)
 rather than inventing it.
 
@@ -33,6 +33,7 @@ don't apply here.
 | Photos | Camera capture | HEIC files in the group container, never the Photos library |
 | Reminders | UserNotifications + Core Location | Time reminders and the leave-home nudge (`CLMonitor`) |
 | Tips | TipKit | One-time hints |
+| Charts | Swift Charts | Stats' Tasks logged bars; app target only |
 | Strings | `Localizable.xcstrings` | From the first view onward |
 | Unit tests | Swift Testing | `@Test`, `#expect`, `#require` |
 | UI tests | XCTest / XCUITest | Swift Testing doesn't support UI automation |
@@ -106,7 +107,8 @@ To look at one screen without tests, build for the simulator, install with `xcru
 - `-UITests`: an in-memory store, a fresh `UserDefaults` suite, TipKit tips hidden.
 - `-SeedSample`: the design's four categories and twelve tasks, with Bin night due today and four tasks logged
   this morning (only into an empty store).
-- `-Open <screen>`: `addChecks`, `history`, `settings`, `actionButton`, `reminders`, `categories`, `newCategory`,
+- `-SeedStats`: the same sample plus about two years of logs for Stats, the same on every run, with a 12-day streak.
+- `-Open <screen>`: `addChecks`, `history`, `stats`, `settings`, `actionButton`, `reminders`, `categories`, `newCategory`,
   `detail` (the first check), `logged` (the newest log).
 - `-Gallery` / `-GalleryControls` / `-GalleryCalendar` / `-GalleryAgenda` / `-GalleryCategory`: the design-system
   gallery (tiles first, or that page).
@@ -302,7 +304,7 @@ isn't in the export, so read them as source. If the canvas changes, re-copy them
   letters and dates (dots for non-daily categories due), a sticky block of a one-line progress bar and the category
   filter chips (with a dashed + for New category), then one collapsible section per due category (its header opens
   or closes it, a + adds tasks; tasks not done first, as 3-column tiles or 52 pt rows), "Nothing due", the undo
-  toast, a floating bottom bar (Today with a progress ring / History / + Add tasks), and the Add sheet with "Add to"
+  toast, a floating bottom bar (Today with a progress ring / Stats / History / + Add tasks), and the Add sheet with "Add to"
   categories. Its script holds the sample categories and tasks, the repeat rules, the tile palette, the suggestions
   and the copy. Port behaviour and copy from it as written. `AddChecks.dc.html` is `Main` with the sheet open.
 - **`NewCategory.dc.html`**: the New category page: a preview card, name, icon grid, colour swatches, repeat
@@ -310,6 +312,9 @@ isn't in the export, so read them as source. If the canvas changes, re-copy them
   canvas doesn't show (Phase 20, the user's request): a template gallery first, editable task rows, a custom colour
   after the swatches and **More icons** after the icons; a category's colour and icon are open-ended
   (`CategoryColour`, `CategoryIcon`).
+- **`Stats.dc.html`**: the Stats tab: Week / Month / Year, Streak and Second-guesses cards, the Tasks logged bars
+  (tap one to read it), By category, How you log, Most re-checked and Photo proof. Its numbers are mock data; what
+  each means on real logs is in `Plan.md`'s Phase 25. The rules are pure, in `StatsReport`.
 - **`Detail.dc.html` (Check detail)**: violet header with back and Remove, "Locked at {time}" and "{day} · {ago}",
   the latest photo; a "Nudge me when I leave home — Only if it isn't logged yet" switch; the History timeline
   (time and source) with the log count; a "Log it again" button.
