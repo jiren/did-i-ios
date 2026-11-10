@@ -10,8 +10,9 @@ final class LayoutUITests: XCTestCase {
         let app = XCUIApplication.launched(arguments: [
             "-SeedSample", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXL",
         ])
-        let first = app.buttons["tile.Front door locked"]
-        let second = app.buttons["tile.Pill taken"]
+        // Bin night (Evening) is the first section, above Daily (Anytime); not done comes first.
+        let first = app.buttons["tile.Recycling out"]
+        let second = app.buttons["tile.Bins out"]
         XCTAssertTrue(first.waitForExistence(timeout: 5))
         // One column: the second tile sits below the first, not beside it.
         XCTAssertGreaterThan(second.frame.minY, first.frame.maxY - 1)
