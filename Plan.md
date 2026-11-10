@@ -586,7 +586,7 @@ From the design: the order, the copy, Week / Month / Year, tap a bar to read it,
 - `-SeedStats` and `-Open stats` for screenshots. 2,943 seeded logs: a reload takes about 60 ms on the simulator and a
   range change 5–13 ms, so it stays on the main actor.
 
-## Phase 26 — Custom repeat
+## Phase 26 — Custom repeat ✅ Done 2026-11-10, merged into main (the simulator's real V3 store opened as V4; the Custom card checked on the simulator; unit and UI tests pass)
 
 Branch `feature/phase-26-custom-repeat`. 2026-11-07, the user: "Add Category with repeating date like calendar and time
 of the day"; asked, they chose a **calendar-style Custom repeat** and a **part of the day** (see Categories &
@@ -608,7 +608,7 @@ change, Phase 27 the part-of-day UI.
 
 **Done when** the custom rule's tables pass and the simulator's real V3 store opens as V4 unchanged.
 
-## Phase 27 — Time of day
+## Phase 27 — Time of day ✅ Done 2026-11-10, merged into main (headers checked on the simulator with -SeedSample; unit and UI tests pass)
 
 Branch `feature/phase-27-part-of-day`. A "Time of day" field (Morning / Afternoon / Evening / Anytime) on New and
 Edit category, after Repeat, for Daily too; turning on Remind me starts at the part's time (9 AM, 3 PM, 8 PM). Today
