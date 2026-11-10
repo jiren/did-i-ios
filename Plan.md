@@ -124,6 +124,7 @@ Ask each before the phase that needs it, then move the answer into Resolved deci
 | Reassurance notification, leave-home nudge | `LockScreen.dc.html`, `Detail.dc.html` | 10 |
 | Logo and app icon | `Logo.dc.html` | 11 |
 | Stats tab | `Stats.dc.html`, `Main.dc.html` (tab bar) | 25 |
+| New category's template gallery (the canvas follows the app, 2026-11-02) | `Templates.dc.html` | 20, 23, 24 |
 | Today redesign: day strip, filter chips, sticky progress bar, category sections, 3-column tiles, Coming up, ring tab | `Main.dc.html` (2026-10-30 update) | 14–15 |
 | Add sheet with "Add to" categories | `Main.dc.html`, `AddChecks.dc.html` (2026-10-30 update) | 16 |
 | New category and its schedule | `NewCategory.dc.html` | 16 |
@@ -274,6 +275,8 @@ Branch `feature/phase-11-icon`. Ask open question 2 first.
   (`rsvg-convert`, alpha removed) in the app icon set: default (Violet), dark (Ink with a cream stroke), tinted
   (white glyph on black). The widgets use SF Symbols, so no separate glyph asset was needed. A single-size icon
   can't drop the check at 44 px; iOS scales the 1024 art.
+- 2026-11-02, the user: the logo changed on the canvas (a larger dot, a heavier check, a shorter stem), so the three
+  SVGs and PNGs were re-rendered the same way.
 
 **Done when** the icon shows on the Home Screen in light, dark and tinted modes.
 
@@ -477,7 +480,7 @@ Branch `feature/phase-20-category-templates`. The user, 2026-10-30: New category
 categories and tasks; once one is chosen its tasks can be added, deleted and renamed; the colours end with a
 **custom colour picker**; the icons end with **More icons**, a much larger choice. Their answers: a **template
 gallery first** (then the form, filled in); custom colours and icons apply to **the category only** (task tiles keep
-the palette by position); **app only** (the canvas doesn't show this).
+the palette by position); **app only** (the canvas doesn't show this; since 2026-11-02 its `Templates.dc.html` draws the gallery, see Phase 25).
 
 | Topic | Decision |
 |---|---|
@@ -548,12 +551,15 @@ The user, 2026-10-30: a done task should be easy to un-complete.
 - `-SeedSample`'s second front-door log is last night at 10:58 PM, as in `Detail.dc.html`, rather than 12 hours
   ago (which was still today in the evening).
 
-## Phase 25 — Stats ✅ Done 2026-11-02, merged into main (checked on the simulator: all ranges, both themes, an accessibility size, the iPad split; unit and UI tests pass; dark colours await the user's sign-off)
+## Phase 25 — Stats ✅ Done 2026-11-02, merged into main (checked on the simulator: all ranges, both themes, an accessibility size, the iPad split; unit and UI tests pass; the user checked hold-and-drag and VoiceOver and approved the dark colours, 2026-11-02)
 
 Branch `feature/phase-25-stats`. 2026-11-02, the user: build the task stats screen from the canvas, which gained
 `Stats.dc.html` and a Stats tab in `Main.dc.html` (both copied into `design/`). The artboard is mock data, so these
-rules say what each number means. `NewCategory.dc.html` also changed on the canvas (an inline template row); the app
-has its own gallery (Phase 20), so it wasn't re-copied here.
+rules say what each number means.
+
+The canvas had also gained an inline template row in `NewCategory.dc.html`. 2026-11-02, the user: the app's gallery
+stays, and the design follows the app. The canvas now has `Templates.dc.html` (the gallery, opened from New category
+on `Main.dc.html`); the form has lost the row and goes back to the templates.
 
 From the design: the order, the copy, Week / Month / Year, tap a bar to read it, the last bar chosen in ink.
 
@@ -568,7 +574,7 @@ From the design: the order, the copy, Week / Month / Year, tap a bar to read it,
 | **Photo proof** | 2026-11-02, the user: "{n} photos kept" counts logs in the range that still have a photo. Keep photos clears the file name from older logs, so with the 30-day default Year reads about like Month; remembering every photo would have needed a `SchemaV4`. Busiest hour is the hour with the most logs of any kind. |
 | **By category** | Done ÷ due per category, in category order, leaving out categories with nothing due in the range. |
 | **How you log** | Proposed: the log has 8 sources and the design 3 rows, so: Action Button (with `.control`, which can't be told apart), Lock Screen widget, In the app, Home Screen widget, Siri & Shortcuts, Notification. Share of all logs in the range; rows with none are hidden; each keeps its colour. |
-| **Colours** | The design's `#E0583A` and `#0F9C78` are `statCoral` and `statMint`. Proposed: `statSky` `#2E93D9`, `statPink` `#D14FA8` and `statSun` `#B8860B` for the extra rows, darker than the tile colours so the six pass the chart palette checks (violet on the dark surface is 2.84:1, which the rows' labels cover). `gridLine` `#E6E1EF`, dark `#3A3452`. Dark values await the user's sign-off, as the dark palette does. |
+| **Colours** | The design's `#E0583A` and `#0F9C78` are `statCoral` and `statMint`. Proposed: `statSky` `#2E93D9`, `statPink` `#D14FA8` and `statSun` `#B8860B` for the extra rows, darker than the tile colours so the six pass the chart palette checks (violet on the dark surface is 2.84:1, which the rows' labels cover). `gridLine` `#E6E1EF`, dark `#3A3452`. The user approved these in the dark theme, 2026-11-02. |
 | **Empty** | Proposed: with no logs at all, "Nothing to show yet" / "Log a few tasks and your numbers show up here." |
 | **Tab bar** | Proposed: the **+** stays on Stats, although the artboard omits it, so the bar keeps its shape across tabs as it does on History. |
 | **Accessibility** | Each bar reads "Tue, Oct 27, 100% logged"; the arrow reads "down 38%". At accessibility sizes the pairs of cards stack; the chart's axis labels stop growing at xxLarge, where they would collide, and the tip above says the same at full size. |

@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Did I? — Start from a template</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=DM+Sans:opsz,wght@9..40,400..700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#4B22E0}a:hover{color:#2E0FA8}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFF6EA; color: #17142A; font-family: 'DM Sans', system-ui, sans-serif; position: relative; overflow: hidden">
+
+<div style="position: absolute; inset: 0; overflow-y: auto; padding: 56px 20px 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px">
+
+<div style="display: flex; align-items: center; justify-content: space-between">
+<a href="Main.dc.html" aria-label="Cancel and go back" style="width: 44px; height: 44px; border-radius: 22px; background: #17142A; color: #FFFFFF; display: flex; align-items: center; justify-content: center">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+</a>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 28px; font-weight: 800; letter-spacing: -0.5px">New category</h1>
+<span style="width: 44px"></span>
+</div>
+
+<p style="margin: 0; font-size: 16px; color: #5C5670">Start from a template</p>
+
+<sc-for list="{{sections}}" as="section" hint-placeholder-count="6">
+<div role="group" aria-label="{{section.title}}" style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 13px; font-weight: 700; color: #5C5670; letter-spacing: 0.6px">{{section.label}}</span>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<sc-for list="{{section.items}}" as="item" hint-placeholder-count="4">
+<a href="NewCategory.dc.html" style="background: #FFFFFF; color: #17142A; border-radius: 22px; padding: 14px; box-sizing: border-box; min-height: 132px; display: flex; flex-direction: column; gap: 10px; text-decoration: none">
+<span style="display: flex; align-items: flex-start; justify-content: space-between; gap: 4px">
+<span style="{{item.badgeStyle}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{item.path}}"></path></svg></span>
+<sc-if value="{{item.isAdded}}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 12px; font-weight: 700; color: #5C5670; background: #EDE6D8; border-radius: 999px; padding: 4px 8px">Added</span>
+</sc-if>
+</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 17px; font-weight: 800; line-height: 1.1">{{item.name}}</span>
+<span style="font-size: 13px; color: #5C5670">{{item.detail}}</span>
+</a>
+</sc-for>
+</div>
+</div>
+</sc-for>
+
+<a href="NewCategory.dc.html" style="min-height: 56px; border-radius: 20px; border: 2.5px dashed #B9B2CC; box-sizing: border-box; color: #4B22E0; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+Start from scratch
+</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+var CIRCLE = 'a1.5 1.5 0 1 0 .01 0z';
+var PATHS = {
+  suitcase: 'M4 8h16v11H4zM9 8V5h6v3M4 13h16',
+  home: 'M3 11l9-7 9 7M5 10v10h14V10M10 20v-6h4v6',
+  bin: 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3',
+  pill: 'M14 4.9a4.6 4.6 0 0 1 6.5 6.5l-9.1 9.1a4.6 4.6 0 0 1-6.5-6.5zM9.6 9.6l4.8 4.8',
+  flame: 'M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 .3 2 1.2 3 2.5 3.5C11.5 9 11 6 12 3z',
+  car: 'M5 16h14v-4l-2-5H7l-2 5zM5 12h14M7 19v-3M17 19v-3',
+  key: 'M8 11a4 4 0 1 0 0 8a4 4 0 1 0 0-8zM10.8 12.2L20 3M17 6l3 3M14.5 8.5l2 2',
+  heart: 'M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z',
+  moon: 'M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z',
+  stove: 'M5 3h14v18H5zM5 9h14M9 6h.01M15 6h.01M12 12a3 3 0 1 0 0 6a3 3 0 1 0 0-6z',
+  drop: 'M12 3s6.5 6.8 6.5 11.5a6.5 6.5 0 0 1-13 0C5.5 9.8 12 3 12 3z',
+  washer: 'M5 3h14v18H5zM5 8h14M8 5.5h.01M11 5.5h.01M12 10.5a4 4 0 1 0 0 8a4 4 0 1 0 0-8z',
+  recycle: 'M8.5 9L12 3.5l2.5 4M15.5 5.5l-1 2.5-2.5-.5M18 11l3 5.5h-5M18 14l-2 2.5 2 2.5M13 20H4l2.5-4.5M4 14l2.5 1.5 1.5-2.5',
+  wrench: 'M20 6.5l-3 3-2.5-.5-.5-2.5 3-3a5 5 0 0 0-6.4 6.4L4 16.5a2.1 2.1 0 0 0 3 3l6.6-6.6A5 5 0 0 0 20 6.5z',
+  briefcase: 'M3 8h18v12H3zM8 8V5h8v3M3 13h18M12 12v2',
+  run: 'M14 3' + CIRCLE + 'M7 12l4-3 3 2 3 1M11 9l-1 6 3 2 1 5M10 15l-2 3-4 1',
+  comb: 'M4 6h16v5H4zM6 11v8M10 11v8M14 11v8M18 11v8',
+  syringe: 'M18 3l3 3M16 5l3 3M17.5 6.5L8 16l-2.5-.5L5 13l9.5-9.5zM11 7l2 2M8.5 9.5l2 2M5.5 15.5L3 21',
+  eye: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7zM12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6z',
+  medical: 'M3 8h18v12H3zM9 8V5h6v3M12 11v6M9 14h6',
+  backpack: 'M6 10a6 6 0 0 1 12 0v11H6zM9 5V3h6v2M9 14h6v4H9z',
+  paw: 'M12 12c-3 0-5 3-5 5.5C7 19 8 20 9.5 20c1 0 1.5-.5 2.5-.5s1.5.5 2.5.5c1.5 0 2.5-1 2.5-2.500C17 15 15 12 12 12zM4.5 9.500a1.5 2 0 1 0 3 0a1.5 2 0 1 0-3 0zM8.5 5.500a1.5 2 0 1 0 3 0a1.5 2 0 1 0-3 0zM12.5 5.500a1.5 2 0 1 0 3 0a1.5 2 0 1 0-3 0zM16.5 9.500a1.5 2 0 1 0 3 0a1.5 2 0 1 0-3 0z',
+  leaf: 'M5 19C5 10 11 4 20 4c0 9-6 15-15 15zM5 19l8-8',
+  card: 'M3 6h18v13H3zM3 10h18M7 15h4',
+  carSide: 'M2 16v-3l4-5h9l4 5h3v3zM7 19a2 2 0 1 0 0-4a2 2 0 1 0 0 4zM17 19a2 2 0 1 0 0-4a2 2 0 1 0 0 4z',
+  walk: 'M12 3' + CIRCLE + 'M12 7l-2 5 3 3 1 6M10 12l-2 3-1 4M12 8l3 3 3 1',
+  mind: 'M12 3' + CIRCLE + 'M12 7v6M6 11l6-2 6 2M4 18c3 0 5-1 8-3 3 2 5 3 8 3M5 20h14',
+  sparkles: 'M11 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2zM19 15l.8 2.200L22 18l-2.2.8L19 21l-.8-2.200L16 18l2.2-.8z',
+  book: 'M5 4h14v17H7a2 2 0 0 1-2-2zM5 19a2 2 0 0 1 2-2h12',
+  moonStars: 'M18 14.500A7.5 7.5 0 1 1 8.5 5a6 6 0 0 0 9.5 9.500zM18 3l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z'
+};
+var COLORS = { violet: ['#6B3BFF', '#FFFFFF'], sun: ['#FFD23F', '#17142A'], coral: ['#FF7A59', '#17142A'], mint: ['#2FD4A7', '#17142A'], sky: ['#5BC0FF', '#17142A'], pink: ['#FF8AD8', '#17142A'] };
+/* The app's gallery on the design's Friday, Oct 30, with the sample's categories already added. */
+var SECTIONS = [
+  ['Home & safety', [
+    ['Leaving home', 'home', 'coral', 'Every day', 6],
+    ['Bedtime', 'moon', 'violet', 'Every day', 6],
+    ['Kitchen', 'stove', 'coral', 'Every day', 4],
+    ['Water', 'drop', 'sky', 'Every day', 3],
+    ['Laundry', 'washer', 'sky', 'Every Friday', 3],
+    ['Bin night', 'bin', 'mint', 'Every Friday', 4, true],
+    ['Recycling', 'recycle', 'mint', 'Every other Friday', 2],
+    ['Home safety', 'flame', 'coral', 'Monthly on the 30th', 3, true],
+    ['Yearly home', 'wrench', 'sun', 'Every year, Oct 30', 3]
+  ]],
+  ['Out & about', [
+    ['Out the door', 'key', 'sun', 'Every day', 3],
+    ['Leaving work', 'briefcase', 'sky', 'Every weekday', 3],
+    ['Car', 'car', 'sky', 'Every day', 4],
+    ['Trip', 'suitcase', 'sky', 'Once · Sat, Oct 31', 8],
+    ['Gym', 'run', 'pink', 'Every Mon, Wed, Fri', 4],
+    ['Hair & beauty', 'comb', 'pink', 'Every day', 3]
+  ]],
+  ['Health', [
+    ['Morning meds', 'pill', 'violet', 'Every day', 2],
+    ['Evening meds', 'pill', 'sky', 'Every day', 1],
+    ['Diabetes', 'syringe', 'coral', 'Every day', 2],
+    ['Contact lenses', 'eye', 'sky', 'Every day', 2],
+    ['Pharmacy', 'medical', 'mint', 'Monthly on the 30th', 1]
+  ]],
+  ['Family & pets', [
+    ['School run', 'backpack', 'sun', 'Every weekday', 3],
+    ['Pets', 'paw', 'coral', 'Every day', 4],
+    ['Plants', 'leaf', 'mint', 'Every Friday', 2],
+    ['Caring for someone', 'heart', 'pink', 'Every day', 3]
+  ]],
+  ['Money & admin', [
+    ['Bills', 'card', 'sun', 'Monthly on the 30th', 4],
+    ['Car admin', 'carSide', 'sky', 'Every year, Oct 30', 3]
+  ]],
+  ['Habits', [
+    ['Healthy day', 'walk', 'mint', 'Every day', 3],
+    ['Mindful', 'mind', 'violet', 'Every day', 3],
+    ['Self-care', 'sparkles', 'pink', 'Every day', 3],
+    ['Learning', 'book', 'sun', 'Every day', 3],
+    ['Wind-down', 'moonStars', 'sky', 'Every day', 3]
+  ]]
+];
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      sections: SECTIONS.map(function (section) {
+        return {
+          title: section[0],
+          label: section[0].toUpperCase(),
+          items: section[1].map(function (t) {
+            var colour = COLORS[t[2]];
+            return {
+              name: t[0],
+              path: PATHS[t[1]],
+              detail: t[3] + ' · ' + t[4] + (t[4] === 1 ? ' task' : ' tasks'),
+              isAdded: t[5] === true,
+              badgeStyle: 'width: 40px; height: 40px; border-radius: 14px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: ' + colour[0] + '; color: ' + colour[1] + ';'
+            };
+          })
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

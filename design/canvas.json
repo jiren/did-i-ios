@@ -10,6 +10,7 @@
     "Main.dc.html": {"h": 844, "is_interactive": true, "radius": 48, "title": "Today", "w": 390, "x": 0, "y": 0},
     "NewCategory.dc.html": {"h": 844, "is_interactive": true, "radius": 48, "title": "New category + schedule", "w": 390, "x": 2820, "y": 0},
     "Stats.dc.html": {"h": 844, "is_interactive": true, "radius": 48, "title": "Stats", "w": 390, "x": 3290, "y": 0},
+    "Templates.dc.html": {"h": 844, "is_interactive": true, "radius": 48, "title": "New category templates", "w": 390, "x": 3760, "y": 0},
     "Logo.dc.html": {"h": 900, "radius": 24, "title": "Logo & app icon", "w": 1440, "x": 0, "y": 1100}
   },
   "createdOnFiles": {"at": "2026-10-29T10:00:00Z", "v": 1},
@@ -18,7 +19,7 @@
   "notes": {
     "title": {"kind": "title1", "maxW": 3680, "text": "Did I? — tap once, stop wondering", "w": 240, "x": 0, "y": -260}
   },
-  "order": ["Main.dc.html", "AddChecks.dc.html", "LockScreen.dc.html", "Logged.dc.html", "ActionButton.dc.html", "Detail.dc.html", "NewCategory.dc.html", "Stats.dc.html", "Logo.dc.html"],
+  "order": ["Main.dc.html", "AddChecks.dc.html", "LockScreen.dc.html", "Logged.dc.html", "ActionButton.dc.html", "Detail.dc.html", "NewCategory.dc.html", "Stats.dc.html", "Templates.dc.html", "Logo.dc.html"],
   "pages": [],
   "title": "Did I? Micro-Logger"
 }
