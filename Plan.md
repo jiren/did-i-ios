@@ -624,7 +624,7 @@ Friday · Evening"), leaving out Anytime. Templates and `-SeedSample` get parts 
 
 **Done when** `-SeedSample` shows the headers on Today and a filter hides them.
 
-## Phase 28 — Start from a template on Today
+## Phase 28 — Start from a template on Today ✅ Done 2026-11-10, merged into main (checked on the simulator: the row, a card's form and back to the gallery; unit and UI tests pass)
 
 Branch `feature/phase-28-today-templates`. 2026-11-10, the user: "Today page - add create new category from template";
 asked, they chose a **template row on Today** (over a + menu or a header button). The dashed + chip in the filter
