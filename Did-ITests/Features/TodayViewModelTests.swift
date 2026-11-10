@@ -67,6 +67,32 @@ struct TodayViewModelTests {
         #expect(viewModel.isEmpty)
     }
 
+    // MARK: - Start from a template (Phase 28)
+
+    @Test func suggestsTheFirstUnusedTemplates() throws {
+        viewModel.reload()
+        // Bin night is already a category, so it's skipped.
+        #expect(viewModel.templateSuggestions.map(\.id) == ["leavingHome", "bedtime", "kitchen", "water", "laundry", "recycling"])
+        #expect(viewModel.templateSuggestions[1].detail == "Every day · Evening · 6 tasks")
+        #expect(viewModel.showsTemplateSuggestions)
+
+        _ = try store.addCategory(CategoryDraft(name: "bedtime"), tasks: [])
+        viewModel.reload()
+        #expect(!viewModel.templateSuggestions.map(\.id).contains("bedtime"))
+        #expect(viewModel.templateSuggestions.count == TodayViewModel.suggestionLimit)
+    }
+
+    @Test func theTemplateRowHidesWhenFilteredOrEmpty() throws {
+        viewModel.reload()
+        viewModel.selectFilter(bins.id)
+        #expect(!viewModel.showsTemplateSuggestions)
+        viewModel.selectFilter(nil)
+        #expect(viewModel.showsTemplateSuggestions)
+        try store.deleteEverything()
+        viewModel.reload()
+        #expect(!viewModel.showsTemplateSuggestions)
+    }
+
     @Test func yesterdaysLogDoesNotCountToday() throws {
         _ = try store.log(checks[0].id, source: .app, at: TestTime.date(2026, 10, 28, 22, 58), photoFileName: nil)
         viewModel.reload()

@@ -5,15 +5,7 @@ import Observation
 /// category already has its name.
 @Observable
 final class CategoryTemplatesViewModel {
-    struct Item: Identifiable, Equatable {
-        var template: CategoryTemplate
-        /// "Every day · 5 tasks".
-        var detail: String
-        /// A category already has this name; picking it opens as "Bin night 2".
-        var isAdded: Bool
-
-        var id: String { template.id }
-    }
+    typealias Item = CategoryTemplateItem
 
     struct Section: Identifiable, Equatable {
         let id: String
@@ -42,15 +34,8 @@ final class CategoryTemplatesViewModel {
         let boundary = days.dayBoundary
         let today = boundary.calendarDay(containing: timeSource.now)
         sections = CategoryTemplates.groups.map { group in
-            Section(id: group.id, title: group.title, items: group.templates.map { template in
-                let rule = template.partOfDay.summary(template.rule(today: today, calendar: boundary.calendar).label(calendar: boundary.calendar, locale: locale))
-                let count = template.tasks.count
-                let tasks = count == 1 ? String(localized: "1 task") : String(localized: "\(count) tasks")
-                return Item(
-                    template: template,
-                    detail: String(localized: "\(rule) · \(tasks)"),
-                    isAdded: names.contains(CheckName.key(template.name))
-                )
+            Section(id: group.id, title: group.title, items: group.templates.map {
+                CategoryTemplateItem($0, usedNames: names, today: today, calendar: boundary.calendar, locale: locale)
             })
         }
     }

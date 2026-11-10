@@ -18,13 +18,22 @@ struct AddChecksRequest: Identifiable {
 /// The category page: a new category, or one being edited.
 enum CategoryEditorRequest: Identifiable, Hashable {
     case new
+    /// New category on this template's form (Today's template row).
+    case template(CategoryTemplate)
     case edit(UUID)
 
     var id: String {
         switch self {
         case .new: "new"
+        case .template(let template): "template.\(template.id)"
         case .edit(let id): id.uuidString
         }
+    }
+
+    /// The form New category opens on, if any.
+    var start: NewCategoryStart? {
+        if case .template(let template) = self { return .template(template) }
+        return nil
     }
 }
 
@@ -61,11 +70,12 @@ struct RootView: View {
             }
             .fullScreenCover(item: $categoryEditor) { request in
                 switch request {
-                case .new:
+                case .new, .template:
                     NewCategoryFlow(
                         templates: CategoryTemplatesViewModel(
                             store: environment.store, days: environment.settings, timeSource: environment.timeSource
                         ),
+                        start: request.start,
                         makeEditor: { categoryEditorModel(editing: nil) },
                         onDone: { categoryEditor = nil }
                     )
@@ -165,6 +175,7 @@ struct RootView: View {
                     openCategories: { isSplit ? (path = [.categories]) : path.append(.categories) },
                     openCheck: { open($0, replacing: false) },
                     newCategory: { categoryEditor = .new },
+                    newCategoryFromTemplate: { categoryEditor = .template($0) },
                     editCategory: { categoryEditor = .edit($0) }
                 )
             )

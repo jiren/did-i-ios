@@ -93,6 +93,22 @@ final class TodayUITests: XCTestCase {
         XCTAssertTrue(app.buttons["tile.Front door locked"].waitForExistence(timeout: 2))
     }
 
+    /// Today's template row opens New category on that template's form; back goes to the whole gallery.
+    @MainActor
+    func testStartingACategoryFromTodaysTemplateRow() throws {
+        let app = XCUIApplication.launched(arguments: ["-SeedSample"])
+        let bedtime = app.buttons["today.template.bedtime"]
+        XCTAssertTrue(app.buttons["tile.Bins out"].waitForExistence(timeout: 5))
+        for _ in 0..<4 where !bedtime.isHittable { app.swipeUp() }
+        XCTAssertTrue(bedtime.isHittable)
+        bedtime.tap()
+        let name = app.textFields["category.name"]
+        XCTAssertTrue(name.waitForExistence(timeout: 5))
+        XCTAssertEqual(name.value as? String, "Bedtime")
+        app.buttons["category.close"].tap()
+        XCTAssertTrue(app.buttons["templates.leavingHome"].waitForExistence(timeout: 5))
+    }
+
     /// The sample's Bin night is Evening and Daily Anytime, so Today shows both headers; one category alone shows none.
     @MainActor
     func testPartOfDayHeaders() throws {

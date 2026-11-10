@@ -48,6 +48,7 @@ struct CategoryTemplateGallery: View {
                         LazyVGrid(columns: columns, spacing: 10) {
                             ForEach(section.items) { item in
                                 TemplateCard(item: item) { onPick(.template(item.template)) }
+                                    .accessibilityIdentifier("templates.\(item.template.id)")
                             }
                         }
                     }
@@ -75,45 +76,5 @@ struct CategoryTemplateGallery: View {
         .background(Color.ground)
         .toolbarVisibility(.hidden, for: .navigationBar)
         .task { viewModel.load() }
-    }
-}
-
-/// A template: its icon on its colour, name, "Every day · 5 tasks", and "Added" when a category has its name.
-private struct TemplateCard: View {
-    let item: CategoryTemplatesViewModel.Item
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack(alignment: .top) {
-                    CategoryBadge(icon: item.template.icon, colour: item.template.colour, size: 40)
-                    Spacer(minLength: 4)
-                    if item.isAdded {
-                        Text("Added")
-                            .font(.didMicro)
-                            .foregroundStyle(Color.muted)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Color.sand, in: .capsule)
-                    }
-                }
-                Text(item.template.name)
-                    .font(.didBarTitle)
-                    .foregroundStyle(Color.ink)
-                    .multilineTextAlignment(.leading)
-                Text(item.detail)
-                    .font(.didFootnoteRegular)
-                    .foregroundStyle(Color.muted)
-                    .multilineTextAlignment(.leading)
-            }
-            .padding(14)
-            .frame(maxWidth: .infinity, minHeight: 132, alignment: .topLeading)
-            .background(Color.surface, in: .rect(cornerRadius: 22, style: .continuous))
-            .contentShape(.rect(cornerRadius: 22))
-        }
-        .buttonStyle(TilePressStyle())
-        .accessibilityElement(children: .combine)
-        .accessibilityIdentifier("templates.\(item.template.id)")
     }
 }

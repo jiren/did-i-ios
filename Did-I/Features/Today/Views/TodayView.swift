@@ -172,6 +172,16 @@ struct TodayView: View {
                     .font(.didFootnote)
                     .foregroundStyle(Color.muted)
             }
+            if viewModel.showsTemplateSuggestions {
+                TemplateSuggestionsRow(
+                    items: viewModel.templateSuggestions,
+                    onPick: actions.newCategoryFromTemplate,
+                    onSeeAll: actions.newCategory
+                )
+                // Edge to edge, so the cards scroll under the screen's sides.
+                .padding(.horizontal, -20)
+                .padding(.top, 10)
+            }
         }
         .padding(.horizontal, 20)
         .padding(.top, 8)
@@ -240,6 +250,8 @@ struct TodayActions {
     var openCategories: () -> Void = {}
     var openCheck: (UUID) -> Void = { _ in }
     var newCategory: () -> Void = {}
+    /// New category on a template's form, filled in; back goes to the gallery.
+    var newCategoryFromTemplate: (CategoryTemplate) -> Void = { _ in }
     var editCategory: (UUID) -> Void = { _ in }
 }
 

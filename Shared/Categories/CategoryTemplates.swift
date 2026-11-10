@@ -49,6 +49,28 @@ nonisolated struct CategoryTemplate: Identifiable, Hashable, Sendable {
     }
 }
 
+/// A template as listed: its repeat and task count, and whether a category already has its name (gallery and
+/// Today's "Start from a template" row).
+nonisolated struct CategoryTemplateItem: Identifiable, Equatable, Sendable {
+    var template: CategoryTemplate
+    /// "Every day · Evening · 5 tasks".
+    var detail: String
+    /// A category already has this name; picking it opens as "Bin night 2".
+    var isAdded: Bool
+
+    var id: String { template.id }
+
+    /// - Parameter usedNames: the existing categories' names, as `CheckName.key`s.
+    init(_ template: CategoryTemplate, usedNames: Set<String>, today: CalendarDay, calendar: Calendar, locale: Locale) {
+        self.template = template
+        let rule = template.partOfDay.summary(template.rule(today: today, calendar: calendar).label(calendar: calendar, locale: locale))
+        let count = template.tasks.count
+        let tasks = count == 1 ? String(localized: "1 task") : String(localized: "\(count) tasks")
+        detail = String(localized: "\(rule) · \(tasks)")
+        isAdded = usedNames.contains(CheckName.key(template.name))
+    }
+}
+
 /// The gallery's sections.
 nonisolated struct CategoryTemplateGroup: Identifiable, Sendable {
     let id: String

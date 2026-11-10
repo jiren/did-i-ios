@@ -9,8 +9,15 @@ struct NewCategoryFlow: View {
     /// After the category is created.
     let onDone: () -> Void
 
-    init(templates: @autoclosure () -> CategoryTemplatesViewModel, makeEditor: @escaping () -> CategoryEditorViewModel, onDone: @escaping () -> Void) {
+    /// - Parameter start: a form to open on, over the gallery (Today's template row); nil opens the gallery.
+    init(
+        templates: @autoclosure () -> CategoryTemplatesViewModel,
+        start: NewCategoryStart? = nil,
+        makeEditor: @escaping () -> CategoryEditorViewModel,
+        onDone: @escaping () -> Void
+    ) {
         _templates = State(initialValue: templates())
+        _path = State(initialValue: start.map { [$0] } ?? [])
         self.makeEditor = makeEditor
         self.onDone = onDone
     }

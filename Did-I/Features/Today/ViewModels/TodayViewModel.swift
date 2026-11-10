@@ -40,6 +40,14 @@ final class TodayViewModel {
 
     /// No checks at all: the empty state instead of the calendar.
     private(set) var isEmpty = false
+    /// "Start from a template" (Phase 28): the first templates no category has the name of yet.
+    private(set) var templateSuggestions: [CategoryTemplateItem] = []
+
+    /// How many templates the row offers before "See all".
+    static let suggestionLimit = 6
+
+    /// The row shows under every category (no filter), once there are tasks, while a template is left to suggest.
+    var showsTemplateSuggestions: Bool { filterID == nil && !isEmpty && !templateSuggestions.isEmpty }
 
     @ObservationIgnored private let checkStore: any CheckStoring & CategoryStoring
     @ObservationIgnored private let logStore: any LogStoring
@@ -107,6 +115,14 @@ final class TodayViewModel {
             errorMessage = String(localized: "Couldn’t read your checks.")
         }
         if let filterID, !categories.contains(where: { $0.id == filterID }) { self.filterID = nil }
+        let usedNames = Set(categories.map { CheckName.key($0.name) })
+        templateSuggestions = Array(
+            CategoryTemplates.all
+                .lazy
+                .map { CategoryTemplateItem($0, usedNames: usedNames, today: today, calendar: boundary.calendar, locale: self.locale) }
+                .filter { !$0.isAdded }
+                .prefix(Self.suggestionLimit)
+        )
         rebuild()
     }
 

@@ -624,3 +624,21 @@ Friday · Evening"), leaving out Anytime. Templates and `-SeedSample` get parts 
 
 **Done when** `-SeedSample` shows the headers on Today and a filter hides them.
 
+## Phase 28 — Start from a template on Today
+
+Branch `feature/phase-28-today-templates`. 2026-11-10, the user: "Today page - add create new category from template";
+asked, they chose a **template row on Today** (over a + menu or a header button). The dashed + chip in the filter
+row still opens the gallery.
+
+| Topic | Decision |
+|---|---|
+| **Row** | "START FROM A TEMPLATE" with **See all** (the gallery), then the gallery's cards (`TemplateCard`, now in the design system) scrolling sideways, 168 pt wide and scaled with Dynamic Type, equal heights. |
+| **Which templates** | Proposed: the first six, in the gallery's order, whose name no category has yet (ignoring case), so the row changes as categories are added and goes once every template is used. |
+| **Where** | Proposed: under the sections (and under "Nothing due"), with no filter chosen, once there's at least one task; never on the empty state, which has its own button. |
+| **Tap** | Opens New category on that template's form, filled in, over the gallery: back goes to every template, as from the + chip. |
+
+- `CategoryTemplateItem` (in `Shared/Categories/CategoryTemplates.swift`) builds a card's detail and "Added" for both
+  the gallery and Today. `CategoryEditorRequest.template` opens `NewCategoryFlow(start:)`.
+
+**Done when** the row shows on Today with `-SeedSample`, a card opens its form, and back shows the gallery.
+
