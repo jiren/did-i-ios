@@ -139,6 +139,8 @@ struct WeekdayPicker: View {
     var allowsSeveral = false
     let colour: CategoryColour
     var calendar: Calendar = .autoupdatingCurrent
+    /// Unchosen days; the ground when the picker sits on a white card.
+    var offBackground: Color = .surface
 
     var body: some View {
         HStack(spacing: 6) {
@@ -149,7 +151,7 @@ struct WeekdayPicker: View {
                         .font(.didEmphasis)
                         .foregroundStyle(isOn ? colour.foreground : Color.ink)
                         .frame(maxWidth: .infinity, minHeight: 44)
-                        .background(isOn ? colour.background : Color.surface, in: .capsule)
+                        .background(isOn ? colour.background : offBackground, in: .capsule)
                         .contentShape(.capsule)
                 }
                 .buttonStyle(.plain)

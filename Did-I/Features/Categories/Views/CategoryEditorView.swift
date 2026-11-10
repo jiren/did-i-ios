@@ -235,7 +235,7 @@ struct CategoryEditorView: View {
     }
 }
 
-/// The Repeat chips, then the weekday, the day of the month or the date the chosen rule needs.
+/// The Repeat chips, then the weekday, the day of the month, the date or the Custom card the chosen rule needs.
 private struct RepeatEditor: View {
     @Bindable var viewModel: CategoryEditorViewModel
 
@@ -243,7 +243,7 @@ private struct RepeatEditor: View {
         VStack(alignment: .leading, spacing: 12) {
             FlowLayout(spacing: 8) {
                 ForEach(RepeatKind.allCases, id: \.self) { kind in
-                    ChoiceChip(title: kind.title, isOn: viewModel.repeatKind == kind) { viewModel.repeatKind = kind }
+                    ChoiceChip(title: kind.title, isOn: viewModel.repeatKind == kind) { viewModel.chooseRepeat(kind) }
                         .accessibilityIdentifier("category.repeat.\(kind.rawValue)")
                 }
             }
@@ -280,6 +280,8 @@ private struct RepeatEditor: View {
                 DatePicker(viewModel.dateLabel, selection: $viewModel.date, displayedComponents: .date)
                     .font(.didSubheadline)
                     .foregroundStyle(Color.muted)
+            case .custom:
+                CustomRepeatEditor(viewModel: viewModel)
             }
         }
     }

@@ -265,6 +265,92 @@ struct CategoryEditorViewModelTests {
         #expect(daily.name == "Every day")
         #expect(daily.rule == .daily)
     }
+
+    // MARK: - Custom repeat (Phase 26)
+
+    @Test func customStartsFromTheChosenPreset() {
+        let viewModel = editor()
+        viewModel.chooseRepeat(.everyTwoWeeks)
+        viewModel.weekday = 6
+        viewModel.chooseRepeat(.custom)
+        let anchor = CalendarDay(year: 2026, month: 10, day: 30)
+        #expect(viewModel.custom.unit == .weeks)
+        #expect(viewModel.custom.interval == 2)
+        #expect(viewModel.custom.weekdays == [6])
+        #expect(viewModel.custom.start == anchor)
+        #expect(viewModel.repeatSummary == "Every other Friday")
+        #expect(viewModel.rule.isDue(on: anchor, calendar: TestTime.calendar()))
+
+        let weekly = editor()
+        weekly.chooseRepeat(.weekly)
+        weekly.weekdays = [2, 4]
+        weekly.chooseRepeat(.custom)
+        #expect(weekly.custom.interval == 1)
+        #expect(weekly.custom.weekdays == [2, 4])
+        #expect(weekly.repeatSummary == "Every Mon, Wed")
+    }
+
+    @Test func aCustomMonthlyRuleSavesAndReopens() throws {
+        let viewModel = editor()
+        viewModel.name = "Book club"
+        viewModel.chooseRepeat(.custom)
+        viewModel.custom.unit = .months
+        viewModel.custom.interval = 2
+        viewModel.custom.positionChoice = .weekday
+        viewModel.custom.ordinal = .last
+        viewModel.custom.ordinalWeekday = 6
+        viewModel.custom.endChoice = .after
+        viewModel.custom.endCount = 6
+        #expect(viewModel.repeatSummary == "Every other month on the last Friday · 6 times")
+        #expect(viewModel.save())
+        let saved = try #require(try store.categories().first { $0.name == "Book club" })
+        #expect(saved.rule == viewModel.rule)
+        let reopened = editor(saved.id)
+        #expect(reopened.repeatKind == .custom)
+        #expect(reopened.custom.unit == .months)
+        #expect(reopened.custom.ordinal == .last)
+        #expect(reopened.custom.endCount == 6)
+        #expect(reopened.rule == saved.rule)
+    }
+
+    @Test func theEndDateFollowsTheStart() {
+        let viewModel = editor()
+        viewModel.chooseRepeat(.custom)
+        viewModel.custom.endChoice = .onDate
+        viewModel.customEnd = TestTime.date(2026, 11, 5, 12)
+        viewModel.customStart = TestTime.date(2026, 11, 20, 12)
+        #expect(viewModel.custom.endDate == CalendarDay(year: 2026, month: 11, day: 20))
+        viewModel.customEnd = TestTime.date(2026, 11, 1, 12)
+        #expect(viewModel.custom.endDate == CalendarDay(year: 2026, month: 11, day: 20))
+    }
+
+    @Test func aRuleThatNeverComesUpCantBeSaved() {
+        let viewModel = editor()
+        viewModel.name = "First Mondays"
+        viewModel.chooseRepeat(.custom)
+        viewModel.custom.unit = .months
+        viewModel.custom.positionChoice = .weekday
+        viewModel.custom.ordinal = .first
+        viewModel.custom.ordinalWeekday = 2
+        viewModel.customStart = TestTime.date(2026, 11, 10, 12)
+        viewModel.custom.endChoice = .onDate
+        viewModel.customEnd = TestTime.date(2026, 11, 20, 12)
+        #expect(viewModel.neverComesUp)
+        #expect(!viewModel.canSave)
+        #expect(!viewModel.save())
+        viewModel.customEnd = TestTime.date(2026, 12, 20, 12)
+        #expect(!viewModel.neverComesUp)
+        #expect(viewModel.canSave)
+    }
+
+    @Test func editingKeepsThePartOfDay() throws {
+        let category = try store.addCategory(CategoryDraft(name: "Bin night", rule: .weekly(weekday: 6), partOfDay: .evening), tasks: [])
+        let viewModel = editor(category.id)
+        #expect(viewModel.partOfDay == .evening)
+        viewModel.name = "Bins"
+        #expect(viewModel.save())
+        #expect(try store.category(id: category.id)?.partOfDay == .evening)
+    }
 }
 
 @MainActor
@@ -289,6 +375,18 @@ struct CategoriesViewModelTests {
         #expect(viewModel.current.map(\.category.name) == ["Daily", "Bin night"])
         #expect(viewModel.current[1].detail == "Every Friday · 1 task")
         #expect(viewModel.past.map(\.category.name) == ["Old trip"])
+    }
+
+    @Test func anEndedCustomRuleIsPast() throws {
+        let ended = CustomRepeat(
+            frequency: .daily, start: CalendarDay(year: 2026, month: 10, day: 1), end: .on(CalendarDay(year: 2026, month: 10, day: 20))
+        )
+        let running = CustomRepeat(frequency: .daily, start: CalendarDay(year: 2026, month: 10, day: 1), end: .after(100))
+        _ = try store.addCategory(CategoryDraft(name: "Course", rule: .custom(ended)), tasks: [])
+        _ = try store.addCategory(CategoryDraft(name: "Physio", rule: .custom(running)), tasks: [])
+        viewModel.load()
+        #expect(viewModel.current.map(\.category.name) == ["Daily", "Physio"])
+        #expect(viewModel.past.map(\.category.name) == ["Course"])
     }
 
     @Test func dragsToReorder() throws {

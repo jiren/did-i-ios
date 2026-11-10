@@ -13,6 +13,8 @@ nonisolated enum RepeatRule: Hashable, Sendable {
     case yearly(month: Int, day: Int)
     /// Once, on that day.
     case once(CalendarDay)
+    /// Calendar-style: every n days, weeks, months or years, with a start and an end (Phase 26).
+    case custom(CustomRepeat)
 
     /// Monday to Friday.
     static let workingDays: Set<Int> = [2, 3, 4, 5, 6]
@@ -38,6 +40,7 @@ nonisolated enum RepeatRule: Hashable, Sendable {
         case .monthly: .monthly
         case .yearly: .yearly
         case .once: .once
+        case .custom: .custom
         }
     }
 
@@ -58,12 +61,16 @@ nonisolated enum RepeatRule: Hashable, Sendable {
             return day.day == min(monthDay, day.numberOfDaysInMonth(calendar: calendar))
         case .once(let date):
             return day == date
+        case .custom(let custom):
+            return custom.isDue(on: day, calendar: calendar)
         }
     }
 
-    /// The first due day from `day` on, looking up to two years ahead.
+    /// The first due day from `day` on: worked out for a one-off or a custom rule, else looking up to two years
+    /// ahead (every other kind recurs within a year).
     func nextDueDay(onOrAfter day: CalendarDay, calendar: Calendar) -> CalendarDay? {
         if case .once(let date) = self { return date >= day ? date : nil }
+        if case .custom(let custom) = self { return custom.nextDueDay(onOrAfter: day, calendar: calendar) }
         for offset in 0..<(366 * 2) {
             let candidate = day.adding(days: offset, calendar: calendar)
             if isDue(on: candidate, calendar: calendar) { return candidate }
@@ -71,10 +78,13 @@ nonisolated enum RepeatRule: Hashable, Sendable {
         return nil
     }
 
-    /// A one-off whose day has gone by.
-    func isPast(before day: CalendarDay) -> Bool {
-        if case .once(let date) = self { return date < day }
-        return false
+    /// A one-off whose day has gone by, or a custom rule that has ended.
+    func isPast(before day: CalendarDay, calendar: Calendar) -> Bool {
+        switch self {
+        case .once(let date): date < day
+        case .custom(let custom): custom.hasEnded(before: day, calendar: calendar)
+        default: false
+        }
     }
 
     /// "Every day", "Every Friday", "Every other Friday", "Monthly on the 1st", "Every year, Nov 6",
@@ -94,7 +104,107 @@ nonisolated enum RepeatRule: Hashable, Sendable {
             return String(localized: "Every year, \(date.formatted(Self.monthDay(calendar: calendar, locale: locale)))")
         case .once(let day):
             return String(localized: "Once · \(Self.shortDate(day, calendar: calendar, locale: locale))")
+        case .custom(let custom):
+            return Self.customLabel(custom, calendar: calendar, locale: locale)
         }
+    }
+
+    // MARK: - Custom labels
+
+    /// "Every 3 days", "Every other week on Mon, Wed", "Monthly on the first Monday", "Every 2 years, Nov 6", then
+    /// " · until Dec 31" or " · 5 times".
+    private static func customLabel(_ rule: CustomRepeat, calendar: Calendar, locale: Locale) -> String {
+        let base = customBase(rule, calendar: calendar, locale: locale)
+        switch rule.end {
+        case .never:
+            return base
+        case .on(let last):
+            var style = monthDay(calendar: calendar, locale: locale)
+            if last.year != rule.start.year { style = style.year() }
+            return String(localized: "\(base) · until \(last.noon(in: calendar).formatted(style))")
+        case .after(let count):
+            return count == 1 ? String(localized: "\(base) · 1 time") : String(localized: "\(base) · \(count) times")
+        }
+    }
+
+    private static func customBase(_ rule: CustomRepeat, calendar: Calendar, locale: Locale) -> String {
+        let n = rule.interval
+        switch rule.frequency {
+        case .daily:
+            switch n {
+            case 1: return String(localized: "Every day")
+            case 2: return String(localized: "Every other day")
+            default: return String(localized: "Every \(n) days")
+            }
+        case .weekly(let weekdays):
+            if n == 1 { return weeklyLabel(weekdays, calendar: calendar, locale: locale) }
+            if n == 2, weekdays.count == 1, let weekday = weekdays.first {
+                return String(localized: "Every other \(weekdayName(weekday, calendar: calendar, locale: locale))")
+            }
+            let days = weekdayList(weekdays, calendar: calendar, locale: locale)
+            return n == 2
+                ? String(localized: "Every other week on \(days)")
+                : String(localized: "Every \(n) weeks on \(days)")
+        case .monthly(let position):
+            if n == 1, case .day(let day) = position {
+                return String(localized: "Monthly on the \(ordinal(day, locale: locale))")
+            }
+            let on = positionPhrase(position, calendar: calendar, locale: locale)
+            switch n {
+            case 1: return String(localized: "Monthly on \(on)")
+            case 2: return String(localized: "Every other month on \(on)")
+            default: return String(localized: "Every \(n) months on \(on)")
+            }
+        case .yearly(let month, let position):
+            if case .day(let day) = position {
+                let date = CalendarDay(year: 2028, month: month, day: day).noon(in: calendar)
+                    .formatted(monthDay(calendar: calendar, locale: locale))
+                switch n {
+                case 1: return String(localized: "Every year, \(date)")
+                case 2: return String(localized: "Every other year, \(date)")
+                default: return String(localized: "Every \(n) years, \(date)")
+                }
+            }
+            let on = positionPhrase(position, calendar: calendar, locale: locale)
+            let monthName = self.monthName(month, calendar: calendar, locale: locale)
+            switch n {
+            case 1: return String(localized: "Every year on \(on) of \(monthName)")
+            case 2: return String(localized: "Every other year on \(on) of \(monthName)")
+            default: return String(localized: "Every \(n) years on \(on) of \(monthName)")
+            }
+        }
+    }
+
+    /// "Friday" for one day, else "Mon, Wed" in the calendar's week order.
+    private static func weekdayList(_ weekdays: Set<Int>, calendar: Calendar, locale: Locale) -> String {
+        if weekdays.count == 1, let weekday = weekdays.first { return weekdayName(weekday, calendar: calendar, locale: locale) }
+        var calendar = calendar
+        calendar.locale = locale
+        return weekOrder(weekdays, calendar: calendar).map { calendar.shortStandaloneWeekdaySymbols[$0 - 1] }.joined(separator: ", ")
+    }
+
+    /// "the 15th" or "the first Monday".
+    static func positionPhrase(_ position: CustomRepeat.MonthPosition, calendar: Calendar, locale: Locale) -> String {
+        switch position {
+        case .day(let day):
+            return String(localized: "the \(ordinal(day, locale: locale))", comment: "A day of the month: “the 15th”.")
+        case .weekday(let weekday, let ordinal):
+            let name = weekdayName(weekday, calendar: calendar, locale: locale)
+            switch ordinal {
+            case .first: return String(localized: "the first \(name)", comment: "“the first Monday” of a month.")
+            case .second: return String(localized: "the second \(name)", comment: "“the second Monday” of a month.")
+            case .third: return String(localized: "the third \(name)", comment: "“the third Monday” of a month.")
+            case .fourth: return String(localized: "the fourth \(name)", comment: "“the fourth Monday” of a month.")
+            case .last: return String(localized: "the last \(name)", comment: "“the last Monday” of a month.")
+            }
+        }
+    }
+
+    static func monthName(_ month: Int, calendar: Calendar, locale: Locale) -> String {
+        var calendar = calendar
+        calendar.locale = locale
+        let symbols = calendar.standaloneMonthSymbols
+        return symbols[min(max(month, 1), symbols.count) - 1]
     }
 
     /// "Every Friday", "Every weekday", "Every weekend", "Every Mon, Wed, Fri", or "Every day" for all seven.
@@ -146,9 +256,9 @@ nonisolated enum RepeatRule: Hashable, Sendable {
     static func clampedWeekday(_ weekday: Int) -> Int { min(max(weekday, 1), 7) }
 }
 
-/// The six repeat choices, as stored and as `NewCategory.dc.html`'s Repeat chips name them.
+/// The repeat choices, as stored and as `NewCategory.dc.html`'s Repeat chips name them, then Custom (Phase 26).
 nonisolated enum RepeatKind: String, CaseIterable, Codable, Sendable {
-    case daily, weekly, everyTwoWeeks, monthly, yearly, once
+    case daily, weekly, everyTwoWeeks, monthly, yearly, once, custom
 
     var title: String {
         switch self {
@@ -158,6 +268,7 @@ nonisolated enum RepeatKind: String, CaseIterable, Codable, Sendable {
         case .monthly: String(localized: "Monthly")
         case .yearly: String(localized: "Yearly")
         case .once: String(localized: "On a date")
+        case .custom: String(localized: "Custom")
         }
     }
 }

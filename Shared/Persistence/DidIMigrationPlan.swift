@@ -3,8 +3,8 @@ import SwiftData
 import Synchronization
 
 nonisolated enum DidIMigrationPlan: SchemaMigrationPlan {
-    static var schemas: [any VersionedSchema.Type] { [SchemaV1.self, SchemaV2.self, SchemaV3.self] }
-    static var stages: [MigrationStage] { [v1ToV2, v2ToV3] }
+    static var schemas: [any VersionedSchema.Type] { [SchemaV1.self, SchemaV2.self, SchemaV3.self, SchemaV4.self] }
+    static var stages: [MigrationStage] { [v1ToV2, v2ToV3, v3ToV4] }
 
     /// V1 → V2: every check goes into Daily, which takes the earliest per-check reminder time. Works on V2's own
     /// models, so later versions can't change it.
@@ -40,6 +40,9 @@ nonisolated enum DidIMigrationPlan: SchemaMigrationPlan {
 
     /// V2 → V3: adds the weekdays a weekly category repeats on; existing ones keep their one day.
     static let v2ToV3 = MigrationStage.lightweight(fromVersion: SchemaV2.self, toVersion: SchemaV3.self)
+
+    /// V3 → V4: adds custom repeats and the part of day, all optional; existing categories read as before, at Anytime.
+    static let v3ToV4 = MigrationStage.lightweight(fromVersion: SchemaV3.self, toVersion: SchemaV4.self)
 
     /// The V1 reminder time, read before V1's column goes and written to Daily after.
     private static let carriedReminderMinutes = Mutex<Int?>(nil)

@@ -24,6 +24,8 @@ nonisolated struct CategoryRecord: Identifiable, Hashable, Sendable {
     var order: Int
     /// Daily: can't be deleted or rescheduled.
     var isDefault: Bool
+    /// Today groups sections by it (Phase 27).
+    var partOfDay: PartOfDay = .anytime
 }
 
 /// A category's details, for creating or editing one.
@@ -33,13 +35,18 @@ nonisolated struct CategoryDraft: Hashable, Sendable {
     var colour: CategoryColour
     var rule: RepeatRule
     var reminderMinutes: Int?
+    var partOfDay: PartOfDay
 
-    init(name: String, icon: CategoryIcon = .sun, colour: CategoryColour = .violet, rule: RepeatRule = .daily, reminderMinutes: Int? = nil) {
+    init(
+        name: String, icon: CategoryIcon = .sun, colour: CategoryColour = .violet, rule: RepeatRule = .daily,
+        reminderMinutes: Int? = nil, partOfDay: PartOfDay = .anytime
+    ) {
         self.name = name
         self.icon = icon
         self.colour = colour
         self.rule = rule
         self.reminderMinutes = reminderMinutes
+        self.partOfDay = partOfDay
     }
 }
 

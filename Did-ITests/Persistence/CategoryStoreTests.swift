@@ -85,11 +85,38 @@ struct CategoryStoreTests {
         let rules: [RepeatRule] = [
             .daily, .weekly(weekday: 2), .weekly(weekdays: [1, 4, 7]), .everyTwoWeeks(weekday: 6, anchor: CalendarDay(year: 2026, month: 10, day: 30)),
             .monthly(day: 31), .yearly(month: 2, day: 29), .once(CalendarDay(year: 2026, month: 11, day: 2)),
+            .custom(CustomRepeat(frequency: .daily, interval: 3, start: CalendarDay(year: 2026, month: 10, day: 30))),
+            .custom(CustomRepeat(
+                frequency: .weekly(weekdays: [2, 4]), interval: 2, start: CalendarDay(year: 2026, month: 11, day: 4),
+                end: .on(CalendarDay(year: 2027, month: 3, day: 1)), weekStart: 2
+            )),
+            .custom(CustomRepeat(frequency: .monthly(.weekday(6, .last)), start: CalendarDay(year: 2026, month: 10, day: 30), end: .after(6))),
+            .custom(CustomRepeat(frequency: .monthly(.day(31)), interval: 2, start: CalendarDay(year: 2027, month: 1, day: 31))),
+            .custom(CustomRepeat(frequency: .yearly(month: 11, .weekday(5, .fourth)), interval: 2, start: CalendarDay(year: 2026, month: 10, day: 30))),
         ]
         for (index, rule) in rules.enumerated() {
             let category = try store.addCategory(CategoryDraft(name: "Rule \(index)", rule: rule), tasks: [])
             #expect(try store.category(id: category.id)?.rule == rule)
         }
+    }
+
+    @Test func storesThePartOfDay() throws {
+        let bins = try store.addCategory(CategoryDraft(name: "Bin night", rule: .weekly(weekday: 6), partOfDay: .evening), tasks: [])
+        #expect(try store.category(id: bins.id)?.partOfDay == .evening)
+        try store.updateCategory(bins.id, to: CategoryDraft(name: "Bin night", rule: .weekly(weekday: 6), partOfDay: .morning))
+        #expect(try store.category(id: bins.id)?.partOfDay == .morning)
+        #expect(try store.category(id: CategoryDefaults.dailyID)?.partOfDay == .anytime)
+    }
+
+    @Test func aPresetClearsAnEarlierCustomRule() throws {
+        let custom = RepeatRule.custom(CustomRepeat(
+            frequency: .yearly(month: 3, .weekday(1, .last)), start: CalendarDay(year: 2026, month: 10, day: 30), end: .after(4)
+        ))
+        let category = try store.addCategory(CategoryDraft(name: "Clocks change", rule: custom), tasks: [])
+        try store.updateCategory(category.id, to: CategoryDraft(name: "Clocks change", rule: .monthly(day: 1)))
+        #expect(try store.category(id: category.id)?.rule == .monthly(day: 1))
+        try store.updateCategory(category.id, to: CategoryDraft(name: "Clocks change", rule: custom))
+        #expect(try store.category(id: category.id)?.rule == custom)
     }
 
     @Test func dailyCanBeRenamedButNotRescheduledOrDeleted() throws {
@@ -227,6 +254,44 @@ struct MigrationTests {
         #expect(bins.rule == .weekly(weekday: 6))
         #expect(bins.icon == .bin)
         #expect(try store.checks().map(\.name) == ["Bins out"])
+    }
+
+    @Test func aVersion3StoreReadsTheSame() throws {
+        let url = URL.temporaryDirectory.appending(path: "DidI-V3-\(UUID().uuidString).store")
+        defer {
+            for suffix in ["", "-shm", "-wal"] {
+                try? FileManager.default.removeItem(at: URL(filePath: url.path() + suffix))
+            }
+        }
+        let now = TestTime.date(2026, 10, 29, 8)
+        let recyclingID = UUID(), gymID = UUID()
+        do {
+            let schema = Schema(versionedSchema: SchemaV3.self)
+            let container = try ModelContainer(for: schema, configurations: [ModelConfiguration(schema: schema, url: url)])
+            let context = ModelContext(container)
+            context.insert(SchemaV3.CheckCategory(id: CategoryDefaults.dailyID, name: "Daily", repeatKindRaw: "daily", order: 0, isDefault: true, now: now))
+            let recycling = SchemaV3.CheckCategory(id: recyclingID, name: "Recycling", repeatKindRaw: "everyTwoWeeks", order: 1, isDefault: false, now: now)
+            recycling.repeatWeekday = 6
+            (recycling.repeatYear, recycling.repeatMonth, recycling.repeatDay) = (2026, 10, 30)
+            recycling.reminderMinutes = 20 * 60
+            let gym = SchemaV3.CheckCategory(id: gymID, name: "Gym", repeatKindRaw: "weekly", order: 2, isDefault: false, now: now)
+            gym.repeatWeekday = 2
+            gym.repeatWeekdayMask = 0b0101010
+            context.insert(recycling)
+            context.insert(gym)
+            let check = SchemaV3.Check(name: "Recycling out", kindRaw: "other", order: 0, now: now)
+            check.category = recycling
+            context.insert(check)
+            try context.save()
+        }
+
+        let store = SwiftDataStore(container: try ModelContainer.app(url: url))
+        let recycling = try #require(try store.category(id: recyclingID))
+        #expect(recycling.rule == .everyTwoWeeks(weekday: 6, anchor: CalendarDay(year: 2026, month: 10, day: 30)))
+        #expect(recycling.reminderMinutes == 20 * 60)
+        #expect(recycling.partOfDay == .anytime)
+        #expect(try store.category(id: gymID)?.rule == .weekly(weekdays: [2, 4, 6]))
+        #expect(try store.checks().map(\.name) == ["Recycling out"])
     }
 
     private func writeVersion1Store(at url: URL, now: Date, doorID: UUID) throws {

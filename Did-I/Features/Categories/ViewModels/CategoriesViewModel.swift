@@ -48,8 +48,9 @@ final class CategoriesViewModel {
             let rule = category.rule.label(calendar: boundary.calendar, locale: locale)
             return Row(category: category, detail: String(localized: "\(rule) · \(tasks)"))
         }
-        current = rows.filter { !$0.category.rule.isPast(before: today) }
-        past = rows.filter { $0.category.rule.isPast(before: today) }
+        let isPast = { (row: Row) in row.category.rule.isPast(before: today, calendar: boundary.calendar) }
+        current = rows.filter { !isPast($0) }
+        past = rows.filter(isPast)
     }
 
     /// Drag to reorder the current categories; past ones keep their place after them.

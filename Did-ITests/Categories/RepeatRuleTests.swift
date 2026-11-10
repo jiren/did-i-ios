@@ -76,8 +76,8 @@ struct RepeatRuleTests {
         #expect(RepeatRule.monthly(day: 31).nextDueDay(onOrAfter: day(2027, 2, 1), calendar: calendar) == day(2027, 2, 28))
         #expect(RepeatRule.once(day(2026, 11, 2)).nextDueDay(onOrAfter: day(2026, 10, 30), calendar: calendar) == day(2026, 11, 2))
         #expect(RepeatRule.once(day(2026, 10, 2)).nextDueDay(onOrAfter: day(2026, 10, 30), calendar: calendar) == nil)
-        #expect(RepeatRule.once(day(2026, 10, 2)).isPast(before: day(2026, 10, 30)))
-        #expect(!RepeatRule.daily.isPast(before: day(2026, 10, 30)))
+        #expect(RepeatRule.once(day(2026, 10, 2)).isPast(before: day(2026, 10, 30), calendar: calendar))
+        #expect(!RepeatRule.daily.isPast(before: day(2026, 10, 30), calendar: calendar))
     }
 
     @Test(arguments: [

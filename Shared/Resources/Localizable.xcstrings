@@ -43,6 +43,19 @@
         }
       }
     },
+    "%@ · %lld times" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$lld times"
+          }
+        }
+      }
+    },
+    "%@ · 1 time" : {
+
+    },
     "%@ · No reminder" : {
 
     },
@@ -58,6 +71,16 @@
     },
     "%@ · photo" : {
 
+    },
+    "%@ · until %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · until %2$@"
+          }
+        }
+      }
     },
     "%@ — %@" : {
       "localizations" : {
@@ -473,7 +496,19 @@
     "Added" : {
 
     },
+    "After" : {
+
+    },
+    "After %lld times" : {
+
+    },
+    "After 1 time" : {
+
+    },
     "After a press" : {
+
+    },
+    "Afternoon" : {
 
     },
     "Air conditioning" : {
@@ -501,6 +536,9 @@
 
     },
     "Also notify for checks already logged" : {
+
+    },
+    "Anytime" : {
 
     },
     "Appearance" : {
@@ -800,6 +838,9 @@
     "Curling iron off" : {
 
     },
+    "Custom" : {
+
+    },
     "Custom colour" : {
 
     },
@@ -825,6 +866,9 @@
 
     },
     "Day starts at" : {
+
+    },
+    "Days" : {
 
     },
     "Delete" : {
@@ -948,6 +992,15 @@
     "Edit check" : {
 
     },
+    "End repeat" : {
+
+    },
+    "Ends on" : {
+
+    },
+    "Evening" : {
+
+    },
     "Evening meds" : {
 
     },
@@ -956,6 +1009,58 @@
     },
     "Every %@" : {
 
+    },
+    "Every %lld days" : {
+
+    },
+    "Every %lld months" : {
+
+    },
+    "Every %lld months on %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Every %1$lld months on %2$@"
+          }
+        }
+      }
+    },
+    "Every %lld weeks" : {
+
+    },
+    "Every %lld weeks on %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Every %1$lld weeks on %2$@"
+          }
+        }
+      }
+    },
+    "Every %lld years" : {
+
+    },
+    "Every %lld years on %@ of %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Every %1$lld years on %2$@ of %3$@"
+          }
+        }
+      }
+    },
+    "Every %lld years, %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Every %1$lld years, %2$@"
+          }
+        }
+      }
     },
     "Every 2 weeks" : {
 
@@ -966,7 +1071,35 @@
     "Every log and photo is deleted." : {
 
     },
+    "Every month" : {
+
+    },
     "Every other %@" : {
+
+    },
+    "Every other day" : {
+
+    },
+    "Every other month on %@" : {
+
+    },
+    "Every other week on %@" : {
+
+    },
+    "Every other year on %@ of %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Every other year on %1$@ of %2$@"
+          }
+        }
+      }
+    },
+    "Every other year, %@" : {
+
+    },
+    "Every week" : {
 
     },
     "Every weekday" : {
@@ -974,6 +1107,19 @@
     },
     "Every weekend" : {
 
+    },
+    "Every year" : {
+
+    },
+    "Every year on %@ of %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Every year on %1$@ of %2$@"
+          }
+        }
+      }
     },
     "Every year, %@" : {
 
@@ -1014,6 +1160,9 @@
     "Filter by category" : {
 
     },
+    "First" : {
+
+    },
     "First aid" : {
 
     },
@@ -1051,6 +1200,9 @@
 
     },
     "Forget home" : {
+
+    },
+    "Fourth" : {
 
     },
     "Free" : {
@@ -1224,6 +1376,9 @@
     "Icon for “%@”" : {
 
     },
+    "In" : {
+
+    },
     "In the Settings app, open Action Button, swipe to Controls, and choose Did I? › Log a check." : {
 
     },
@@ -1307,6 +1462,9 @@
 
     },
     "Laptop locked" : {
+
+    },
+    "Last" : {
 
     },
     "Laundry" : {
@@ -1481,13 +1639,22 @@
     "Monthly" : {
 
     },
+    "Monthly on %@" : {
+
+    },
     "Monthly on the %@" : {
+
+    },
+    "Months" : {
 
     },
     "Moon" : {
 
     },
     "More icons" : {
+
+    },
+    "Morning" : {
 
     },
     "Morning & night" : {
@@ -1552,6 +1719,9 @@
 
     },
     "Needed for reminders and nudges" : {
+
+    },
+    "Never" : {
 
     },
     "New category" : {
@@ -1651,6 +1821,12 @@
 
     },
     "On a date" : {
+
+    },
+    "On day" : {
+
+    },
+    "On the" : {
 
     },
     "Once · %@" : {
@@ -1907,6 +2083,9 @@
     "Repeat" : {
 
     },
+    "Repeat every" : {
+
+    },
     "Retake photo for %@" : {
 
     },
@@ -1947,6 +2126,9 @@
 
     },
     "Search icons" : {
+
+    },
+    "Second" : {
 
     },
     "Second-guesses" : {
@@ -2054,6 +2236,9 @@
     "Start from scratch" : {
 
     },
+    "Starts" : {
+
+    },
     "Stats" : {
 
     },
@@ -2150,6 +2335,9 @@
     "That check isn’t in Did I? any more." : {
 
     },
+    "The" : {
+
+    },
     "The check this widget shows and logs." : {
 
     },
@@ -2162,10 +2350,16 @@
     "There’s already a category called “%@”." : {
 
     },
+    "Third" : {
+
+    },
     "This can’t be undone." : {
 
     },
     "This device has no camera, so proof photos aren’t available. Logging still works." : {
+
+    },
+    "This doesn’t come up between those dates." : {
 
     },
     "This iPhone has no Action Button. The same choice applies to the Did I? control in Control Center." : {
@@ -2308,13 +2502,22 @@
     "Week" : {
 
     },
+    "Weekday" : {
+
+    },
     "Weekly" : {
+
+    },
+    "Weeks" : {
 
     },
     "Weights" : {
 
     },
     "Which check?" : {
+
+    },
+    "Which week" : {
 
     },
     "Wi-Fi" : {
@@ -2351,6 +2554,9 @@
 
     },
     "Yearly home" : {
+
+    },
+    "Years" : {
 
     },
     "Yes. %@ at %@, %@." : {
@@ -2417,6 +2623,24 @@
     },
     "re-logs within 30 min, vs %@" : {
 
+    },
+    "the %@" : {
+      "comment" : "A day of the month: “the 15th”."
+    },
+    "the first %@" : {
+      "comment" : "“the first Monday” of a month."
+    },
+    "the fourth %@" : {
+      "comment" : "“the fourth Monday” of a month."
+    },
+    "the last %@" : {
+      "comment" : "“the last Monday” of a month."
+    },
+    "the second %@" : {
+      "comment" : "“the second Monday” of a month."
+    },
+    "the third %@" : {
+      "comment" : "“the third Monday” of a month."
     },
     "up %lld%%, %@" : {
       "localizations" : {

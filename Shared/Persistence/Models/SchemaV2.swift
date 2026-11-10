@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 /// Categories (phase 13): every check belongs to one, and reminders moved from checks to categories. Frozen; the
-/// app uses `SchemaV3`.
+/// app uses `SchemaV4`.
 nonisolated enum SchemaV2: VersionedSchema {
     static let versionIdentifier = Schema.Version(2, 0, 0)
 

@@ -79,6 +79,8 @@ others ("Add checks", "3 checks planned"); the copy is ported as written, and th
 |---|---|
 | **Category** | From `NewCategory.dc.html`: a category has a **name**, an **icon** (12: suitcase, sun, home, bin, lock, pill, flame, plug, car, key, heart, globe), a **colour** (the six tile colours), a **repeat** rule, its **tasks** (checks), and a **Remind me at** time ("Only if something’s not logged"). Every check belongs to exactly one category. Categories have an order (the filter chips and sections follow it). Icons map to SF Symbols (`suitcase.fill`, `sun.max.fill`, `house.fill`, `trash.fill`, `lock.fill`, `pills.fill`, `flame.fill`, `powerplug.fill`, `car.fill`, `key.fill`, `heart.fill`, `globe`). |
 | **Repeat rules** | From the design: **Daily** ("Every day"), **Weekly** on a weekday ("Every Friday"), **Every 2 weeks** ("Every other Friday", counted from the week it was set), **Monthly** on a day ("Monthly on the 1st"), **Yearly** on a date ("Every year, Nov 6"), and **On a date**, once ("Once · Fri, Nov 6"). Proposed: a monthly day past the month's end (29–31) falls on its last day; Feb 29 yearly falls on Feb 28 in other years; due days use the **Day starts at** boundary and the current calendar, so DST and travel behave as for "today". |
+| **Custom repeat** | 2026-11-07, the user: a **Custom** chip after On a date, like Calendar's: every n (1–99) days, weeks (on one or more weekdays), months or years; months and years on a day ("the 15th", past the month's end on its last day) or on "the first/second/third/fourth/last {weekday}"; a **start** date; **End repeat** Never / On a date / After n times. Built (Phase 26): start and end apply to Custom only, so the presets stay one tap; Every 2 weeks stays its own chip; picking Custom fills it in from the chosen preset. Labels: "Every 3 days", "Every other week on Mon, Wed", "Monthly on the first Monday", "Every 2 years, Nov 6", then " · until Dec 31" or " · 5 times". A rule that has ended is listed under **Past** in Categories, as a past one-off is. No "fifth" weekday, so each month has one occurrence and "After n times" is arithmetic. |
+| **Time of day** | 2026-11-07, the user: a category has a **part of the day**, Morning / Afternoon / Evening / Anytime (the default), with no clock time. Today groups its sections under those headers (Phase 27). Stored from Phase 26 (`SchemaV4`). |
 | **Default category** | Proposed: there is always one default category, **Daily** (sun, Violet, Every day), created on a new install and by the migration. It can be renamed and re-iconed, but not deleted and not rescheduled, so "Move tasks to Daily" always has a target. |
 | **Done** | From `Main.dc.html`: a task is **done on a day when it has a log in that day** (the Day starts at boundary). A category is **due** on a day when its repeat rule says so; only due categories show for that day. Proposed: a task can still be logged on a day it isn't due (from Siri, a widget, Detail or the Action Button); the log is kept and shown in History, but it counts only toward the day it falls on. |
 | **Today: calendar** | From `Main.dc.html` (2026-10-30, the user: **7 days ahead, as drawn**): a strip of seven days starting today ("Today", then "Sat", "Sun"…, with the date), each with up to three dots in the colours of the **non-daily** categories due that day (white on the selected day). Selecting a day shows that day. Past days aren't in the strip; History covers them. The date line reads "Today · Fri, Oct 30" or "Sat, Oct 31". |
@@ -583,4 +585,36 @@ From the design: the order, the copy, Week / Month / Year, tap a bar to read it,
   Swift Charts. `CheckRecord` gains `createdAt`, which the model already stored, so no schema change.
 - `-SeedStats` and `-Open stats` for screenshots. 2,943 seeded logs: a reload takes about 60 ms on the simulator and a
   range change 5–13 ms, so it stays on the main actor.
+
+## Phase 26 — Custom repeat
+
+Branch `feature/phase-26-custom-repeat`. 2026-11-07, the user: "Add Category with repeating date like calendar and time
+of the day"; asked, they chose a **calendar-style Custom repeat** and a **part of the day** (see Categories &
+calendar). The canvas doesn't draw either, so both are app-only. Two phases: this one adds the rule and the one schema
+change, Phase 27 the part-of-day UI.
+
+- `RepeatRule.custom(CustomRepeat)` (`Shared/Categories/CustomRepeat.swift`): `isDue` and `occurrenceIndex` are
+  arithmetic on `CalendarDay` (days, weeks between week starts, months and years through the calendar), so DST, time
+  zones and Stats' two years of days cost nothing extra. `nextDueDay` works by period for Custom, so "every 5 years"
+  works; the presets keep the two-year scan. A custom rule keeps the week start it was saved with, so a region change
+  doesn't regroup "every 2 weeks on Sun, Wed". `isPast(before:calendar:)` now takes the calendar.
+- `SchemaV4` adds optional `CheckCategory` fields (`partOfDayRaw`, `repeatFrequencyRaw`, `repeatInterval`,
+  `repeatOrdinal`, `repeatWeekStart`, the start and end dates as year/month/day, `repeatEndCount`) with a lightweight
+  stage from V3; `SchemaV3` became frozen copies. The presets read and write exactly as before. `CategoryRecord` and
+  `CategoryDraft` carry `partOfDay`.
+- The editor's Custom card (`CustomRepeatEditor`, with the pure `CustomRepeatForm`): a stepper and Days / Weeks /
+  Months / Years, the weekdays or "On day" / "On the", Starts, and End repeat. Moving the start past the end date
+  pulls the end along; a rule that never comes up ("This doesn’t come up between those dates.") can't be saved.
+
+**Done when** the custom rule's tables pass and the simulator's real V3 store opens as V4 unchanged.
+
+## Phase 27 — Time of day
+
+Branch `feature/phase-27-part-of-day`. A "Time of day" field (Morning / Afternoon / Evening / Anytime) on New and
+Edit category, after Repeat, for Daily too; turning on Remind me starts at the part's time (9 AM, 3 PM, 8 PM). Today
+sorts sections by part, then category order, under MORNING / AFTERNOON / EVENING / ANYTIME headers, shown only when
+the sections span two or more parts (a filter shows none). Tile colours don't change. Summaries add the part ("Every
+Friday · Evening"), leaving out Anytime. Templates and `-SeedSample` get parts (Bin night Evening, Travel Morning).
+
+**Done when** `-SeedSample` shows the headers on Today and a filter hides them.
 

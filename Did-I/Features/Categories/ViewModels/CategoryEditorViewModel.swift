@@ -34,6 +34,10 @@ final class CategoryEditorViewModel {
     var monthDay = 1
     /// For Yearly and On a date.
     var date = Date()
+    /// For Custom (Phase 26).
+    var custom = CustomRepeatForm(start: CalendarDay(year: 2026, month: 1, day: 1), calendar: .autoupdatingCurrent)
+    /// Morning, Afternoon, Evening or Anytime (Phase 27).
+    var partOfDay: PartOfDay = .anytime
     var remindsMe = false
     var reminderTime = Date()
     /// Its tasks nudge when leaving home (once a home is set).
@@ -97,6 +101,7 @@ final class CategoryEditorViewModel {
         weekdays = [weekday]
         monthDay = today.day
         date = today.adding(days: 1, calendar: calendar).noon(in: calendar)
+        custom = CustomRepeatForm(start: today, calendar: calendar)
         reminderTime = time(minutes: Self.defaultReminderMinutes)
         guard let editedID, let category = categories.first(where: { $0.id == editedID }) else {
             let used = Set(categories.map(\.colour))
@@ -107,6 +112,7 @@ final class CategoryEditorViewModel {
         icon = category.icon
         colour = category.colour
         isDaily = category.isDefault
+        partOfDay = category.partOfDay
         loadedRule = category.rule
         repeatKind = category.rule.kind
         switch category.rule {
@@ -120,6 +126,7 @@ final class CategoryEditorViewModel {
         case .monthly(let day): monthDay = day
         case .yearly(let month, let day): date = Self.yearlyDate(month: month, day: day, from: today, calendar: calendar)
         case .once(let day): date = day.noon(in: calendar)
+        case .custom: custom = CustomRepeatForm(from: category.rule, today: today, calendar: calendar)
         }
         if let minutes = category.reminderMinutes {
             remindsMe = true
@@ -167,8 +174,45 @@ final class CategoryEditorViewModel {
 
     var commitTitle: String { isNew ? String(localized: "Create category") : String(localized: "Save") }
 
-    /// A name is all it needs.
-    var canSave: Bool { CheckName.cleaned(name) != nil }
+    /// A name, and a custom rule that comes up at least once.
+    var canSave: Bool { CheckName.cleaned(name) != nil && !neverComesUp }
+
+    /// A custom rule whose end leaves no day for it: "This doesn't come up between those dates."
+    var neverComesUp: Bool {
+        guard repeatKind == .custom, !isDaily else { return false }
+        return rule.nextDueDay(onOrAfter: custom.start, calendar: calendar) == nil
+    }
+
+    /// Picks a Repeat chip. Custom starts from the schedule chosen so far.
+    func chooseRepeat(_ kind: RepeatKind) {
+        guard kind != repeatKind else { return }
+        if kind == .custom, repeatKind != .custom {
+            custom = CustomRepeatForm(from: rule, today: today, calendar: calendar)
+        }
+        repeatKind = kind
+    }
+
+    /// The custom start as a date, for its date picker.
+    var customStart: Date {
+        get { custom.start.noon(in: calendar) }
+        set { custom.setStart(CalendarDay(newValue, calendar: calendar)) }
+    }
+
+    /// The custom end date, never before the start.
+    var customEnd: Date {
+        get { custom.endDate.noon(in: calendar) }
+        set { custom.setEndDate(CalendarDay(newValue, calendar: calendar)) }
+    }
+
+    /// The weekday names in the calendar's week order, for the "On the" weekday menu.
+    var weekdayChoices: [(weekday: Int, name: String)] {
+        RepeatRule.weekOrder(Set(1...7), calendar: calendar).map { ($0, RepeatRule.weekdayName($0, calendar: calendar, locale: locale)) }
+    }
+
+    /// The month names, for a custom yearly rule.
+    var monthChoices: [(month: Int, name: String)] {
+        (1...12).map { ($0, RepeatRule.monthName($0, calendar: calendar, locale: locale)) }
+    }
 
     var rule: RepeatRule {
         let day = CalendarDay(date, calendar: calendar)
@@ -181,6 +225,7 @@ final class CategoryEditorViewModel {
         case .monthly: return .monthly(day: min(max(monthDay, 1), 31))
         case .yearly: return .yearly(month: day.month, day: day.day)
         case .once: return .once(day)
+        case .custom: return custom.rule(weekStart: calendar.firstWeekday)
         }
     }
 
@@ -264,13 +309,17 @@ final class CategoryEditorViewModel {
             errorMessage = String(localized: "Give it a name.")
             return false
         }
+        guard !neverComesUp else {
+            errorMessage = String(localized: "This doesn’t come up between those dates.")
+            return false
+        }
         if removalQuestion == nil, let question = removalQuestionText() {
             removalQuestion = question
             return false
         }
         let draft = CategoryDraft(
             name: cleaned, icon: icon, colour: colour, rule: isDaily ? .daily : rule,
-            reminderMinutes: remindsMe ? minutes(of: reminderTime) : nil
+            reminderMinutes: remindsMe ? minutes(of: reminderTime) : nil, partOfDay: partOfDay
         )
         do {
             let categoryID: UUID

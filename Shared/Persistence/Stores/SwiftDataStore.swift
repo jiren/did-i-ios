@@ -135,6 +135,7 @@ final class SwiftDataStore: CheckStoring, CategoryStoring, LogStoring {
         let order = (try allCategoryModels().map(\.order).max() ?? -1) + 1
         let category = CheckCategory(name: name, icon: draft.icon, colour: draft.colour, rule: draft.rule, order: order, now: timeSource.now)
         category.reminderMinutes = Self.clampedMinutes(draft.reminderMinutes)
+        category.partOfDay = draft.partOfDay
         context.insert(category)
         _ = try insertChecks(tasks, into: category)
         try context.save()
@@ -150,6 +151,7 @@ final class SwiftDataStore: CheckStoring, CategoryStoring, LogStoring {
             category.colourRaw = draft.colour.key
             if category.rule != draft.rule { category.rule = draft.rule }
             category.reminderMinutes = Self.clampedMinutes(draft.reminderMinutes)
+            if category.partOfDay != draft.partOfDay { category.partOfDay = draft.partOfDay }
         }
     }
 
@@ -464,7 +466,8 @@ final class SwiftDataStore: CheckStoring, CategoryStoring, LogStoring {
             rule: model.isDefault ? .daily : model.rule,
             reminderMinutes: model.reminderMinutes,
             order: model.order,
-            isDefault: model.isDefault
+            isDefault: model.isDefault,
+            partOfDay: model.partOfDay
         )
     }
 
