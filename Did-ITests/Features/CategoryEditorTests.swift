@@ -343,6 +343,31 @@ struct CategoryEditorViewModelTests {
         #expect(viewModel.canSave)
     }
 
+    // MARK: - Time of day (Phase 27)
+
+    @Test func theReminderTimeFollowsThePartOfDayUntilPicked() {
+        let viewModel = editor()
+        viewModel.name = "Pills"
+        viewModel.remindsMe = true
+        viewModel.choosePartOfDay(.morning)
+        #expect(viewModel.previewDetail.plainSpaces == "0 tasks · Reminder at 9:00 AM")
+        viewModel.choosePartOfDay(.afternoon)
+        #expect(viewModel.previewDetail.plainSpaces == "0 tasks · Reminder at 3:00 PM")
+        viewModel.setReminderTime(TestTime.date(2026, 10, 29, 7, 30))
+        viewModel.choosePartOfDay(.evening)
+        #expect(viewModel.previewDetail.plainSpaces == "0 tasks · Reminder at 7:30 AM")
+        #expect(viewModel.repeatSummary == "Every day · Evening")
+    }
+
+    @Test func aTemplateBringsItsPartOfDay() throws {
+        let viewModel = editor()
+        let bedtime = try #require(CategoryTemplates.groups.flatMap(\.templates).first { $0.id == "bedtime" })
+        viewModel.apply(bedtime)
+        #expect(viewModel.partOfDay == .evening)
+        #expect(viewModel.save())
+        #expect(try store.categories().first { $0.name == "Bedtime" }?.partOfDay == .evening)
+    }
+
     @Test func editingKeepsThePartOfDay() throws {
         let category = try store.addCategory(CategoryDraft(name: "Bin night", rule: .weekly(weekday: 6), partOfDay: .evening), tasks: [])
         let viewModel = editor(category.id)
@@ -375,6 +400,12 @@ struct CategoriesViewModelTests {
         #expect(viewModel.current.map(\.category.name) == ["Daily", "Bin night"])
         #expect(viewModel.current[1].detail == "Every Friday · 1 task")
         #expect(viewModel.past.map(\.category.name) == ["Old trip"])
+    }
+
+    @Test func rowsNameThePartOfDay() throws {
+        _ = try store.addCategory(CategoryDraft(name: "Bin night", rule: .weekly(weekday: 6), partOfDay: .evening), tasks: [CheckDraft(name: "Bins out")])
+        viewModel.load()
+        #expect(viewModel.current.map(\.detail) == ["Every day · 0 tasks", "Every Friday · Evening · 1 task"])
     }
 
     @Test func anEndedCustomRuleIsPast() throws {

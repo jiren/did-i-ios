@@ -39,6 +39,7 @@ struct CategoryEditorView: View {
                 if !viewModel.isDaily {
                     field(String(localized: "Repeat")) { RepeatEditor(viewModel: viewModel) }
                 }
+                field(String(localized: "Time of day")) { partOfDay }
                 tasks
                 reminder
                 if let message = viewModel.errorMessage {
@@ -189,6 +190,16 @@ struct CategoryEditorView: View {
         }
     }
 
+    /// Morning, Afternoon, Evening or Anytime: where Today groups it.
+    private var partOfDay: some View {
+        FlowLayout(spacing: 8) {
+            ForEach(PartOfDay.allCases, id: \.self) { part in
+                ChoiceChip(title: part.title, isOn: viewModel.partOfDay == part) { viewModel.choosePartOfDay(part) }
+                    .accessibilityIdentifier("category.partOfDay.\(part.rawValue)")
+            }
+        }
+    }
+
     private var reminder: some View {
         VStack(alignment: .leading, spacing: 0) {
             Toggle(isOn: $viewModel.remindsMe) {
@@ -200,7 +211,11 @@ struct CategoryEditorView: View {
             .tint(Color.tileViolet)
             .accessibilityIdentifier("category.reminder")
             if viewModel.remindsMe {
-                DatePicker(String(localized: "Reminder time"), selection: $viewModel.reminderTime, displayedComponents: .hourAndMinute)
+                DatePicker(
+                    String(localized: "Reminder time"),
+                    selection: Binding(get: { viewModel.reminderTime }, set: viewModel.setReminderTime),
+                    displayedComponents: .hourAndMinute
+                )
                     .font(.didRowTitle)
                     .foregroundStyle(Color.ink)
                     .padding(.top, 10)

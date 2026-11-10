@@ -8,8 +8,8 @@ private struct Sample {
     static let now = TestTime.date(2026, 10, 30, 10, 42)
     static let today = CalendarDay(year: 2026, month: 10, day: 30)
 
-    let daily = category("Daily", .sun, .violet, .daily, order: 0, isDefault: true)
-    let bins = category("Bin night", .bin, .mint, .weekly(weekday: 6), order: 1)
+    var daily = category("Daily", .sun, .violet, .daily, order: 0, isDefault: true)
+    var bins = category("Bin night", .bin, .mint, .weekly(weekday: 6), order: 1)
     let home = category("Home safety", .home, .coral, .monthly(day: 1), order: 2)
     let travel = category("Travel", .suitcase, .sky, .once(CalendarDay(year: 2026, month: 11, day: 2)), order: 3)
     var checks: [CheckRecord] = []
@@ -96,6 +96,34 @@ struct DayAgendaTests {
         #expect(agenda.sections.flatMap(\.tasks).map(\.swatch) == [.mint, .violet, .sun, .coral, .pink, .sky])
         let filtered = sample.agenda(filter: sample.bins)
         #expect(filtered.sections.flatMap(\.tasks).map(\.swatch) == [.pink, .sky])
+    }
+
+    // MARK: - Time of day (Phase 27)
+
+    @Test func sectionsFollowThePartOfDayUnderHeaders() {
+        var sample = Sample()
+        sample.bins.partOfDay = .evening
+        let agenda = sample.agenda()
+        #expect(agenda.sections.map(\.category.name) == ["Bin night", "Daily"])
+        #expect(agenda.sections.map(\.partHeader) == [.evening, .anytime])
+        // The progress segments follow the order shown; the colours still follow the whole list.
+        #expect(agenda.progress.segments.map(\.check.name).prefix(2) == ["Recycling out", "Bins out"])
+        #expect(agenda.sections.flatMap(\.tasks).map(\.swatch) == [.pink, .sky, .mint, .violet, .sun, .coral])
+
+        sample.daily.partOfDay = .morning
+        let morning = sample.agenda()
+        #expect(morning.sections.map(\.category.name) == ["Daily", "Bin night"])
+        #expect(morning.sections.map(\.partHeader) == [.morning, .evening])
+    }
+
+    @Test func oneSectionsPartHasNoHeader() {
+        #expect(Sample().agenda().sections.allSatisfy { $0.partHeader == nil })
+        var sample = Sample()
+        sample.bins.partOfDay = .evening
+        sample.daily.partOfDay = .evening
+        #expect(sample.agenda().sections.allSatisfy { $0.partHeader == nil })
+        sample.daily.partOfDay = .morning
+        #expect(sample.agenda(filter: sample.bins).sections.map(\.partHeader) == [nil])
     }
 
     @Test func allClearOnceEveryDueTaskIsLogged() {

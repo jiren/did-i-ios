@@ -79,6 +79,16 @@ struct CategoryTemplateTests {
         }
     }
 
+    @Test func templatesHaveTheirPartOfDay() {
+        let parts = Dictionary(uniqueKeysWithValues: CategoryTemplates.all.map { ($0.id, $0.partOfDay) })
+        #expect(parts["morningMeds"] == .morning)
+        #expect(parts["outTheDoor"] == .morning)
+        #expect(parts["bedtime"] == .evening)
+        #expect(parts["binNight"] == .evening)
+        #expect(parts["leavingHome"] == .anytime)
+        #expect(!parts.values.contains(.afternoon))
+    }
+
     @Test func rulesStartFromToday() {
         func rule(_ id: String) -> RepeatRule? {
             CategoryTemplates.all.first { $0.id == id }?.rule(today: today, calendar: calendar)

@@ -10,6 +10,8 @@ struct TodaySection: Identifiable, Equatable {
     var isAllDone: Bool
     var isExpanded: Bool
     var tiles: [TodayTile]
+    /// "Morning", above the first section of a part of the day, when the day spans two or more parts.
+    var partHeader: PartOfDay? = nil
 
     var id: UUID { category.id }
 }

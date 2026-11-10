@@ -31,6 +31,8 @@ nonisolated struct CategoryTemplate: Identifiable, Hashable, Sendable {
     let reminderMinutes: Int?
     /// Its tasks nudge when leaving home (once a home is set).
     var nudgesOnLeavingHome = false
+    /// Where Today groups it (Phase 27).
+    var partOfDay: PartOfDay = .anytime
 
     /// The rule for a category made from this template on `today`.
     func rule(today: CalendarDay, calendar: Calendar) -> RepeatRule {
@@ -73,12 +75,12 @@ nonisolated enum CategoryTemplates {
                     String(localized: "Front door locked"), String(localized: "Back door locked"), String(localized: "Stove off"),
                     String(localized: "Candles out"), String(localized: "Phone charging"), String(localized: "Alarm set"),
                 ],
-                reminderMinutes: 22 * 60
+                reminderMinutes: 22 * 60, partOfDay: .evening
             ),
             CategoryTemplate(
                 id: "kitchen", name: String(localized: "Kitchen"), icon: symbol("stove.fill"), colour: .coral, repeats: .daily,
                 tasks: [String(localized: "Oven off"), String(localized: "Hob off"), String(localized: "Kettle off"), String(localized: "Fridge shut")],
-                reminderMinutes: 21 * 60
+                reminderMinutes: 21 * 60, partOfDay: .evening
             ),
             CategoryTemplate(
                 id: "water", name: String(localized: "Water"), icon: symbol("drop.fill"), colour: .sky, repeats: .daily,
@@ -96,13 +98,13 @@ nonisolated enum CategoryTemplates {
                     String(localized: "Bins out"), String(localized: "Recycling out"), String(localized: "Food caddy out"),
                     String(localized: "Garden waste out"),
                 ],
-                reminderMinutes: 20 * 60
+                reminderMinutes: 20 * 60, partOfDay: .evening
             ),
             CategoryTemplate(
                 id: "recycling", name: String(localized: "Recycling"), icon: symbol("arrow.3.trianglepath"), colour: .mint,
                 repeats: .everyTwoWeeks,
                 tasks: [String(localized: "Recycling out"), String(localized: "Glass out")],
-                reminderMinutes: 20 * 60
+                reminderMinutes: 20 * 60, partOfDay: .evening
             ),
             CategoryTemplate(
                 id: "homeSafety", name: String(localized: "Home safety"), icon: .flame, colour: .coral, repeats: .monthly,
@@ -120,13 +122,13 @@ nonisolated enum CategoryTemplates {
             CategoryTemplate(
                 id: "outTheDoor", name: String(localized: "Out the door"), icon: .key, colour: .sun, repeats: .daily,
                 tasks: [String(localized: "Keys with me"), String(localized: "Phone with me"), String(localized: "Wallet with me")],
-                reminderMinutes: nil, nudgesOnLeavingHome: true
+                reminderMinutes: nil, nudgesOnLeavingHome: true, partOfDay: .morning
             ),
             CategoryTemplate(
                 id: "leavingWork", name: String(localized: "Leaving work"), icon: symbol("briefcase.fill"), colour: .sky,
                 repeats: .weekdays,
                 tasks: [String(localized: "Laptop locked"), String(localized: "Desk lamp off"), String(localized: "Locker locked")],
-                reminderMinutes: 17 * 60 + 30
+                reminderMinutes: 17 * 60 + 30, partOfDay: .evening
             ),
             CategoryTemplate(
                 id: "car", name: String(localized: "Car"), icon: .car, colour: .sky, repeats: .daily,
@@ -156,19 +158,19 @@ nonisolated enum CategoryTemplates {
             CategoryTemplate(
                 id: "hairBeauty", name: String(localized: "Hair & beauty"), icon: symbol("comb.fill"), colour: .pink, repeats: .daily,
                 tasks: [String(localized: "Straighteners off"), String(localized: "Curling iron off"), String(localized: "Hairdryer unplugged")],
-                reminderMinutes: nil
+                reminderMinutes: nil, partOfDay: .morning
             ),
         ]),
         CategoryTemplateGroup(id: "health", title: String(localized: "Health"), templates: [
             CategoryTemplate(
                 id: "morningMeds", name: String(localized: "Morning meds"), icon: .pill, colour: .violet, repeats: .daily,
                 tasks: [String(localized: "Morning meds taken"), String(localized: "Vitamins taken")],
-                reminderMinutes: 9 * 60
+                reminderMinutes: 9 * 60, partOfDay: .morning
             ),
             CategoryTemplate(
                 id: "eveningMeds", name: String(localized: "Evening meds"), icon: .pill, colour: .sky, repeats: .daily,
                 tasks: [String(localized: "Evening meds taken")],
-                reminderMinutes: 21 * 60
+                reminderMinutes: 21 * 60, partOfDay: .evening
             ),
             CategoryTemplate(
                 id: "diabetes", name: String(localized: "Diabetes"), icon: symbol("syringe.fill"), colour: .coral, repeats: .daily,
@@ -178,7 +180,7 @@ nonisolated enum CategoryTemplates {
             CategoryTemplate(
                 id: "contacts", name: String(localized: "Contact lenses"), icon: symbol("eye.fill"), colour: .sky, repeats: .daily,
                 tasks: [String(localized: "Lenses out"), String(localized: "Case closed")],
-                reminderMinutes: 22 * 60
+                reminderMinutes: 22 * 60, partOfDay: .evening
             ),
             CategoryTemplate(
                 id: "pharmacy", name: String(localized: "Pharmacy"), icon: symbol("cross.case.fill"), colour: .mint, repeats: .monthly,
@@ -190,7 +192,7 @@ nonisolated enum CategoryTemplates {
             CategoryTemplate(
                 id: "schoolRun", name: String(localized: "School run"), icon: symbol("backpack.fill"), colour: .sun, repeats: .weekdays,
                 tasks: [String(localized: "School bag packed"), String(localized: "Lunch packed"), String(localized: "Back seat checked")],
-                reminderMinutes: 7 * 60 + 30
+                reminderMinutes: 7 * 60 + 30, partOfDay: .morning
             ),
             CategoryTemplate(
                 id: "pets", name: String(localized: "Pets"), icon: symbol("pawprint.fill"), colour: .coral, repeats: .daily,
@@ -241,7 +243,7 @@ nonisolated enum CategoryTemplates {
             CategoryTemplate(
                 id: "selfCare", name: String(localized: "Self-care"), icon: symbol("sparkles"), colour: .pink, repeats: .daily,
                 tasks: [String(localized: "Skincare done"), String(localized: "Flossed"), String(localized: "Stretched")],
-                reminderMinutes: 21 * 60 + 30
+                reminderMinutes: 21 * 60 + 30, partOfDay: .evening
             ),
             CategoryTemplate(
                 id: "learning", name: String(localized: "Learning"), icon: symbol("book.fill"), colour: .sun, repeats: .daily,
@@ -251,7 +253,7 @@ nonisolated enum CategoryTemplates {
             CategoryTemplate(
                 id: "windDown", name: String(localized: "Wind-down"), icon: symbol("moon.stars.fill"), colour: .sky, repeats: .daily,
                 tasks: [String(localized: "Screens off by 10"), String(localized: "Tomorrow planned"), String(localized: "Lights dimmed")],
-                reminderMinutes: 22 * 60
+                reminderMinutes: 22 * 60, partOfDay: .evening
             ),
         ]),
     ]

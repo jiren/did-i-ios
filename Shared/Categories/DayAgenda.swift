@@ -25,8 +25,11 @@ nonisolated struct DayAgenda: Equatable, Sendable {
         var tasks: [Tile]
         /// Every task logged, on today (a later day is never all done).
         var isAllDone: Bool
+        /// Set on the first section of each part of the day, when the day's sections span two or more parts.
+        var partHeader: PartOfDay? = nil
 
         var id: UUID { category.id }
+        var partOfDay: PartOfDay { category.partOfDay }
         var doneCount: Int { tasks.filter(\.isDone).count }
         /// "2/4".
         var progressText: String { "\(doneCount)/\(tasks.count)" }
@@ -152,8 +155,9 @@ nonisolated struct DayAgenda: Equatable, Sendable {
         }
 
         let selectedLogs = Self.newestLogs(in: boundary.interval(of: selected), logs: logs)
-        sections = categories
+        var sections = categories
             .filter { (filter == nil || $0.id == filter?.id) && $0.rule.isDue(on: selected, calendar: calendar) }
+            .sorted { ($0.partOfDay.sortIndex, $0.order, $0.name) < ($1.partOfDay.sortIndex, $1.order, $1.name) }
             .map { category in
                 let tasks = (tasksByCategory[category.id] ?? []).map { task in
                     Tile(check: task.check, swatch: task.swatch, log: selectedLogs[task.check.id])
@@ -165,6 +169,12 @@ nonisolated struct DayAgenda: Equatable, Sendable {
                     isAllDone: isToday && !tasks.isEmpty && tasks.allSatisfy(\.isDone)
                 )
             }
+        if Set(sections.map(\.partOfDay)).count > 1 {
+            for index in sections.indices where index == 0 || sections[index - 1].partOfDay != sections[index].partOfDay {
+                sections[index].partHeader = sections[index].partOfDay
+            }
+        }
+        self.sections = sections
 
         let segments = sections.flatMap(\.tasks)
         let doneCount = segments.filter(\.isDone).count

@@ -154,7 +154,8 @@ final class TodayViewModel {
                 isExpanded: expandedOverrides[section.id] ?? !section.isAllDone,
                 tiles: section.tasks.map { tile in
                     TodayTile(id: tile.id, content: Self.content(for: tile, isToday: agenda.isToday, dayName: dayName, time: time))
-                }
+                },
+                partHeader: section.partHeader
             )
         }
     }

@@ -36,8 +36,8 @@ final class CategoryEditorViewModel {
     var date = Date()
     /// For Custom (Phase 26).
     var custom = CustomRepeatForm(start: CalendarDay(year: 2026, month: 1, day: 1), calendar: .autoupdatingCurrent)
-    /// Morning, Afternoon, Evening or Anytime (Phase 27).
-    var partOfDay: PartOfDay = .anytime
+    /// Morning, Afternoon, Evening or Anytime (Phase 27); set it with `choosePartOfDay(_:)`.
+    private(set) var partOfDay: PartOfDay = .anytime
     var remindsMe = false
     var reminderTime = Date()
     /// Its tasks nudge when leaving home (once a home is set).
@@ -68,6 +68,8 @@ final class CategoryEditorViewModel {
     @ObservationIgnored private var isLoaded = false
     /// The nudge setting as loaded, so saving an untouched one leaves each task's own setting alone.
     @ObservationIgnored private var loadedNudges = false
+    /// The reminder time still follows the part of day: nobody has picked one.
+    @ObservationIgnored private var followsPartOfDay = true
 
     init(
         editing id: UUID? = nil,
@@ -131,6 +133,9 @@ final class CategoryEditorViewModel {
         if let minutes = category.reminderMinutes {
             remindsMe = true
             reminderTime = time(minutes: minutes)
+            followsPartOfDay = false
+        } else {
+            reminderTime = time(minutes: partOfDay.defaultReminderMinutes)
         }
         let own = checks.filter { $0.categoryID == editedID }
         tasks = own.map { TaskDraft(name: $0.name, checkID: $0.id, savedName: $0.name) }
@@ -154,7 +159,9 @@ final class CategoryEditorViewModel {
         }
         remindsMe = template.reminderMinutes != nil
         nudgesOnLeavingHome = template.nudgesOnLeavingHome
-        reminderTime = time(minutes: template.reminderMinutes ?? Self.defaultReminderMinutes)
+        partOfDay = template.partOfDay
+        followsPartOfDay = template.reminderMinutes == nil
+        reminderTime = time(minutes: template.reminderMinutes ?? template.partOfDay.defaultReminderMinutes)
         tasks = []
         template.tasks.forEach(append)
     }
@@ -181,6 +188,18 @@ final class CategoryEditorViewModel {
     var neverComesUp: Bool {
         guard repeatKind == .custom, !isDaily else { return false }
         return rule.nextDueDay(onOrAfter: custom.start, calendar: calendar) == nil
+    }
+
+    /// Picks a part of the day; a reminder time nobody picked moves to its time (9 AM, 3 PM, 8 PM).
+    func choosePartOfDay(_ part: PartOfDay) {
+        partOfDay = part
+        if followsPartOfDay { reminderTime = time(minutes: part.defaultReminderMinutes) }
+    }
+
+    /// A reminder time picked by hand; it stays when the part of day changes.
+    func setReminderTime(_ date: Date) {
+        reminderTime = date
+        followsPartOfDay = false
     }
 
     /// Picks a Repeat chip. Custom starts from the schedule chosen so far.
@@ -233,7 +252,8 @@ final class CategoryEditorViewModel {
 
     var previewName: String { CheckName.cleaned(name) ?? String(localized: "New category") }
 
-    var repeatSummary: String { rule.label(calendar: calendar, locale: locale) }
+    /// "Every Friday · Evening".
+    var repeatSummary: String { partOfDay.summary((isDaily ? .daily : rule).label(calendar: calendar, locale: locale)) }
 
     /// Tasks with a name.
     private var namedTasks: [TaskDraft] { tasks.filter { CheckName.cleaned($0.name) != nil } }

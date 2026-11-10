@@ -43,7 +43,7 @@ final class CategoryTemplatesViewModel {
         let today = boundary.calendarDay(containing: timeSource.now)
         sections = CategoryTemplates.groups.map { group in
             Section(id: group.id, title: group.title, items: group.templates.map { template in
-                let rule = template.rule(today: today, calendar: boundary.calendar).label(calendar: boundary.calendar, locale: locale)
+                let rule = template.partOfDay.summary(template.rule(today: today, calendar: boundary.calendar).label(calendar: boundary.calendar, locale: locale))
                 let count = template.tasks.count
                 let tasks = count == 1 ? String(localized: "1 task") : String(localized: "\(count) tasks")
                 return Item(

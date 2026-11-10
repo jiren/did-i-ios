@@ -616,5 +616,11 @@ sorts sections by part, then category order, under MORNING / AFTERNOON / EVENING
 the sections span two or more parts (a filter shows none). Tile colours don't change. Summaries add the part ("Every
 Friday · Evening"), leaving out Anytime. Templates and `-SeedSample` get parts (Bin night Evening, Travel Morning).
 
+- Built: `DayAgenda` sorts the due sections by (part, order, name) and marks the first section of each part with
+  `partHeader` when the day's sections span two or more parts; Today draws a `SectionLabel` (`today.part.<raw>`)
+  above it, as a plain view, not a pinned header. The editor's reminder time follows the part until it's picked by
+  hand (`setReminderTime`). Templates: Morning for Out the door, Hair & beauty, Morning meds and School run; Evening for
+  Bedtime, Kitchen, Bin night, Recycling, Leaving work, Evening meds, Contact lenses, Self-care and Wind-down.
+
 **Done when** `-SeedSample` shows the headers on Today and a filter hides them.
 

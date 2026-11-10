@@ -34,6 +34,7 @@
 
     },
     "%@ · %@" : {
+      "comment" : "A category's repeat, then its part of the day: “Every Friday · Evening”.",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2372,6 +2373,9 @@
 
     },
     "Ticket" : {
+
+    },
+    "Time of day" : {
 
     },
     "Time range" : {

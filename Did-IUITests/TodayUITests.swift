@@ -92,6 +92,17 @@ final class TodayUITests: XCTestCase {
         app.buttons["filter.all"].tap()
         XCTAssertTrue(app.buttons["tile.Front door locked"].waitForExistence(timeout: 2))
     }
+
+    /// The sample's Bin night is Evening and Daily Anytime, so Today shows both headers; one category alone shows none.
+    @MainActor
+    func testPartOfDayHeaders() throws {
+        let app = XCUIApplication.launched(arguments: ["-SeedSample"])
+        XCTAssertTrue(app.staticTexts["today.part.evening"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["today.part.anytime"].exists)
+        app.buttons["filter.Bin night"].tap()
+        XCTAssertTrue(app.buttons["tile.Bins out"].waitForExistence(timeout: 2))
+        XCTAssertFalse(app.staticTexts["today.part.evening"].exists)
+    }
 }
 
 final class PhotoUITests: XCTestCase {

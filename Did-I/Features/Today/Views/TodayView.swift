@@ -143,6 +143,11 @@ struct TodayView: View {
                 .tipBackground(Color.surface)
                 .autoDismissing(EditTileTip())
             ForEach(viewModel.sections) { section in
+                if let part = section.partHeader {
+                    SectionLabel(title: part.title)
+                        .padding(.top, section.id == viewModel.sections.first?.id ? 0 : 6)
+                        .accessibilityIdentifier("today.part.\(part.rawValue)")
+                }
                 TodaySectionView(
                     section: section,
                     layout: viewModel.layout,

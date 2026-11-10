@@ -24,6 +24,11 @@ nonisolated enum PartOfDay: String, CaseIterable, Codable, Hashable, Sendable {
         }
     }
 
+    /// "Every Friday · Evening"; Anytime adds nothing.
+    func summary(_ repeatLabel: String) -> String {
+        self == .anytime ? repeatLabel : String(localized: "\(repeatLabel) · \(title)", comment: "A category's repeat, then its part of the day: “Every Friday · Evening”.")
+    }
+
     /// The reminder time a category starts with when Remind me is turned on: 9 AM, 3 PM, else 8 PM (as drawn).
     var defaultReminderMinutes: Int {
         switch self {

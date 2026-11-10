@@ -17,7 +17,7 @@ enum SampleData {
             CheckDraft(name: "Iron unplugged"),
         ])) ?? []
         _ = try? store.addCategory(
-            CategoryDraft(name: "Bin night", icon: .bin, colour: .mint, rule: .weekly(weekday: today.weekday(in: calendar))),
+            CategoryDraft(name: "Bin night", icon: .bin, colour: .mint, rule: .weekly(weekday: today.weekday(in: calendar)), partOfDay: .evening),
             tasks: [CheckDraft(name: "Bins out", kind: .other), CheckDraft(name: "Recycling out", kind: .other)]
         )
         _ = try? store.addCategory(
@@ -25,7 +25,7 @@ enum SampleData {
             tasks: [CheckDraft(name: "Smoke alarm tested", kind: .stove), CheckDraft(name: "Extinguisher checked", kind: .other)]
         )
         _ = try? store.addCategory(
-            CategoryDraft(name: "Travel", icon: .suitcase, colour: .sky, rule: .once(today.adding(days: 3, calendar: calendar))),
+            CategoryDraft(name: "Travel", icon: .suitcase, colour: .sky, rule: .once(today.adding(days: 3, calendar: calendar)), partOfDay: .morning),
             tasks: ["Passport packed", "Charger packed", "Windows closed", "Water main off"].map { CheckDraft(name: $0) }
         )
         let bins = (try? store.checks().first { $0.name == "Bins out" }).flatMap { $0 }

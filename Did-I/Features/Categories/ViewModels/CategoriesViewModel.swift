@@ -45,7 +45,7 @@ final class CategoriesViewModel {
         let rows = categories.map { category in
             let count = checks.filter { $0.categoryID == category.id }.count
             let tasks = count == 1 ? String(localized: "1 task") : String(localized: "\(count) tasks")
-            let rule = category.rule.label(calendar: boundary.calendar, locale: locale)
+            let rule = category.partOfDay.summary(category.rule.label(calendar: boundary.calendar, locale: locale))
             return Row(category: category, detail: String(localized: "\(rule) · \(tasks)"))
         }
         let isPast = { (row: Row) in row.category.rule.isPast(before: today, calendar: boundary.calendar) }
